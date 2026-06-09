@@ -319,10 +319,40 @@ def generate_srt(segments: list[dict]) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Stage 6 — Hindi TTS
+# Stage 6 — Hindi TTS  (timestamp-aligned + time-stretched)
 # ─────────────────────────────────────────────────────────────────────────────
 
+def _atempo_chain(ratio: float) -> str:
+    """Build an ffmpeg atempo filter chain for ratios outside the 0.5–2.0 range."""
+    filters: list[str] = []
+    while ratio > 2.0:
+        filters.append("atempo=2.0")
+        ratio /= 2.0
+    while ratio < 0.5:
+        filters.append("atempo=0.5")
+        ratio /= 0.5
+    filters.append(f"atempo={ratio:.6f}")
+    return ",".join(filters)
+
+
+def _stretch_to_fit(seg_path: Path, target_s: float) -> Path:
+    """Compress seg_path to target_s via ffmpeg atempo. No-op if already shorter."""
+    tts_dur = len(AudioSegment.from_mp3(str(seg_path))) / 1000
+    if tts_dur <= target_s + 0.05:
+        return seg_path
+    out_path = seg_path.with_stem(seg_path.stem + "_stretched")
+    if not out_path.exists():
+        cmd = [
+            "ffmpeg", "-y", "-i", str(seg_path),
+            "-filter:a", _atempo_chain(tts_dur / target_s),
+            str(out_path),
+        ]
+        subprocess.run(cmd, check=True, capture_output=True)
+    return out_path
+
+
 def synthesize_hindi_audio(segments: list[dict], stem: str = "sample",
+                           src_audio: Path | None = None,
                            force: bool = False) -> Path:
     dubbed_path = RAW / f"dubbed_hi_{stem}.mp3"
     if dubbed_path.exists() and not force:
@@ -331,10 +361,18 @@ def synthesize_hindi_audio(segments: list[dict], stem: str = "sample",
 
     seg_dir = PREPARED / f"hi_segments_{stem}"
     seg_dir.mkdir(exist_ok=True)
-    combined_hi = " ".join(s["hi_text"] for s in segments)
-    print(f"  Synthesising Hindi audio ({len(combined_hi)} chars) …")
 
-    seg_paths = []
+    # Silent base track at source video duration for correct lip-sync alignment
+    if src_audio and src_audio.exists():
+        total_ms = len(AudioSegment.from_file(str(src_audio)))
+    else:
+        total_ms = int(segments[-1]["end"] * 1000) + 500 if segments else 5000
+
+    combined_hi = " ".join(s["hi_text"] for s in segments)
+    print(f"  Synthesising Hindi audio ({len(combined_hi)} chars, "
+          f"base={total_ms / 1000:.1f}s) …")
+
+    combined = AudioSegment.silent(duration=total_ms)
     for seg in segments:
         if not seg["hi_text"].strip():
             continue
@@ -347,13 +385,16 @@ def synthesize_hindi_audio(segments: list[dict], stem: str = "sample",
                 asyncio.run(_s())
             except Exception:
                 gTTS(seg["hi_text"], lang="hi", slow=False).save(str(p))
-        seg_paths.append(p)
 
-    combined = AudioSegment.empty()
-    for p in seg_paths:
-        combined += AudioSegment.from_mp3(str(p))
+        # Compress to fit original window; overlay at original start timestamp
+        fitted = _stretch_to_fit(p, seg["duration"])
+        combined = combined.overlay(
+            AudioSegment.from_mp3(str(fitted)),
+            position=int(seg["start"] * 1000),
+        )
+
     combined.export(str(dubbed_path), format="mp3")
-    print(f"  Hindi dubbed audio: {dubbed_path.name}  ({len(combined)/1000:.1f}s)")
+    print(f"  Hindi dubbed audio: {dubbed_path.name}  ({len(combined) / 1000:.1f}s)")
     return dubbed_path
 
 
@@ -408,7 +449,7 @@ def compute_metrics(whisper_result: dict, segments: list[dict],
         bleu_note = "N/A — no reference text for this clip"
 
     try:
-        src_dur = len(AudioSegment.from_mp3(str(src_audio))) / 1000
+        src_dur = len(AudioSegment.from_file(str(src_audio))) / 1000
         dub_dur = len(AudioSegment.from_mp3(str(dubbed_audio))) / 1000
         dar     = dub_dur / src_dur
     except Exception:
@@ -499,16 +540,18 @@ if __name__ == "__main__":
     print(f"  VTT: {len(vtt)} chars  |  SRT: {len(srt)} chars")
 
     print("\nStage 6 — Hindi TTS …")
-    hindi_audio = synthesize_hindi_audio(segments, stem=video_path.stem)
+    hindi_audio = synthesize_hindi_audio(
+        segments, stem=video_path.stem, src_audio=audio_path
+    )
 
     print("\nStage 7 — Creating dubbed video …")
     dubbed_video = create_dubbed_video(video_path, hindi_audio)
 
     print("\nStage 8 — Computing metrics …")
-    src_audio    = RAW / "source_en.mp3"
-    has_ref      = args.input is None
-    metrics      = compute_metrics(whisper_result, segments, src_audio,
-                                   hindi_audio, has_reference=has_ref)
+    has_ref   = args.input is None
+    src_audio = RAW / "source_en.mp3" if has_ref else audio_path
+    metrics   = compute_metrics(whisper_result, segments, src_audio,
+                                hindi_audio, has_reference=has_ref)
 
     save_outputs(segments, vtt, srt, metrics, src_audio, hindi_audio,
                  stem=video_path.stem)

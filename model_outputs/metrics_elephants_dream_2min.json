@@ -15,10 +15,10 @@
     "voice": "hi-IN-SwaraNeural"
   },
   "alignment": {
-    "source_duration_s": 31.94,
-    "dubbed_duration_s": 35.3,
-    "duration_ratio": 1.105,
-    "en_chars_per_sec": 12.2,
-    "hi_chars_per_sec": 4.7
+    "source_duration_s": 120.0,
+    "dubbed_duration_s": 120.0,
+    "duration_ratio": 1.0,
+    "en_chars_per_sec": 3.3,
+    "hi_chars_per_sec": 1.5
   }
 }
