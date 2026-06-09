@@ -319,36 +319,21 @@ def generate_srt(segments: list[dict]) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Stage 6 — Hindi TTS  (timestamp-aligned + time-stretched)
+# Stage 6 — Hindi TTS  (timestamp-aligned + rate-controlled re-synthesis)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _atempo_chain(ratio: float) -> str:
-    """Build an ffmpeg atempo filter chain for ratios outside the 0.5–2.0 range."""
-    filters: list[str] = []
-    while ratio > 2.0:
-        filters.append("atempo=2.0")
-        ratio /= 2.0
-    while ratio < 0.5:
-        filters.append("atempo=0.5")
-        ratio /= 0.5
-    filters.append(f"atempo={ratio:.6f}")
-    return ",".join(filters)
+MAX_RATE_PCT = 75  # cap edge-tts speed-up at +75% to avoid chipmunk artefacts
 
 
-def _stretch_to_fit(seg_path: Path, target_s: float) -> Path:
-    """Compress seg_path to target_s via ffmpeg atempo. No-op if already shorter."""
-    tts_dur = len(AudioSegment.from_mp3(str(seg_path))) / 1000
-    if tts_dur <= target_s + 0.05:
-        return seg_path
-    out_path = seg_path.with_stem(seg_path.stem + "_stretched")
-    if not out_path.exists():
-        cmd = [
-            "ffmpeg", "-y", "-i", str(seg_path),
-            "-filter:a", _atempo_chain(tts_dur / target_s),
-            str(out_path),
-        ]
-        subprocess.run(cmd, check=True, capture_output=True)
-    return out_path
+def _synth_segment(text: str, path: Path, rate: str = "+0%") -> None:
+    """Synthesize one segment via edge-tts at the given rate; gTTS fallback."""
+    async def _run() -> None:
+        communicate = edge_tts.Communicate(text, TTS_VOICE_HI, rate=rate)
+        await communicate.save(str(path))
+    try:
+        asyncio.run(_run())
+    except Exception:
+        gTTS(text, lang="hi", slow=False).save(str(path))
 
 
 def synthesize_hindi_audio(segments: list[dict], stem: str = "sample",
@@ -368,30 +353,41 @@ def synthesize_hindi_audio(segments: list[dict], stem: str = "sample",
     else:
         total_ms = int(segments[-1]["end"] * 1000) + 500 if segments else 5000
 
-    combined_hi = " ".join(s["hi_text"] for s in segments)
+    valid = [s for s in segments if s["hi_text"].strip()]
+    combined_hi = " ".join(s["hi_text"] for s in valid)
     print(f"  Synthesising Hindi audio ({len(combined_hi)} chars, "
           f"base={total_ms / 1000:.1f}s) …")
 
-    combined = AudioSegment.silent(duration=total_ms)
-    for seg in segments:
-        if not seg["hi_text"].strip():
-            continue
+    # Pass 1 — synthesize every segment at normal rate and measure durations
+    for seg in valid:
         p = seg_dir / f"seg_{seg['id']:03d}.mp3"
         if not p.exists():
-            try:
-                async def _s(text=seg["hi_text"], path=p):
-                    communicate = edge_tts.Communicate(text, TTS_VOICE_HI)
-                    await communicate.save(str(path))
-                asyncio.run(_s())
-            except Exception:
-                gTTS(seg["hi_text"], lang="hi", slow=False).save(str(p))
+            _synth_segment(seg["hi_text"], p)
 
-        # Compress to fit original window; overlay at original start timestamp
-        fitted = _stretch_to_fit(p, seg["duration"])
-        combined = combined.overlay(
-            AudioSegment.from_mp3(str(fitted)),
-            position=int(seg["start"] * 1000),
-        )
+    total_tts_s = sum(
+        len(AudioSegment.from_mp3(str(seg_dir / f"seg_{s['id']:03d}.mp3"))) / 1000
+        for s in valid
+    )
+    total_speech_s = sum(s["duration"] for s in valid)
+
+    # One global rate for the whole clip — consistent tempo, no per-segment jumps
+    raw_rate = int((total_tts_s / total_speech_s - 1) * 100)
+    global_rate = max(0, min(raw_rate, MAX_RATE_PCT))
+    print(f"  TTS {total_tts_s:.1f}s over {total_speech_s:.1f}s speech "
+          f"→ uniform rate: +{global_rate}%")
+
+    # Pass 2 — re-synthesize at global rate if needed, then overlay at timestamps
+    combined = AudioSegment.silent(duration=total_ms)
+    for seg in valid:
+        if global_rate > 5:
+            p_fast = seg_dir / f"seg_{seg['id']:03d}_r{global_rate}.mp3"
+            if not p_fast.exists():
+                _synth_segment(seg["hi_text"], p_fast, rate=f"+{global_rate}%")
+            seg_audio = AudioSegment.from_mp3(str(p_fast))
+        else:
+            seg_audio = AudioSegment.from_mp3(str(seg_dir / f"seg_{seg['id']:03d}.mp3"))
+
+        combined = combined.overlay(seg_audio, position=int(seg["start"] * 1000))
 
     combined.export(str(dubbed_path), format="mp3")
     print(f"  Hindi dubbed audio: {dubbed_path.name}  ({len(combined) / 1000:.1f}s)")
