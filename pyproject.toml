@@ -1,0 +1,16 @@
+[project]
+name = "videodubbing"
+version = "0.1.0"
+description = "Logituit 2026 OTT Engagement — VideoDubbing POC"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.26",
+    "matplotlib>=3.8",
+    "seaborn>=0.13",
+    "scikit-learn>=1.4",
+    "streamlit>=1.35",
+    "plotly>=5.20",
+    "python-pptx>=1.0",
+    "optuna>=3.6",
+]

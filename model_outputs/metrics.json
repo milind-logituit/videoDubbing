@@ -1,0 +1,22 @@
+{
+  "asr": {
+    "model": "base",
+    "wer": 0.0649,
+    "wer_pct": 6.49
+  },
+  "translation": {
+    "model": "Google Translate (en→hi)",
+    "bleu": 26.49,
+    "n_segments": 7
+  },
+  "tts": {
+    "voice": "hi-IN-SwaraNeural"
+  },
+  "alignment": {
+    "source_duration_s": 31.94,
+    "dubbed_duration_s": 41.86,
+    "duration_ratio": 1.31,
+    "en_chars_per_sec": 12.2,
+    "hi_chars_per_sec": 8.4
+  }
+}
