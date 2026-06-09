@@ -10,11 +10,13 @@ Outputs:
 
 Run: uv run python code/pipeline_v2.py
 """
+import argparse
 import asyncio
 import json
 import subprocess
 from pathlib import Path
 
+import anthropic
 import whisper
 from deep_translator import GoogleTranslator
 from gtts import gTTS
@@ -37,7 +39,8 @@ for d in [RAW, PREPARED, MODEL_OUT]:
 SOURCE_SCRIPT = [
     {"id": 1, "speaker": "Narrator",
      "text": ("In a world where streaming has replaced the multiplex, "
-               "content is king — and every second of screen time must earn its place.")},
+               "content is king — and every second of screen time must "
+               "earn its place.")},
     {"id": 2, "speaker": "Character A",
      "text": ("We built this platform from nothing. "
                "Forty million subscribers in five years. "
@@ -116,10 +119,15 @@ def _make_title_frame() -> Path:
         bbox = draw.textbbox((0, 0), text, font=font)
         return (VIDEO_SIZE[0] - (bbox[2] - bbox[0])) // 2
 
-    draw.text((centered_x(title, font_lg), 270), title, font=font_lg, fill=(255, 255, 255))
-    draw.text((centered_x(sub, font_sm),   370), sub,   font=font_sm, fill=(148, 163, 184))
-    draw.text((centered_x(tag, font_xs),   430), tag,   font=font_xs, fill=(100, 116, 139))
-    draw.rectangle([0, VIDEO_SIZE[1] - 6, VIDEO_SIZE[0], VIDEO_SIZE[1]], fill=ACCENT_COLOR)
+    draw.text((centered_x(title, font_lg), 270), title,
+              font=font_lg, fill=(255, 255, 255))
+    draw.text((centered_x(sub, font_sm), 370), sub,
+              font=font_sm, fill=(148, 163, 184))
+    draw.text((centered_x(tag, font_xs), 430), tag,
+              font=font_xs, fill=(100, 116, 139))
+    draw.rectangle(
+        [0, VIDEO_SIZE[1] - 6, VIDEO_SIZE[0], VIDEO_SIZE[1]], fill=ACCENT_COLOR
+    )
 
     frame_path = RAW / "title_frame.png"
     img.save(frame_path)
@@ -187,6 +195,9 @@ def transcribe(audio_path: Path) -> dict:
 # Stage 4 — Translation
 # ─────────────────────────────────────────────────────────────────────────────
 
+FILLER_MAP = {"hmm": "हाँ", "uh": "", "um": "", "ah": "अच्छा"}
+
+
 def translate_segments(whisper_result: dict) -> list[dict]:
     translator   = GoogleTranslator(source="en", target="hi")
     segments_out = []
@@ -195,6 +206,9 @@ def translate_segments(whisper_result: dict) -> list[dict]:
         if not en:
             continue
         hi = translator.translate(en)
+        # Post-process: replace or drop filler-only segments
+        if en.lower().rstrip(".!?,") in FILLER_MAP:
+            hi = FILLER_MAP[en.lower().rstrip(".!?,")]
         segments_out.append({
             "id":       seg["id"],
             "start":    round(seg["start"], 3),
@@ -207,6 +221,68 @@ def translate_segments(whisper_result: dict) -> list[dict]:
         print(f"           →  {hi[:55]}")
     print(f"  Translated {len(segments_out)} segments.")
     return segments_out
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 4b — LLM post-correction (Claude)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def refine_segments(segments: list[dict], *, skip: bool = False) -> list[dict]:
+    """Fix ASR errors and rewrite Hindi as natural dubbing-quality speech via Claude."""
+    if skip:
+        print("  Stage 4b skipped (--no-llm).")
+        return segments
+
+    client = anthropic.Anthropic()
+    payload = [
+        {"id": s["id"], "en_text": s["en_text"], "hi_text": s["hi_text"]}
+        for s in segments
+    ]
+    print(f"  Calling Claude (claude-sonnet-4-6) to refine {len(payload)} segments …")
+
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=8192,
+        system=(
+            "You are a professional Hindi dubbing editor for OTT streaming content "
+            "(Eros Now / SunNxt).\n"
+            "Input: JSON array of segments with ASR English (en_text) and "
+            "Google-Translate Hindi (hi_text).\n"
+            "For each segment:\n"
+            "  1. Fix ASR transcription errors in en_text "
+            "(e.g. 'half is likely' → 'half as likely').\n"
+            "  2. Rewrite hi_text as natural spoken Hindi for dubbing — "
+            "not word-for-word translation.\n"
+            "     • Distinguish dinner vs supper, couch vs sofa, etc.\n"
+            "     • Fillers: 'Hmm' → 'हाँ', 'Uh'/'Um' → empty string, 'Ah' → 'अच्छा'.\n"
+            "     • Preserve brevity for lip-sync timing.\n"
+            "Return ONLY a valid JSON array: "
+            '[{"id": int, "en_text": str, "hi_text": str}, …]. '
+            "Same count and IDs as input. No markdown, no explanation."
+        ),
+        messages=[{"role": "user", "content": json.dumps(payload, ensure_ascii=False)}],
+    )
+
+    # Collect all text content, strip markdown fences if present
+    raw = "".join(b.text for b in response.content if b.type == "text").strip()
+    if raw.startswith("```"):
+        raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+    refined_list: list[dict] = json.loads(raw)
+    refined = {r["id"]: r for r in refined_list}
+
+    out = []
+    for seg in segments:
+        r = refined.get(seg["id"])
+        if r:
+            seg = {**seg, "en_text": r["en_text"], "hi_text": r["hi_text"]}
+        out.append(seg)
+
+    changed = sum(
+        1 for orig, new in zip(segments, out)
+        if orig["en_text"] != new["en_text"] or orig["hi_text"] != new["hi_text"]
+    )
+    print(f"  LLM refined {changed}/{len(out)} segments.")
+    return out
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -246,19 +322,22 @@ def generate_srt(segments: list[dict]) -> str:
 # Stage 6 — Hindi TTS
 # ─────────────────────────────────────────────────────────────────────────────
 
-def synthesize_hindi_audio(segments: list[dict], force: bool = False) -> Path:
-    dubbed_path = RAW / "dubbed_hi_v2.mp3"
+def synthesize_hindi_audio(segments: list[dict], stem: str = "sample",
+                           force: bool = False) -> Path:
+    dubbed_path = RAW / f"dubbed_hi_{stem}.mp3"
     if dubbed_path.exists() and not force:
         print(f"  Hindi audio already exists: {dubbed_path.name}")
         return dubbed_path
 
-    seg_dir = PREPARED / "hi_segments_v2"
+    seg_dir = PREPARED / f"hi_segments_{stem}"
     seg_dir.mkdir(exist_ok=True)
     combined_hi = " ".join(s["hi_text"] for s in segments)
     print(f"  Synthesising Hindi audio ({len(combined_hi)} chars) …")
 
     seg_paths = []
     for seg in segments:
+        if not seg["hi_text"].strip():
+            continue
         p = seg_dir / f"seg_{seg['id']:03d}.mp3"
         if not p.exists():
             try:
@@ -289,7 +368,7 @@ def create_dubbed_video(video_path: Path, hindi_audio_path: Path,
         print(f"  Dubbed video already exists: {dubbed_video.name}")
         return dubbed_video
 
-    print(f"  Replacing audio track …")
+    print("  Replacing audio track …")
     cmd = [
         "ffmpeg", "-y",
         "-i", str(video_path),
@@ -310,10 +389,23 @@ def create_dubbed_video(video_path: Path, hindi_audio_path: Path,
 # ─────────────────────────────────────────────────────────────────────────────
 
 def compute_metrics(whisper_result: dict, segments: list[dict],
-                    src_audio: Path, dubbed_audio: Path) -> dict:
-    wer_score = jiwer.wer(FULL_SOURCE_TEXT.lower(), whisper_result["text"].lower())
+                    src_audio: Path, dubbed_audio: Path,
+                    has_reference: bool = True) -> dict:
     machine_hindi = " ".join(s["hi_text"] for s in segments)
-    bleu = sacrebleu.corpus_bleu([machine_hindi], [[REFERENCE_HINDI]])
+
+    if has_reference:
+        wer_score = jiwer.wer(FULL_SOURCE_TEXT.lower(),
+                               whisper_result["text"].lower())
+        bleu_obj  = sacrebleu.corpus_bleu([machine_hindi], [[REFERENCE_HINDI]])
+        wer_val: float | None       = round(wer_score, 4)
+        wer_pct_val: float | None   = round(wer_score * 100, 2)
+        bleu_val: float | None      = round(bleu_obj.score, 2)
+        wer_note  = None
+        bleu_note = None
+    else:
+        wer_val = wer_pct_val = bleu_val = None
+        wer_note  = "N/A — no reference text for this clip"
+        bleu_note = "N/A — no reference text for this clip"
 
     try:
         src_dur = len(AudioSegment.from_mp3(str(src_audio))) / 1000
@@ -322,18 +414,30 @@ def compute_metrics(whisper_result: dict, segments: list[dict],
     except Exception:
         src_dur = dub_dur = dar = 0.0
 
+    asr_block: dict = {"model": WHISPER_MODEL, "wer": wer_val,
+                       "wer_pct": wer_pct_val}
+    if wer_note is not None:
+        asr_block["note"] = wer_note
+
+    trans_block: dict = {"model": "Google Translate (en→hi)",
+                         "bleu": bleu_val,
+                         "n_segments": len(segments)}
+    if bleu_note is not None:
+        trans_block["note"] = bleu_note
+
     return {
-        "asr":         {"model": WHISPER_MODEL, "wer": round(wer_score, 4),
-                        "wer_pct": round(wer_score * 100, 2)},
-        "translation": {"model": "Google Translate (en→hi)",
-                        "bleu": round(bleu.score, 2),
-                        "n_segments": len(segments)},
+        "asr":         asr_block,
+        "translation": trans_block,
         "tts":         {"voice": TTS_VOICE_HI},
         "alignment":   {"source_duration_s": round(src_dur, 2),
                         "dubbed_duration_s": round(dub_dur, 2),
                         "duration_ratio": round(dar, 3),
-                        "en_chars_per_sec": round(len(FULL_SOURCE_TEXT.replace(" ","")) / src_dur, 1) if src_dur else 0,
-                        "hi_chars_per_sec": round(len(machine_hindi.replace(" ","")) / dub_dur, 1) if dub_dur else 0},
+                        "en_chars_per_sec": round(
+                            len(FULL_SOURCE_TEXT.replace(" ", "")) / src_dur, 1
+                        ) if src_dur else 0,
+                        "hi_chars_per_sec": round(
+                            len(machine_hindi.replace(" ", "")) / dub_dur, 1
+                        ) if dub_dur else 0},
     }
 
 
@@ -341,15 +445,18 @@ def compute_metrics(whisper_result: dict, segments: list[dict],
 # Save outputs
 # ─────────────────────────────────────────────────────────────────────────────
 
-def save_outputs(segments, vtt, srt, metrics, src_audio, dubbed_audio):
-    pd.DataFrame(segments).to_csv(PREPARED / "transcript_bilingual_v2.csv", index=False)
-    (MODEL_OUT / "subtitles_hi.vtt").write_text(vtt, encoding="utf-8")
-    (MODEL_OUT / "subtitles_hi.srt").write_text(srt, encoding="utf-8")
-    with open(MODEL_OUT / "metrics_v2.json", "w") as f:
+def save_outputs(segments, vtt, srt, metrics, src_audio, dubbed_audio,
+                 stem: str = "sample"):
+    pd.DataFrame(segments).to_csv(
+        PREPARED / f"transcript_bilingual_{stem}.csv", index=False
+    )
+    (MODEL_OUT / f"subtitles_{stem}_hi.vtt").write_text(vtt, encoding="utf-8")
+    (MODEL_OUT / f"subtitles_{stem}_hi.srt").write_text(srt, encoding="utf-8")
+    with open(MODEL_OUT / f"metrics_{stem}.json", "w") as f:
         json.dump(metrics, f, indent=2, ensure_ascii=False)
     print(f"\nSaved outputs to {MODEL_OUT}/")
-    for f in sorted(MODEL_OUT.iterdir()):
-        print(f"  {f.name}")
+    for out in sorted(MODEL_OUT.iterdir()):
+        print(f"  {out.name}")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -357,8 +464,22 @@ def save_outputs(segments, vtt, srt, metrics, src_audio, dubbed_audio):
 # ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    print("Stage 1 — Generating sample video …")
-    video_path = generate_sample_video()
+    parser = argparse.ArgumentParser(description="VideoDubbing v2 pipeline")
+    parser.add_argument("--input", type=Path, default=None,
+                        help="Path to an existing MP4/MOV to dub. "
+                             "Skips synthetic sample-video generation.")
+    parser.add_argument("--no-llm", action="store_true",
+                        help="Skip Stage 4b Claude post-correction.")
+    args = parser.parse_args()
+
+    if args.input:
+        if not args.input.exists():
+            raise FileNotFoundError(f"Input video not found: {args.input}")
+        video_path = args.input
+        print(f"Stage 1 — Using provided video: {video_path.name}")
+    else:
+        print("Stage 1 — Generating sample video …")
+        video_path = generate_sample_video()
 
     print("\nStage 2 — Extracting audio …")
     audio_path = extract_audio(video_path)
@@ -369,25 +490,33 @@ if __name__ == "__main__":
     print("\nStage 4 — Translation (Google Translate) …")
     segments = translate_segments(whisper_result)
 
+    print("\nStage 4b — LLM post-correction (Claude) …")
+    segments = refine_segments(segments, skip=args.no_llm)
+
     print("\nStage 5 — Generating subtitle files …")
     vtt = generate_vtt(segments)
     srt = generate_srt(segments)
     print(f"  VTT: {len(vtt)} chars  |  SRT: {len(srt)} chars")
 
     print("\nStage 6 — Hindi TTS …")
-    hindi_audio = synthesize_hindi_audio(segments)
+    hindi_audio = synthesize_hindi_audio(segments, stem=video_path.stem)
 
     print("\nStage 7 — Creating dubbed video …")
     dubbed_video = create_dubbed_video(video_path, hindi_audio)
 
     print("\nStage 8 — Computing metrics …")
-    src_audio = RAW / "source_en.mp3"
-    metrics   = compute_metrics(whisper_result, segments, src_audio, hindi_audio)
+    src_audio    = RAW / "source_en.mp3"
+    has_ref      = args.input is None
+    metrics      = compute_metrics(whisper_result, segments, src_audio,
+                                   hindi_audio, has_reference=has_ref)
 
-    save_outputs(segments, vtt, srt, metrics, src_audio, hindi_audio)
+    save_outputs(segments, vtt, srt, metrics, src_audio, hindi_audio,
+                 stem=video_path.stem)
 
     print("\n── Quality metrics ──")
-    print(f"  ASR WER          : {metrics['asr']['wer_pct']:.1f}%")
-    print(f"  Translation BLEU : {metrics['translation']['bleu']:.1f}")
+    wer_pct = metrics["asr"]["wer_pct"]
+    bleu    = metrics["translation"]["bleu"]
+    print(f"  ASR WER          : {f'{wer_pct:.1f}%' if wer_pct is not None else 'N/A'}")
+    print(f"  Translation BLEU : {f'{bleu:.1f}' if bleu is not None else 'N/A'}")
     print(f"  Duration ratio   : {metrics['alignment']['duration_ratio']:.3f}")
     print("\nDone.")

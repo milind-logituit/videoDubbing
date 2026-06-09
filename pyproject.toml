@@ -13,4 +13,18 @@ dependencies = [
     "plotly>=5.20",
     "python-pptx>=1.0",
     "optuna>=3.6",
+    "ruff>=0.15.16",
+    "openai-whisper>=20250625",
+    "deep-translator>=1.11.4",
+    "edge-tts>=7.2.8",
+    "jiwer>=4.0.0",
+    "sacrebleu>=2.6.0",
+    "pydub>=0.25.1",
+    "gtts>=2.5.4",
+    "anthropic>=0.107.1",
+]
+
+[dependency-groups]
+dev = [
+    "ruff>=0.15.16",
 ]

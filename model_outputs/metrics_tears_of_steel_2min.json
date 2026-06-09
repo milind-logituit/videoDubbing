@@ -1,0 +1,24 @@
+{
+  "asr": {
+    "model": "base",
+    "wer": null,
+    "wer_pct": null,
+    "note": "N/A — no reference text for this clip"
+  },
+  "translation": {
+    "model": "Google Translate (en→hi)",
+    "bleu": null,
+    "n_segments": 14,
+    "note": "N/A — no reference text for this clip"
+  },
+  "tts": {
+    "voice": "hi-IN-SwaraNeural"
+  },
+  "alignment": {
+    "source_duration_s": 31.94,
+    "dubbed_duration_s": 56.81,
+    "duration_ratio": 1.778,
+    "en_chars_per_sec": 12.2,
+    "hi_chars_per_sec": 6.7
+  }
+}
