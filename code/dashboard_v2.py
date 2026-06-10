@@ -26,7 +26,7 @@ RAW       = ROOT / "data/raw"
 MODEL_OUT = ROOT / "model_outputs"
 
 
-def _find_processed_clips() -> dict[str, tuple[Path, Path, Path, Path, Path]]:
+def _find_processed_clips() -> dict[str, tuple[Path, Path, Path, Path, Path, Path]]:
     """Return {stem: (orig, dubbed, metrics, vtt, transcript)} for ready clips."""
     clips: dict[str, tuple[Path, Path, Path, Path, Path]] = {}
     for d in [RAW, ROOT / "test_clips"]:
@@ -143,7 +143,15 @@ else:
 
 st.sidebar.divider()
 st.sidebar.markdown("**Pipeline**")
-st.sidebar.code("Whisper (base)\n→ Google Translate\n→ edge-tts (hi-IN-Swara)")
+st.sidebar.code(
+    "Whisper (base)\n"
+    "→ pyannote speaker diarization\n"
+    "→ wav2vec2 gender classification\n"
+    "→ Claude (isochrony constraints)\n"
+    "→ edge-tts multi-voice\n"
+    "  ♀ hi-IN-SwaraNeural\n"
+    "  ♂ hi-IN-MadhurNeural"
+)
 
 # ── Header ────────────────────────────────────────────────────────────────────
 st.title("🎬 AI Video Dubbing — v2")
@@ -227,9 +235,11 @@ with tab1:
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab2:
     st.subheader("Original video with Hindi audio track (dubbed)")
+    _voice_display = metrics.get("tts", {}).get("voice", "multi-voice (diarized)")
     st.caption(
-        "The English audio has been replaced with AI-generated Hindi speech "
-        "using Microsoft's hi-IN-SwaraNeural voice."
+        "The English audio has been replaced with AI-generated Hindi speech. "
+        f"Speaker diarization assigns per-character voices (♀ hi-IN-SwaraNeural, "
+        f"♂ hi-IN-MadhurNeural). Recorded as: **{_voice_display}**."
     )
     st.video(dubbed_src)
 
@@ -266,9 +276,10 @@ with tab3:
     with c4:
         st.markdown("#### 🇮🇳 Use Case 2 — Hindi dubbed audio")
         st.video(dubbed_src)
+        _v = metrics.get("tts", {}).get("voice", "multi-voice")
         st.caption(f"Duration: {al['dubbed_duration_s']:.1f}s  |  "
                    f"Pace: {al['hi_chars_per_sec']:.1f} ch/s  |  "
-                   f"Voice: hi-IN-SwaraNeural")
+                   f"Voice: {_v}")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
@@ -354,16 +365,26 @@ with tab5:
           │
           ├── ffmpeg ──────────────────────► WAV audio (16 kHz mono)
           │                                        │
-          │                               OpenAI Whisper (base)
+          │                    ┌───────────────────┤
+          │                    │                   │
+          │          OpenAI Whisper (base)   pyannote diarization 3.1
+          │                    │                   │
+          │          EN transcript + timestamps  speaker turns
+          │                    │                   │
+          │                    └───────────────────┤
           │                                        │
-          │                            EN transcript + timestamps
+          │                         wav2vec2 gender classifier
+          │                         (audeering/wav2vec2-large)
           │                                        │
-          │                            Google Translate (en→hi)
+          │                         speaker → voice map
+          │                         ♀ SwaraNeural  ♂ MadhurNeural
+          │                                        │
+          │                    Claude (isochrony-constrained translation)
           │                                        │
           │                  ┌─────────────────────┴──────────────────┐
           │                  ▼                                         ▼
-          │            WebVTT / SRT                          Hindi TTS audio
-          │            subtitle file                    (hi-IN-SwaraNeural)
+          │            WebVTT / SRT                      per-segment TTS audio
+          │            subtitle file                  (voice matched per speaker)
           │                  │                                         │
           │                  ▼                                         ▼
           └──── st.video(subtitles=vtt) ──────── ffmpeg -map 0:v -map 1:a ──►
@@ -373,24 +394,28 @@ with tab5:
 
     st.markdown("#### Component breakdown")
     components = pd.DataFrame({
-        "Stage": ["ASR", "Translation", "TTS", "Subtitle", "Dubbing"],
+        "Stage": ["ASR", "Diarization", "Translation", "TTS", "Subtitle", "Dubbing"],
         "Model / Tool": [
-            "OpenAI Whisper base", "Google Translate (free)",
-            "edge-tts hi-IN-SwaraNeural",
-            "WebVTT → st.video()", "ffmpeg audio track replace",
+            "OpenAI Whisper base",
+            "pyannote 3.1 + wav2vec2-large gender",
+            "Claude (isochrony constraints)",
+            "edge-tts hi-IN-Swara/MadhurNeural",
+            "WebVTT → st.video()",
+            "ffmpeg audio track replace",
         ],
         "Cost": [
-            "Free (local)", "Free", "Free (Microsoft Edge)",
-            "Free", "Free (local)",
+            "Free (local)", "Free (HF model)", "Claude API",
+            "Free (Microsoft Edge)", "Free", "Free (local)",
         ],
         "Production upgrade": [
             "Whisper large-v3 / Azure Speech",
-            "Google Cloud Translation API",
+            "pyannote cloud / AssemblyAI diarization",
+            "Claude Opus with larger batches",
             "Azure Neural TTS / ElevenLabs voice clone",
             "Burn-in via ffmpeg subtitles filter",
             "Time-stretch TTS to match original duration",
         ],
-        "Status": ["✅ Live"] * 5,
+        "Status": ["✅ Live"] * 6,
     })
     st.dataframe(components, use_container_width=True, hide_index=True)
 

@@ -12,6 +12,7 @@ sys.modules["pipeline_v2"] = _mod
 _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
 
 assign_speakers = _mod.assign_speakers
+_assign_genders = _mod._assign_genders
 _seg_voice = _mod._seg_voice
 _voice_tag = _mod._voice_tag
 _GENDER_LABEL_MAP = _mod._GENDER_LABEL_MAP
@@ -101,6 +102,46 @@ def test_seg_voice_defaults_to_female_when_missing():
 def test_seg_voice_defaults_to_female_when_speaker_not_in_map():
     seg = {"speaker": "SPEAKER_99", "hi_text": "test"}
     assert _seg_voice(seg, {}) == TTS_VOICE_FEMALE_HI
+
+
+# ── _assign_genders ───────────────────────────────────────────────────────────
+
+def test_assign_genders_high_confidence_female():
+    # f_prob >= 0.70 → female regardless
+    result = _assign_genders({"SP0": (0.92, 0.08)})
+    assert result["SP0"] == "female"
+
+
+def test_assign_genders_below_half_is_male():
+    result = _assign_genders({"SP0": (0.40, 0.60)})
+    assert result["SP0"] == "male"
+
+
+def test_assign_genders_borderline_top_speaker_with_margin_is_female():
+    # Tears-of-Steel scenario: SP1=0.54 (female), others clearly male
+    probs = {"SP0": (0.04, 0.96), "SP1": (0.54, 0.45), "SP2": (0.20, 0.80)}
+    result = _assign_genders(probs)
+    assert result["SP1"] == "female"
+    assert result["SP0"] == "male"
+    assert result["SP2"] == "male"
+
+
+def test_assign_genders_borderline_no_margin_is_male():
+    # Two borderline speakers close together → both male (neither wins the margin)
+    probs = {"SP0": (0.55, 0.45), "SP1": (0.52, 0.48)}
+    result = _assign_genders(probs)
+    assert result["SP0"] == "male"
+    assert result["SP1"] == "male"
+
+
+def test_assign_genders_elephants_dream_scenario():
+    # SPEAKER_01=0.48 (below 0.5 → male), SPEAKER_00=0.97 (→ female)
+    probs = {"SPEAKER_01": (0.48, 0.52), "SPEAKER_00": (0.97, 0.03),
+             "SPEAKER_02": (0.42, 0.58)}
+    result = _assign_genders(probs)
+    assert result["SPEAKER_00"] == "female"
+    assert result["SPEAKER_01"] == "male"
+    assert result["SPEAKER_02"] == "male"
 
 
 # ── gender label map ──────────────────────────────────────────────────────────

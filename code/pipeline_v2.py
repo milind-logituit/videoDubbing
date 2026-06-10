@@ -264,6 +264,8 @@ _GENDER_MODEL_ID = "audeering/wav2vec2-large-robust-24-ft-age-gender"
 # {0: female, 1: male, 2: child} — child maps to female voice
 _GENDER_LABEL_MAP: dict[int, str] = {0: "female", 1: "male", 2: "female"}
 _gender_model_cache: tuple | None = None  # (model, processor) loaded once per process
+_FEMALE_CONFIDENCE_THRESH = 0.70  # require 70% confidence to assign female voice
+BG_AUDIO_VOL = 0.12  # original audio volume in dubbed mix (12% ≈ -18 dB)
 
 
 def _load_gender_model() -> tuple:
@@ -327,8 +329,47 @@ def _collect_speaker_chunks(
     return speaker_chunks
 
 
-def detect_speaker_genders(audio_path: Path,
-                            segments: list[dict]) -> dict[str, str]:
+def _assign_genders(
+    speaker_probs: dict[str, tuple[float, float]],
+    female_thresh: float = _FEMALE_CONFIDENCE_THRESH,
+    relative_margin: float = 0.20,
+) -> dict[str, str]:
+    """
+    Assign gender labels given per-speaker (f_prob, m_prob) tuples.
+
+    Rules (in order):
+    1. f_prob >= female_thresh          → female  (high confidence)
+    2. f_prob < 0.50                    → male    (majority male)
+    3. 0.50 ≤ f_prob < female_thresh    → borderline: female only if this speaker
+       has the highest f_prob among all speakers by >= relative_margin, else male.
+       Handles mixed-cast clips where one character is clearly "more female" than
+       the rest without reaching the absolute threshold.
+    """
+    sorted_by_f = sorted(speaker_probs.items(), key=lambda x: -x[1][0])
+    f_probs_desc = [v[0] for _, v in sorted_by_f]
+
+    genders: dict[str, str] = {}
+    for rank, (sp, (f_prob, _)) in enumerate(sorted_by_f):
+        if f_prob >= female_thresh:
+            genders[sp] = "female"
+        elif f_prob < 0.50:
+            genders[sp] = "male"
+        else:
+            # borderline: assign female only to the top-ranked speaker and only
+            # if they lead the next speaker by at least relative_margin
+            next_f = f_probs_desc[rank + 1] if rank + 1 < len(f_probs_desc) else 0.0
+            if rank == 0 and (f_prob - next_f) >= relative_margin:
+                genders[sp] = "female"
+            else:
+                genders[sp] = "male"
+    return genders
+
+
+def detect_speaker_genders(
+    audio_path: Path,
+    segments: list[dict],
+    female_thresh: float = _FEMALE_CONFIDENCE_THRESH,
+) -> dict[str, str]:
     """Classify gender per speaker using a wav2vec2 age-gender model."""
     import numpy as np
     import torch
@@ -338,18 +379,19 @@ def detect_speaker_genders(audio_path: Path,
     audio, sr = librosa.load(str(audio_path), sr=16000, mono=True)
     speaker_chunks = _collect_speaker_chunks(audio, sr, segments)
 
-    genders: dict[str, str] = {}
+    speaker_probs: dict[str, tuple[float, float]] = {}
     for sp, chunks in speaker_chunks.items():
         chunk = np.concatenate(chunks).astype(np.float32)
         inputs = processor(chunk, sampling_rate=16000, return_tensors="pt",
                            padding=True)
         with torch.no_grad():
             probs = model(inputs["input_values"])
-        gender_idx = int(probs.argmax())
-        genders[sp] = _GENDER_LABEL_MAP[gender_idx]
-        print(f"    {sp}: {genders[sp]} "
-              f"(f={probs[0,0]:.2f} m={probs[0,1]:.2f})")
+        speaker_probs[sp] = (float(probs[0, 0]), float(probs[0, 1]))
 
+    genders = _assign_genders(speaker_probs, female_thresh=female_thresh)
+    for sp, gender in genders.items():
+        f_prob, m_prob = speaker_probs[sp]
+        print(f"    {sp}: {gender} (f={f_prob:.2f} m={m_prob:.2f})")
     return genders
 
 
@@ -514,7 +556,7 @@ def generate_srt(segments: list[dict]) -> str:
 # Stage 6 — Hindi TTS  (timestamp-aligned + rate-controlled re-synthesis)
 # ─────────────────────────────────────────────────────────────────────────────
 
-MAX_RATE_PCT = 75  # cap edge-tts speed-up at +75% to avoid chipmunk artefacts
+MAX_RATE_PCT = 40  # cap edge-tts speed-up; 40% keeps speech intelligible
 
 
 def _synth_segment(text: str, path: Path, rate: str = "+0%",
@@ -617,21 +659,28 @@ def synthesize_hindi_audio(segments: list[dict], stem: str = "sample",
 # ─────────────────────────────────────────────────────────────────────────────
 
 def create_dubbed_video(video_path: Path, hindi_audio_path: Path,
-                        force: bool = False) -> Path:
+                        force: bool = False,
+                        bg_vol: float = BG_AUDIO_VOL) -> Path:
     dubbed_video = RAW / f"{video_path.stem}_dubbed_hi.mp4"
     if dubbed_video.exists() and not force:
         print(f"  Dubbed video already exists: {dubbed_video.name}")
         return dubbed_video
 
-    print("  Replacing audio track …")
+    print(f"  Mixing Hindi TTS with original audio (bg={bg_vol:.0%}) …")
+    # Mix Hindi TTS (full volume) over original audio at bg_vol for ambience.
+    # amix with weights: Hindi=1.0, original=bg_vol, normalise=0 avoids clipping.
+    af = (
+        f"[0:a]volume={bg_vol}[bg];"
+        "[1:a][bg]amix=inputs=2:duration=first:normalize=0[aout]"
+    )
     cmd = [
         "ffmpeg", "-y",
         "-i", str(video_path),
         "-i", str(hindi_audio_path),
-        "-c:v", "copy",
+        "-filter_complex", af,
         "-map", "0:v:0",
-        "-map", "1:a:0",
-        "-shortest",
+        "-map", "[aout]",
+        "-c:v", "copy",
         str(dubbed_video),
     ]
     subprocess.run(cmd, check=True, capture_output=True)
@@ -730,6 +779,13 @@ if __name__ == "__main__":
     parser.add_argument("--hf-token", type=str, default=None,
                         help="HuggingFace token for pyannote models. "
                              "Reads HF_TOKEN env var if not provided.")
+    parser.add_argument("--bg-vol", type=float, default=BG_AUDIO_VOL,
+                        help="Original audio volume in dubbed mix "
+                             f"(default {BG_AUDIO_VOL}).")
+    parser.add_argument("--gender-thresh", type=float,
+                        default=_FEMALE_CONFIDENCE_THRESH,
+                        help="Min female probability to assign female voice "
+                             f"(default {_FEMALE_CONFIDENCE_THRESH}).")
     args = parser.parse_args()
 
     if args.input:
