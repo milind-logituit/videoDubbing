@@ -235,7 +235,12 @@ def refine_segments(segments: list[dict], *, skip: bool = False) -> list[dict]:
 
     client = anthropic.Anthropic()
     payload = [
-        {"id": s["id"], "en_text": s["en_text"], "hi_text": s["hi_text"]}
+        {
+            "id": s["id"],
+            "en_text": s["en_text"],
+            "hi_text": s["hi_text"],
+            "duration_s": round(s["duration"], 2),
+        }
         for s in segments
     ]
     print(f"  Calling Claude (claude-sonnet-4-6) to refine {len(payload)} segments …")
@@ -246,18 +251,24 @@ def refine_segments(segments: list[dict], *, skip: bool = False) -> list[dict]:
         system=(
             "You are a professional Hindi dubbing editor for OTT streaming content "
             "(Eros Now / SunNxt).\n"
-            "Input: JSON array of segments with ASR English (en_text) and "
-            "Google-Translate Hindi (hi_text).\n"
+            "Input: JSON array of segments, each with ASR English (en_text), "
+            "Google-Translate Hindi (hi_text), and duration_s (seconds available "
+            "to speak this line).\n"
             "For each segment:\n"
             "  1. Fix ASR transcription errors in en_text "
             "(e.g. 'half is likely' → 'half as likely').\n"
-            "  2. Rewrite hi_text as natural spoken Hindi for dubbing — "
-            "not word-for-word translation.\n"
+            "  2. Rewrite hi_text as natural spoken Hindi for dubbing that fits "
+            "within duration_s seconds.\n"
+            "     • Hindi TTS speaks at ~3.5 words/second — use this to judge "
+            "length. A 2s window fits ~7 Hindi words maximum.\n"
+            "     • Prefer shorter, natural phrasing over complete sentences when "
+            "the window is tight. Cut filler and subordinate clauses first.\n"
             "     • Distinguish dinner vs supper, couch vs sofa, etc.\n"
-            "     • Fillers: 'Hmm' → 'हाँ', 'Uh'/'Um' → empty string, 'Ah' → 'अच्छा'.\n"
-            "     • Preserve brevity for lip-sync timing.\n"
+            "     • Fillers: 'Hmm' → 'हाँ', 'Uh'/'Um' → empty string, "
+            "'Ah' → 'अच्छा'.\n"
             "Return ONLY a valid JSON array: "
             '[{"id": int, "en_text": str, "hi_text": str}, …]. '
+            "Do NOT include duration_s in output. "
             "Same count and IDs as input. No markdown, no explanation."
         ),
         messages=[{"role": "user", "content": json.dumps(payload, ensure_ascii=False)}],

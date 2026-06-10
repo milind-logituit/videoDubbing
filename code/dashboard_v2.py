@@ -6,7 +6,6 @@ Use Case 2: original video with Hindi audio track (dubbed MP4)
 Run: uv run streamlit run code/dashboard_v2.py
 """
 import json
-import subprocess
 import tempfile
 from pathlib import Path
 
@@ -23,34 +22,54 @@ st.set_page_config(
     initial_sidebar_state="expanded",
 )
 
-SAMPLE_VIDEO   = ROOT / "data/raw/sample_en.mp4"
-DUBBED_VIDEO   = ROOT / "data/raw/sample_en_dubbed_hi.mp4"
-VTT_PATH       = ROOT / "model_outputs/subtitles_hi.vtt"
-SRT_PATH       = ROOT / "model_outputs/subtitles_hi.srt"
-TRANSCRIPT_CSV = ROOT / "data/prepared/transcript_bilingual_v2.csv"
-METRICS_JSON   = ROOT / "model_outputs/metrics_v2.json"
+RAW       = ROOT / "data/raw"
+MODEL_OUT = ROOT / "model_outputs"
+
+
+def _find_processed_clips() -> dict[str, tuple[Path, Path, Path, Path, Path]]:
+    """Return {stem: (orig, dubbed, metrics, vtt, transcript)} for ready clips."""
+    clips: dict[str, tuple[Path, Path, Path, Path, Path]] = {}
+    for d in [RAW, ROOT / "test_clips"]:
+        if not d.exists():
+            continue
+        for mp4 in sorted(d.glob("*.mp4")):
+            if mp4.stem.endswith("_dubbed_hi") or mp4.stem == "sample_en":
+                continue
+            stem   = mp4.stem
+            dubbed = RAW / f"{stem}_dubbed_hi.mp4"
+            metrics_path = MODEL_OUT / f"metrics_{stem}.json"
+            vtt_path     = MODEL_OUT / f"subtitles_{stem}_hi.vtt"
+            srt_path     = MODEL_OUT / f"subtitles_{stem}_hi.srt"
+            transcript   = (
+                ROOT / "data/prepared" / f"transcript_bilingual_{stem}.csv"
+            )
+            if dubbed.exists() and metrics_path.exists():
+                clips[stem] = (mp4, dubbed, metrics_path, vtt_path, srt_path,
+                               transcript)
+    return clips
 
 
 # ── Cached loaders ────────────────────────────────────────────────────────────
 
 @st.cache_data
-def load_sample_outputs():
-    transcript = pd.read_csv(TRANSCRIPT_CSV)
-    with open(METRICS_JSON) as f:
+def load_clip_outputs(stem: str, metrics_path: str, vtt_path: str,
+                      srt_path: str, transcript_path: str):
+    with open(metrics_path) as f:
         metrics = json.load(f)
-    vtt = VTT_PATH.read_text(encoding="utf-8")
-    srt = SRT_PATH.read_text(encoding="utf-8")
+    vtt = Path(vtt_path).read_text(encoding="utf-8")
+    srt = Path(srt_path).read_text(encoding="utf-8")
+    transcript = pd.read_csv(transcript_path)
     return transcript, metrics, vtt, srt
 
 
 @st.cache_data(show_spinner=False)
 def process_uploaded_video(video_bytes: bytes, filename: str):
-    """Run the full v2 pipeline on an uploaded video, return (vtt, srt, dubbed_bytes, transcript_df, metrics)."""
+    """Run the full v2 pipeline on an uploaded video."""
     import sys
     sys.path.insert(0, str(ROOT / "code"))
     from pipeline_v2 import (
         extract_audio, transcribe, translate_segments,
-        generate_vtt, generate_srt, synthesize_hindi_audio,
+        generate_vtt, generate_srt,
         create_dubbed_video, compute_metrics,
     )
 
@@ -59,18 +78,21 @@ def process_uploaded_video(video_bytes: bytes, filename: str):
         video_path = tmp / filename
         video_path.write_bytes(video_bytes)
 
-        audio_path   = extract_audio(video_path)
-        w_result     = transcribe(audio_path)
-        segments     = translate_segments(w_result)
-        vtt          = generate_vtt(segments)
-        srt          = generate_srt(segments)
+        audio_path = extract_audio(video_path)
+        w_result   = transcribe(audio_path)
+        segments   = translate_segments(w_result)
+        vtt        = generate_vtt(segments)
+        srt        = generate_srt(segments)
 
-        hindi_audio  = tmp / "hindi.mp3"
-        # synthesize directly into temp dir
+        hindi_audio = tmp / "hindi.mp3"
+        import asyncio
+        import edge_tts
+        import gtts
         from pydub import AudioSegment
-        import asyncio, edge_tts, gtts
         combined = AudioSegment.empty()
         for seg in segments:
+            if not seg["hi_text"].strip():
+                continue
             seg_path = tmp / f"seg_{seg['id']}.mp3"
             try:
                 async def _s(t=seg["hi_text"], p=seg_path):
@@ -84,9 +106,9 @@ def process_uploaded_video(video_bytes: bytes, filename: str):
 
         dubbed_path  = create_dubbed_video(video_path, hindi_audio)
         dubbed_bytes = dubbed_path.read_bytes()
-
         src_audio    = ROOT / "data/raw/source_en.mp3"
-        metrics      = compute_metrics(w_result, segments, src_audio, hindi_audio)
+        metrics      = compute_metrics(w_result, segments, src_audio,
+                                       hindi_audio)
         transcript   = pd.DataFrame(segments)
 
     return vtt, srt, dubbed_bytes, transcript, metrics
@@ -97,12 +119,27 @@ def process_uploaded_video(video_bytes: bytes, filename: str):
 st.sidebar.title("Video Source")
 source_mode = st.sidebar.radio("", ["Sample clip", "Upload your own"], index=0)
 
-uploaded_file = None
+uploaded_file     = None
+selected_clip_key = None
+processed_clips: dict = {}
+
 if source_mode == "Upload your own":
     uploaded_file = st.sidebar.file_uploader(
         "Drop an MP4 or MOV", type=["mp4", "mov", "avi"],
         help="Max ~100MB. Processing takes ~30-60s.",
     )
+else:
+    processed_clips = _find_processed_clips()
+    if processed_clips:
+        selected_clip_key = st.sidebar.selectbox(
+            "Choose a clip", list(processed_clips.keys()),
+            format_func=lambda k: k.replace("_", " ").title(),
+        )
+    else:
+        st.sidebar.warning(
+            "No processed clips found. "
+            "Run `pipeline_v2.py --input <video>` first."
+        )
 
 st.sidebar.divider()
 st.sidebar.markdown("**Pipeline**")
@@ -118,29 +155,42 @@ st.caption(
 
 # ── Load / process ────────────────────────────────────────────────────────────
 if uploaded_file is not None:
-    with st.spinner(f"Processing **{uploaded_file.name}** — transcribing, translating, dubbing…"):
+    with st.spinner(
+        f"Processing **{uploaded_file.name}** — transcribing, translating, dubbing…"
+    ):
         vtt, srt, dubbed_bytes, transcript, metrics = process_uploaded_video(
             uploaded_file.read(), uploaded_file.name
         )
-    video_src      = uploaded_file  # bytes-based, pass directly
-    dubbed_src     = dubbed_bytes
-    using_sample   = False
+    video_src    = uploaded_file
+    dubbed_src   = dubbed_bytes
+elif selected_clip_key:
+    orig, dubbed, metrics_p, vtt_p, srt_p, transcript_p = (
+        processed_clips[selected_clip_key]
+    )
+    transcript, metrics, vtt, srt = load_clip_outputs(
+        selected_clip_key,
+        str(metrics_p), str(vtt_p), str(srt_p), str(transcript_p),
+    )
+    video_src  = orig.read_bytes()
+    dubbed_src = dubbed.read_bytes()
 else:
-    transcript, metrics, vtt, srt = load_sample_outputs()
-    # Read as bytes — avoids path-with-spaces issues in Streamlit's file server
-    video_src    = SAMPLE_VIDEO.read_bytes()
-    dubbed_src   = DUBBED_VIDEO.read_bytes()
-    using_sample = True
+    st.info("Select a processed clip from the sidebar or upload your own video.")
+    st.stop()
 
 # ── KPI row ───────────────────────────────────────────────────────────────────
 al = metrics["alignment"]
 k1, k2, k3, k4, k5 = st.columns(5)
-k1.metric("ASR Accuracy",    f"{100 - metrics['asr']['wer_pct']:.1f}%")
-k2.metric("BLEU Score",      f"{metrics['translation']['bleu']:.1f}")
+_wer_pct = metrics["asr"]["wer_pct"]
+_bleu    = metrics["translation"]["bleu"]
+k1.metric("ASR Accuracy",
+          f"{100 - _wer_pct:.1f}%" if _wer_pct is not None else "N/A")
+k2.metric("BLEU Score",
+          f"{_bleu:.1f}" if _bleu is not None else "N/A")
 k3.metric("Segments",        str(metrics["translation"]["n_segments"]))
 k4.metric("Source",          f"{al['source_duration_s']:.1f}s")
 k5.metric("Dubbed (HI)",     f"{al['dubbed_duration_s']:.1f}s",
-          f"{(al['duration_ratio'] - 1)*100:+.1f}% vs original", delta_color="off")
+          f"{(al['duration_ratio'] - 1)*100:+.1f}% vs original",
+          delta_color="off")
 
 st.divider()
 
@@ -158,14 +208,10 @@ tab1, tab2, tab3, tab4, tab5 = st.tabs([
 with tab1:
     st.subheader("Original video + Hindi subtitle overlay (WebVTT)")
     st.caption(
-        "Subtitles are rendered natively in the browser — no re-encoding of the video. "
+        "Subtitles are rendered natively in the browser — no re-encoding. "
         "Toggle captions on/off using the CC button in the video player."
     )
-
-    if video_src is not None:
-        st.video(video_src, subtitles={"हिंदी": vtt})
-    else:
-        st.warning("Sample video not found — run `pipeline_v2.py` first.")
+    st.video(video_src, subtitles={"हिंदी": vtt})
 
     with st.expander("⬇️  Download subtitle files"):
         c1, c2 = st.columns(2)
@@ -185,15 +231,12 @@ with tab2:
         "The English audio has been replaced with AI-generated Hindi speech "
         "using Microsoft's hi-IN-SwaraNeural voice."
     )
-
-    if dubbed_src is not None:
-        st.video(dubbed_src)
-    else:
-        st.warning("Dubbed video not found — run `pipeline_v2.py` first.")
+    st.video(dubbed_src)
 
     with st.expander("⬇️  Download dubbed video"):
-        dl_bytes = dubbed_src if isinstance(dubbed_src, bytes) else DUBBED_VIDEO.read_bytes()
-        st.download_button("Download dubbed MP4", dl_bytes,
+        st.download_button("Download dubbed MP4",
+                           dubbed_src if isinstance(dubbed_src, bytes)
+                           else dubbed_src,
                            "video_dubbed_hindi.mp4", "video/mp4")
 
 
@@ -204,15 +247,13 @@ with tab3:
     c1, c2 = st.columns(2)
     with c1:
         st.markdown("#### 🇬🇧 Original — English audio")
-        if video_src is not None:
-            st.video(video_src)
+        st.video(video_src)
         st.caption(f"Duration: {al['source_duration_s']:.1f}s  |  "
                    f"Pace: {al['en_chars_per_sec']:.1f} ch/s")
 
     with c2:
         st.markdown("#### 🇮🇳 Use Case 1 — Hindi subtitles")
-        if video_src is not None:
-            st.video(video_src, subtitles={"हिंदी": vtt})
+        st.video(video_src, subtitles={"हिंदी": vtt})
         st.caption("Same video · Hindi CC overlay · no re-encode")
 
     st.divider()
@@ -220,13 +261,11 @@ with tab3:
     c3, c4 = st.columns(2)
     with c3:
         st.markdown("#### 🇬🇧 Original — English audio")
-        if video_src is not None:
-            st.video(video_src)
+        st.video(video_src)
 
     with c4:
         st.markdown("#### 🇮🇳 Use Case 2 — Hindi dubbed audio")
-        if dubbed_src is not None:
-            st.video(dubbed_src)
+        st.video(dubbed_src)
         st.caption(f"Duration: {al['dubbed_duration_s']:.1f}s  |  "
                    f"Pace: {al['hi_chars_per_sec']:.1f} ch/s  |  "
                    f"Voice: hi-IN-SwaraNeural")
@@ -235,7 +274,9 @@ with tab3:
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab4:
     st.subheader("Bilingual Transcript")
-    st.caption("Whisper ASR → Google Translate · timestamps from Whisper segmentation")
+    st.caption(
+        "Whisper ASR → Google Translate · timestamps from Whisper segmentation"
+    )
 
     for _, row in transcript.iterrows():
         with st.container(border=True):
@@ -254,48 +295,53 @@ with tab4:
         "transcript_bilingual.csv", "text/csv",
     )
 
-    # Quality metrics section
     st.subheader("Quality Metrics")
     m1, m2, m3 = st.columns(3)
 
-    wer = metrics["asr"]["wer_pct"]
-    fig1 = go.Figure(go.Indicator(
-        mode="gauge+number", value=100 - wer,
-        title={"text": "ASR Accuracy (1 − WER)"},
-        gauge={"axis": {"range": [0, 100]}, "bar": {"color": "#00CC96"},
-               "steps": [{"range": [0, 70], "color": "#EF553B"},
-                         {"range": [70, 85], "color": "#FFA15A"},
-                         {"range": [85, 100], "color": "#00CC96"}]},
-        number={"suffix": "%"},
-    ))
-    fig1.update_layout(height=240, margin=dict(t=40, b=10))
+    _wer_pct_tab4 = metrics["asr"]["wer_pct"]
+    _bleu_tab4    = metrics["translation"]["bleu"]
 
-    bleu = metrics["translation"]["bleu"]
-    fig2 = go.Figure(go.Indicator(
-        mode="gauge+number", value=bleu,
-        title={"text": "Translation BLEU"},
-        gauge={"axis": {"range": [0, 50]}, "bar": {"color": "#636EFA"},
-               "steps": [{"range": [0, 10],  "color": "#EF553B"},
-                         {"range": [10, 20], "color": "#FFA15A"},
-                         {"range": [20, 50], "color": "#00CC96"}]},
-    ))
-    fig2.update_layout(height=240, margin=dict(t=40, b=10))
+    if _wer_pct_tab4 is not None:
+        fig1 = go.Figure(go.Indicator(
+            mode="gauge+number", value=100 - _wer_pct_tab4,
+            title={"text": "ASR Accuracy (1 − WER)"},
+            gauge={"axis": {"range": [0, 100]}, "bar": {"color": "#00CC96"},
+                   "steps": [{"range": [0,  70], "color": "#EF553B"},
+                             {"range": [70, 85], "color": "#FFA15A"},
+                             {"range": [85, 100], "color": "#00CC96"}]},
+            number={"suffix": "%"},
+        ))
+        fig1.update_layout(height=240, margin=dict(t=40, b=10))
+        m1.plotly_chart(fig1, use_container_width=True)
+    else:
+        m1.metric("ASR Accuracy", "N/A — no reference")
+
+    if _bleu_tab4 is not None:
+        fig2 = go.Figure(go.Indicator(
+            mode="gauge+number", value=_bleu_tab4,
+            title={"text": "Translation BLEU"},
+            gauge={"axis": {"range": [0, 50]}, "bar": {"color": "#636EFA"},
+                   "steps": [{"range": [0,  10], "color": "#EF553B"},
+                             {"range": [10, 20], "color": "#FFA15A"},
+                             {"range": [20, 50], "color": "#00CC96"}]},
+        ))
+        fig2.update_layout(height=240, margin=dict(t=40, b=10))
+        m2.plotly_chart(fig2, use_container_width=True)
+    else:
+        m2.metric("Translation BLEU", "N/A — no reference")
 
     fig3 = go.Figure(go.Indicator(
         mode="gauge+number", value=al["duration_ratio"],
         title={"text": "Duration Ratio (HI / EN)"},
         gauge={"axis": {"range": [0.5, 2.0]}, "bar": {"color": "#FFA15A"},
-               "steps": [{"range": [0.5, 0.9],  "color": "#EF553B"},
-                         {"range": [0.9, 1.1],  "color": "#00CC96"},
-                         {"range": [1.1, 2.0],  "color": "#FFA15A"}],
+               "steps": [{"range": [0.5, 0.9], "color": "#EF553B"},
+                         {"range": [0.9, 1.1], "color": "#00CC96"},
+                         {"range": [1.1, 2.0], "color": "#FFA15A"}],
                "threshold": {"line": {"color": "black", "width": 3},
                              "thickness": 0.75, "value": 1.0}},
         number={"valueformat": ".3f"},
     ))
     fig3.update_layout(height=240, margin=dict(t=40, b=10))
-
-    m1.plotly_chart(fig1, use_container_width=True)
-    m2.plotly_chart(fig2, use_container_width=True)
     m3.plotly_chart(fig3, use_container_width=True)
 
 
@@ -328,14 +374,23 @@ with tab5:
     st.markdown("#### Component breakdown")
     components = pd.DataFrame({
         "Stage": ["ASR", "Translation", "TTS", "Subtitle", "Dubbing"],
-        "Model / Tool": ["OpenAI Whisper base", "Google Translate (free)", "edge-tts hi-IN-SwaraNeural",
-                         "WebVTT → st.video()", "ffmpeg audio track replace"],
-        "Cost": ["Free (local)", "Free", "Free (Microsoft Edge)", "Free", "Free (local)"],
-        "Production upgrade": ["Whisper large-v3 / Azure Speech", "Google Cloud Translation API",
-                               "Azure Neural TTS / ElevenLabs voice clone",
-                               "Burn-in via ffmpeg subtitles filter",
-                               "Time-stretch TTS to match original duration"],
-        "Status": ["✅ Live", "✅ Live", "✅ Live", "✅ Live", "✅ Live"],
+        "Model / Tool": [
+            "OpenAI Whisper base", "Google Translate (free)",
+            "edge-tts hi-IN-SwaraNeural",
+            "WebVTT → st.video()", "ffmpeg audio track replace",
+        ],
+        "Cost": [
+            "Free (local)", "Free", "Free (Microsoft Edge)",
+            "Free", "Free (local)",
+        ],
+        "Production upgrade": [
+            "Whisper large-v3 / Azure Speech",
+            "Google Cloud Translation API",
+            "Azure Neural TTS / ElevenLabs voice clone",
+            "Burn-in via ffmpeg subtitles filter",
+            "Time-stretch TTS to match original duration",
+        ],
+        "Status": ["✅ Live"] * 5,
     })
     st.dataframe(components, use_container_width=True, hide_index=True)
 
@@ -345,9 +400,10 @@ with tab5:
         "Target": ["Hindi", "Tamil", "Telugu", "Kannada", "Malayalam",
                    "Tamil", "Telugu", "Kannada"],
         "TTS voice (edge-tts)": [
-            "hi-IN-SwaraNeural", "ta-IN-PallaviNeural", "te-IN-ShrutiNeural",
-            "kn-IN-SapnaNeural", "ml-IN-SobhanaNeural",
-            "ta-IN-PallaviNeural", "te-IN-ShrutiNeural", "kn-IN-SapnaNeural",
+            "hi-IN-SwaraNeural", "ta-IN-PallaviNeural",
+            "te-IN-ShrutiNeural", "kn-IN-SapnaNeural",
+            "ml-IN-SobhanaNeural", "ta-IN-PallaviNeural",
+            "te-IN-ShrutiNeural", "kn-IN-SapnaNeural",
         ],
         "Status": ["✅ Live in v2"] + ["🔧 Add in v3"] * 7,
     })
