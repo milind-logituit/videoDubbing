@@ -1,5 +1,10 @@
 __pycache__/
 .venv/
 *.pyc
-data/raw/
+data/raw/*.mp3
+data/raw/*.wav
+data/raw/sample_en.mp4
+data/raw/sample_en_dubbed_hi.mp4
+# Full-length clips too large for git
+test_clips/*_full.mp4
 .DS_Store
