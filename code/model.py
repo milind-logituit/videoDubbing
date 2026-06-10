@@ -2,9 +2,7 @@
 Models for VideoDubbing POC.
 Run: uv run python code/model.py
 """
-import json
 from pathlib import Path
-import pandas as pd
 
 ROOT = Path(__file__).parent.parent
 OUT  = ROOT / "model_outputs"

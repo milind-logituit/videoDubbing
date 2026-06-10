@@ -271,7 +271,7 @@ def save_outputs(segments, metrics, source_path, dubbed_path):
     with open(MODEL_OUT / "audio_manifest.json", "w") as f:
         json.dump({"source_en": str(source_path), "dubbed_hi": str(dubbed_path)}, f, indent=2)
 
-    print(f"\nSaved:")
+    print("\nSaved:")
     print(f"  {PREPARED / 'transcript_bilingual.csv'}")
     print(f"  {MODEL_OUT / 'metrics.json'}")
     print(f"  {MODEL_OUT / 'audio_manifest.json'}")
@@ -288,7 +288,7 @@ def print_summary(segments, metrics):
         print(f"    → {s['hi_text']}")
 
     m = metrics
-    print(f"\n── Quality metrics ──")
+    print("\n── Quality metrics ──")
     print(f"  ASR WER          : {m['asr']['wer_pct']:.1f}%")
     print(f"  Translation BLEU : {m['translation']['bleu']:.1f}")
     print(f"  Duration ratio   : {m['alignment']['duration_ratio']:.3f}  "

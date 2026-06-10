@@ -3,7 +3,6 @@ Data preparation for VideoDubbing POC.
 Run: uv run python code/data_prep.py
 """
 from pathlib import Path
-import pandas as pd
 
 ROOT = Path(__file__).parent.parent
 RAW  = ROOT / "data/raw"

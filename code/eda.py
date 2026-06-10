@@ -3,8 +3,6 @@ EDA for VideoDubbing POC.
 Run: uv run python code/eda.py
 """
 from pathlib import Path
-import pandas as pd
-import matplotlib.pyplot as plt
 import seaborn as sns
 
 ROOT = Path(__file__).parent.parent

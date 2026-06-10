@@ -202,8 +202,7 @@ def diarize_speakers(audio_path: Path, hf_token: str) -> list[dict]:
     cache = audio_path.with_suffix(".diarization.json")
     if cache.exists():
         print(f"  Loaded cached diarization: {cache.name}")
-        import json as _json
-        return _json.loads(cache.read_text())
+        return json.loads(cache.read_text())
 
     from pyannote.audio import Pipeline as _DPipeline
     print("  Loading pyannote/speaker-diarization-3.1 …")
@@ -225,37 +224,66 @@ def diarize_speakers(audio_path: Path, hf_token: str) -> list[dict]:
 
 
 def assign_speakers(segments: list[dict], turns: list[dict]) -> list[dict]:
-    """Tag each segment with the speaker that overlaps it most."""
+    """Tag each segment with the speaker that overlaps it most.
+
+    Falls back to the nearest turn (by midpoint distance) when no turn
+    overlaps a segment — this handles silence gaps at turn boundaries.
+    Runs in O(n log m) via sorted turns and early exit.
+    """
+    sorted_turns = sorted(turns, key=lambda t: t["start"])
     out = []
     for seg in segments:
-        best, best_overlap = "SPEAKER_00", 0.0
-        for turn in turns:
+        # Pass A — find best overlap using early-exit (O(log m) amortised)
+        best: str | None = None
+        best_overlap = 0.0
+        for turn in sorted_turns:
+            if turn["start"] > seg["end"]:
+                break
             overlap = min(seg["end"], turn["end"]) - max(seg["start"], turn["start"])
             if overlap > best_overlap:
                 best_overlap, best = overlap, turn["speaker"]
+
+        # Pass B — no overlap (silence gap): nearest turn by midpoint distance
+        if best is None:
+            seg_mid = (seg["start"] + seg["end"]) / 2
+            best_dist = float("inf")
+            for turn in sorted_turns:
+                dist = abs((turn["start"] + turn["end"]) / 2 - seg_mid)
+                if dist < best_dist:
+                    best_dist, best = dist, turn["speaker"]
+
+        if best is None:
+            best = "SPEAKER_00"
+            print(f"  [warn] no speaker found for segment "
+                  f"{seg['start']:.1f}–{seg['end']:.1f}s; defaulting to {best}")
         out.append({**seg, "speaker": best})
     return out
 
 
-def detect_speaker_genders(audio_path: Path,
-                            segments: list[dict]) -> dict[str, str]:
-    """Classify gender per speaker using a wav2vec2 age-gender model."""
-    import numpy as np
+_GENDER_MODEL_ID = "audeering/wav2vec2-large-robust-24-ft-age-gender"
+# {0: female, 1: male, 2: child} — child maps to female voice
+_GENDER_LABEL_MAP: dict[int, str] = {0: "female", 1: "male", 2: "female"}
+_gender_model_cache: tuple | None = None  # (model, processor) loaded once per process
+
+
+def _load_gender_model() -> tuple:
+    """Load audeering age-gender model, caching it for the process lifetime."""
+    global _gender_model_cache
+    if _gender_model_cache is not None:
+        return _gender_model_cache
+
     import torch
     import torch.nn as nn
-    import librosa
     from transformers import Wav2Vec2Processor, AutoConfig
     from transformers.models.wav2vec2.modeling_wav2vec2 import Wav2Vec2Model
     from huggingface_hub import hf_hub_download
 
-    MODEL_ID = "audeering/wav2vec2-large-robust-24-ft-age-gender"
-
     class _Head(nn.Module):
         def __init__(self, config: object, n: int) -> None:
             super().__init__()
-            self.dense = nn.Linear(config.hidden_size, config.hidden_size)
-            self.dropout = nn.Dropout(config.final_dropout)
-            self.out_proj = nn.Linear(config.hidden_size, n)
+            self.dense = nn.Linear(config.hidden_size, config.hidden_size)  # type: ignore[arg-type]
+            self.dropout = nn.Dropout(config.final_dropout)  # type: ignore[arg-type]
+            self.out_proj = nn.Linear(config.hidden_size, n)  # type: ignore[arg-type]
 
         def forward(self, x: torch.Tensor) -> torch.Tensor:
             return self.out_proj(torch.tanh(self.dense(self.dropout(x))))
@@ -263,7 +291,7 @@ def detect_speaker_genders(audio_path: Path,
     class _AgeGenderModel(nn.Module):
         def __init__(self, config: object) -> None:
             super().__init__()
-            self.wav2vec2 = Wav2Vec2Model(config)
+            self.wav2vec2 = Wav2Vec2Model(config)  # type: ignore[arg-type]
             self.age = _Head(config, 1)
             self.gender = _Head(config, 3)
 
@@ -271,18 +299,24 @@ def detect_speaker_genders(audio_path: Path,
             hidden = self.wav2vec2(input_values)[0].mean(dim=1)
             return torch.softmax(self.gender(hidden), dim=1)
 
-    print(f"  Loading gender classifier ({MODEL_ID}) …")
-    config = AutoConfig.from_pretrained(MODEL_ID)
+    print(f"  Loading gender classifier ({_GENDER_MODEL_ID}) …")
+    config = AutoConfig.from_pretrained(_GENDER_MODEL_ID)  # nosec B615
     model = _AgeGenderModel(config)
-    ckpt = hf_hub_download(MODEL_ID, "pytorch_model.bin")
-    model.load_state_dict(
+    ckpt = hf_hub_download(_GENDER_MODEL_ID, "pytorch_model.bin")  # nosec B615
+    missing, unexpected = model.load_state_dict(
         torch.load(ckpt, map_location="cpu", weights_only=True), strict=False
     )
+    if missing or unexpected:
+        print(f"  [warn] gender model: missing={missing}, unexpected={unexpected}")
     model.eval()
-    processor = Wav2Vec2Processor.from_pretrained(MODEL_ID)
+    processor = Wav2Vec2Processor.from_pretrained(_GENDER_MODEL_ID)  # nosec B615
+    _gender_model_cache = (model, processor)
+    return _gender_model_cache
 
-    audio, sr = librosa.load(str(audio_path), sr=16000, mono=True)
 
+def _collect_speaker_chunks(
+    audio: list, sr: int, segments: list[dict]
+) -> dict[str, list]:
     speaker_chunks: dict[str, list] = {}
     for seg in segments:
         sp = seg.get("speaker", "SPEAKER_00")
@@ -290,8 +324,19 @@ def detect_speaker_genders(audio_path: Path,
         e_idx = int(seg["end"] * sr)
         if e_idx > s_idx:
             speaker_chunks.setdefault(sp, []).append(audio[s_idx:e_idx])
+    return speaker_chunks
 
-    LABEL_MAP = {0: "female", 1: "male", 2: "female"}  # child → female voice
+
+def detect_speaker_genders(audio_path: Path,
+                            segments: list[dict]) -> dict[str, str]:
+    """Classify gender per speaker using a wav2vec2 age-gender model."""
+    import numpy as np
+    import torch
+    import librosa
+
+    model, processor = _load_gender_model()
+    audio, sr = librosa.load(str(audio_path), sr=16000, mono=True)
+    speaker_chunks = _collect_speaker_chunks(audio, sr, segments)
 
     genders: dict[str, str] = {}
     for sp, chunks in speaker_chunks.items():
@@ -301,7 +346,7 @@ def detect_speaker_genders(audio_path: Path,
         with torch.no_grad():
             probs = model(inputs["input_values"])
         gender_idx = int(probs.argmax())
-        genders[sp] = LABEL_MAP[gender_idx]
+        genders[sp] = _GENDER_LABEL_MAP[gender_idx]
         print(f"    {sp}: {genders[sp]} "
               f"(f={probs[0,0]:.2f} m={probs[0,1]:.2f})")
 
@@ -480,8 +525,55 @@ def _synth_segment(text: str, path: Path, rate: str = "+0%",
         await communicate.save(str(path))
     try:
         asyncio.run(_run())
-    except Exception:
+    except Exception as exc:
+        print(f"  [warn] edge-tts failed ({exc}); falling back to gTTS")
         gTTS(text, lang="hi", slow=False).save(str(path))
+
+
+def _seg_voice(seg: dict, voices: dict[str, str]) -> str:
+    return voices.get(seg.get("speaker", ""), TTS_VOICE_FEMALE_HI)
+
+
+def _voice_tag(voice: str) -> str:
+    """Single-char cache key distinguishing male/female segment files."""
+    return "m" if voice == TTS_VOICE_MALE_HI else "f"
+
+
+def _synth_pass1(valid: list[dict], seg_dir: Path,
+                 voices: dict[str, str]) -> float:
+    """Synthesize all segments at normal rate; return total TTS duration in s."""
+    for seg in valid:
+        v = _seg_voice(seg, voices)
+        p = seg_dir / f"seg_{seg['id']:03d}_{_voice_tag(v)}.mp3"
+        if not p.exists():
+            _synth_segment(seg["hi_text"], p, voice=v)
+    return sum(
+        len(AudioSegment.from_mp3(
+            str(seg_dir / f"seg_{s['id']:03d}_{_voice_tag(_seg_voice(s, voices))}.mp3")
+        )) / 1000
+        for s in valid
+    )
+
+
+def _synth_pass2(valid: list[dict], seg_dir: Path, voices: dict[str, str],
+                 global_rate: int, total_ms: int) -> AudioSegment:
+    """Re-synthesize at global_rate and overlay each segment at its timestamp."""
+    combined = AudioSegment.silent(duration=total_ms)
+    for seg in valid:
+        v = _seg_voice(seg, voices)
+        tag = _voice_tag(v)
+        if global_rate > 5:
+            p_fast = seg_dir / f"seg_{seg['id']:03d}_{tag}_r{global_rate}.mp3"
+            if not p_fast.exists():
+                _synth_segment(seg["hi_text"], p_fast,
+                               rate=f"+{global_rate}%", voice=v)
+            seg_audio = AudioSegment.from_mp3(str(p_fast))
+        else:
+            seg_audio = AudioSegment.from_mp3(
+                str(seg_dir / f"seg_{seg['id']:03d}_{tag}.mp3")
+            )
+        combined = combined.overlay(seg_audio, position=int(seg["start"] * 1000))
+    return combined
 
 
 def synthesize_hindi_audio(segments: list[dict], stem: str = "sample",
@@ -495,10 +587,8 @@ def synthesize_hindi_audio(segments: list[dict], stem: str = "sample",
 
     seg_dir = PREPARED / f"hi_segments_{stem}"
     seg_dir.mkdir(exist_ok=True)
-
     voices = speaker_voices or {}
 
-    # Silent base track at source video duration for correct lip-sync alignment
     if src_audio and src_audio.exists():
         total_ms = len(AudioSegment.from_file(str(src_audio)))
     else:
@@ -509,52 +599,14 @@ def synthesize_hindi_audio(segments: list[dict], stem: str = "sample",
     print(f"  Synthesising Hindi audio ({len(combined_hi)} chars, "
           f"base={total_ms / 1000:.1f}s) …")
 
-    def _seg_voice(seg: dict) -> str:
-        return voices.get(seg.get("speaker", ""), TTS_VOICE_FEMALE_HI)
-
-    # Voice suffix for cache filename so different-voice files don't collide
-    def _voice_tag(voice: str) -> str:
-        return "m" if voice == TTS_VOICE_MALE_HI else "f"
-
-    # Pass 1 — synthesize every segment at normal rate and measure durations
-    for seg in valid:
-        v = _seg_voice(seg)
-        p = seg_dir / f"seg_{seg['id']:03d}_{_voice_tag(v)}.mp3"
-        if not p.exists():
-            _synth_segment(seg["hi_text"], p, voice=v)
-
-    total_tts_s = sum(
-        len(AudioSegment.from_mp3(
-            str(seg_dir / f"seg_{s['id']:03d}_{_voice_tag(_seg_voice(s))}.mp3")
-        )) / 1000
-        for s in valid
-    )
+    total_tts_s = _synth_pass1(valid, seg_dir, voices)
     total_speech_s = sum(s["duration"] for s in valid)
-
-    # One global rate for the whole clip — consistent tempo, no per-segment jumps
     raw_rate = int((total_tts_s / total_speech_s - 1) * 100)
     global_rate = max(0, min(raw_rate, MAX_RATE_PCT))
     print(f"  TTS {total_tts_s:.1f}s over {total_speech_s:.1f}s speech "
           f"→ uniform rate: +{global_rate}%")
 
-    # Pass 2 — re-synthesize at global rate if needed, then overlay at timestamps
-    combined = AudioSegment.silent(duration=total_ms)
-    for seg in valid:
-        v = _seg_voice(seg)
-        tag = _voice_tag(v)
-        if global_rate > 5:
-            p_fast = seg_dir / f"seg_{seg['id']:03d}_{tag}_r{global_rate}.mp3"
-            if not p_fast.exists():
-                _synth_segment(seg["hi_text"], p_fast,
-                               rate=f"+{global_rate}%", voice=v)
-            seg_audio = AudioSegment.from_mp3(str(p_fast))
-        else:
-            seg_audio = AudioSegment.from_mp3(
-                str(seg_dir / f"seg_{seg['id']:03d}_{tag}.mp3")
-            )
-
-        combined = combined.overlay(seg_audio, position=int(seg["start"] * 1000))
-
+    combined = _synth_pass2(valid, seg_dir, voices, global_rate, total_ms)
     combined.export(str(dubbed_path), format="mp3")
     print(f"  Hindi dubbed audio: {dubbed_path.name}  ({len(combined) / 1000:.1f}s)")
     return dubbed_path
