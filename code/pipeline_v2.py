@@ -265,7 +265,8 @@ _GENDER_MODEL_ID = "audeering/wav2vec2-large-robust-24-ft-age-gender"
 _GENDER_LABEL_MAP: dict[int, str] = {0: "female", 1: "male", 2: "female"}
 _gender_model_cache: tuple | None = None  # (model, processor) loaded once per process
 _FEMALE_CONFIDENCE_THRESH = 0.70  # require 70% confidence to assign female voice
-BG_AUDIO_VOL = 0.12  # original audio volume in dubbed mix (12% ≈ -18 dB)
+BG_AUDIO_VOL = 0.20       # original audio vol during silence gaps (ambience)
+BG_AUDIO_VOL_SPEECH = 0.04  # original audio vol during Hindi TTS (suppress EN dialogue)
 
 
 def _load_gender_model() -> tuple:
@@ -400,6 +401,34 @@ def detect_speaker_genders(
 # ─────────────────────────────────────────────────────────────────────────────
 
 FILLER_MAP = {"hmm": "हाँ", "uh": "", "um": "", "ah": "अच्छा"}
+
+_GRADE_SYSTEM = """\
+You are a professional Hindi dubbing quality assessor.
+Rate each segment on two dimensions (1 = poor, 5 = excellent):
+- fidelity: semantic accuracy of Hindi vs English
+- fluency: naturalness of the Hindi phrasing (grammar, word choice, register)
+
+Respond ONLY with a JSON array in input order:
+[{"id": <int>, "fidelity": <1-5>, "fluency": <1-5>}, ...]
+Add "note": "..." only for scores ≤ 2. Omit otherwise.\
+"""
+
+
+def _isochrony_fit(ratio: float | None) -> int:
+    """Map isochrony ratio to 1-5 fit score (algorithmic, reliable)."""
+    if ratio is None:
+        return 3
+    if ratio <= 0.80:
+        return 3  # too short — may sound slow
+    if ratio <= 1.15:
+        return 5  # perfect
+    if ratio <= 1.30:
+        return 4  # slightly over
+    if ratio <= 1.50:
+        return 3  # noticeably rushed
+    if ratio <= 2.00:
+        return 2  # significantly rushed
+    return 1     # badly overflow
 
 
 def translate_segments(whisper_result: dict) -> list[dict]:
@@ -658,31 +687,81 @@ def synthesize_hindi_audio(segments: list[dict], stem: str = "sample",
 # Stage 7 — Create dubbed video
 # ─────────────────────────────────────────────────────────────────────────────
 
-def create_dubbed_video(video_path: Path, hindi_audio_path: Path,
-                        force: bool = False,
-                        bg_vol: float = BG_AUDIO_VOL) -> Path:
+def _duck_original_audio(
+    audio_path: Path, segments: list[dict],
+) -> Path:
+    """Build ducked original audio: quiet during speech segments, fuller in gaps.
+
+    pydub `+N` means +N dB. Convert linear ratios via 20*log10(ratio).
+    """
+    import math
+    db_gap    = 20 * math.log10(BG_AUDIO_VOL)         # -14 dB @ 20%
+    db_speech = 20 * math.log10(BG_AUDIO_VOL_SPEECH)  # -28 dB @ 4%
+
+    orig = AudioSegment.from_file(str(audio_path))
+    ducked = AudioSegment.silent(duration=len(orig))
+
+    intervals = sorted(
+        (int(s["start"] * 1000), int(s["end"] * 1000))
+        for s in segments if s.get("hi_text", "").strip()
+    )
+
+    prev_end = 0
+    for start_ms, end_ms in intervals:
+        if start_ms > prev_end:
+            ducked = ducked.overlay(
+                orig[prev_end:start_ms] + db_gap, position=prev_end
+            )
+        ducked = ducked.overlay(
+            orig[start_ms:end_ms] + db_speech, position=start_ms
+        )
+        prev_end = end_ms
+    if prev_end < len(orig):
+        ducked = ducked.overlay(orig[prev_end:] + db_gap, position=prev_end)
+
+    out = audio_path.with_suffix(".ducked.wav")
+    ducked.export(str(out), format="wav")
+    return out
+
+
+def create_dubbed_video(
+    video_path: Path,
+    hindi_audio_path: Path,
+    segments: list[dict] | None = None,
+    force: bool = False,
+) -> Path:
     dubbed_video = RAW / f"{video_path.stem}_dubbed_hi.mp4"
     if dubbed_video.exists() and not force:
         print(f"  Dubbed video already exists: {dubbed_video.name}")
         return dubbed_video
 
-    print(f"  Mixing Hindi TTS with original audio (bg={bg_vol:.0%}) …")
-    # Mix Hindi TTS (full volume) over original audio at bg_vol for ambience.
-    # amix with weights: Hindi=1.0, original=bg_vol, normalise=0 avoids clipping.
-    af = (
-        f"[0:a]volume={bg_vol}[bg];"
-        "[1:a][bg]amix=inputs=2:duration=first:normalize=0[aout]"
-    )
-    cmd = [
-        "ffmpeg", "-y",
-        "-i", str(video_path),
-        "-i", str(hindi_audio_path),
-        "-filter_complex", af,
-        "-map", "0:v:0",
-        "-map", "[aout]",
-        "-c:v", "copy",
-        str(dubbed_video),
-    ]
+    orig_audio = PREPARED / f"{video_path.stem}_audio.wav"
+    if segments and orig_audio.exists():
+        print(f"  Ducking original audio "
+              f"(speech={BG_AUDIO_VOL_SPEECH:.0%}, gaps={BG_AUDIO_VOL:.0%}) …")
+        bg_path = _duck_original_audio(orig_audio, segments)
+        cmd = [
+            "ffmpeg", "-y",
+            "-i", str(video_path),
+            "-i", str(hindi_audio_path),
+            "-i", str(bg_path),
+            "-filter_complex",
+            "[1:a][2:a]amix=inputs=2:duration=first:normalize=0[aout]",
+            "-map", "0:v:0", "-map", "[aout]",
+            "-c:v", "copy", str(dubbed_video),
+        ]
+    else:
+        print(f"  Mixing Hindi TTS with original audio (bg={BG_AUDIO_VOL:.0%}) …")
+        af = (f"[0:a]volume={BG_AUDIO_VOL}[bg];"
+              "[1:a][bg]amix=inputs=2:duration=first:normalize=0[aout]")
+        cmd = [
+            "ffmpeg", "-y",
+            "-i", str(video_path), "-i", str(hindi_audio_path),
+            "-filter_complex", af,
+            "-map", "0:v:0", "-map", "[aout]",
+            "-c:v", "copy", str(dubbed_video),
+        ]
+
     subprocess.run(cmd, check=True, capture_output=True)
     print(f"  Dubbed video saved: {dubbed_video.name}")
     return dubbed_video
@@ -746,6 +825,81 @@ def compute_metrics(whisper_result: dict, segments: list[dict],
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Stage 8b — Segment-level quality (isochrony + LLM grading)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def compute_segment_isochrony(
+    segments: list[dict], seg_dir: Path
+) -> list[dict]:
+    """Per-segment isochrony ratio: TTS duration / EN window duration."""
+    results = []
+    for seg in segments:
+        sid = int(seg["id"])
+        en_dur = round(float(seg["end"]) - float(seg["start"]), 2)
+        candidates = list(seg_dir.glob(f"seg_{sid:03d}_*.mp3"))
+        if candidates:
+            tts_dur = round(len(AudioSegment.from_mp3(str(candidates[0]))) / 1000.0, 2)
+            ratio = round(tts_dur / en_dur, 3) if en_dur > 0 else None
+        else:
+            tts_dur = ratio = None
+        results.append({
+            "id": sid,
+            "start": float(seg["start"]),
+            "end": float(seg["end"]),
+            "en_duration_s": en_dur,
+            "tts_duration_s": tts_dur,
+            "isochrony_ratio": ratio,
+        })
+    return results
+
+
+def grade_translations(segments: list[dict]) -> list[dict]:
+    """Call Claude Haiku to rate fidelity / fluency / fit per segment."""
+    payload = [
+        {"id": int(seg["id"]), "en": seg["en_text"], "hi": seg["hi_text"],
+         "duration_s": round(float(seg["end"]) - float(seg["start"]), 1)}
+        for seg in segments
+        if seg.get("hi_text", "").strip()
+    ]
+    if not payload:
+        return []
+    client = anthropic.Anthropic()
+    msg = client.messages.create(
+        model="claude-haiku-4-5",
+        max_tokens=1024,
+        system=_GRADE_SYSTEM,
+        messages=[{"role": "user",
+                   "content": json.dumps(payload, ensure_ascii=False)}],
+    )
+    raw = msg.content[0].text.strip()
+    if raw.startswith("```"):
+        raw = raw.split("```")[1].lstrip("json").strip()
+    try:
+        return json.loads(raw)
+    except Exception as exc:
+        print(f"  [warn] grade_translations parse failed: {exc}")
+        return []
+
+
+def _merge_segment_quality(
+    isochrony: list[dict], grades_by_id: dict[int, dict]
+) -> list[dict]:
+    out = []
+    for row in isochrony:
+        g = grades_by_id.get(row["id"], {})
+        merged = dict(row)
+        # fit is always algorithmic; fidelity/fluency come from LLM
+        merged["fit"] = _isochrony_fit(row.get("isochrony_ratio"))
+        if g:
+            merged["fidelity"] = g.get("fidelity")
+            merged["fluency"]  = g.get("fluency")
+            if "note" in g:
+                merged["note"] = g["note"]
+        out.append(merged)
+    return out
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Save outputs
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -779,9 +933,6 @@ if __name__ == "__main__":
     parser.add_argument("--hf-token", type=str, default=None,
                         help="HuggingFace token for pyannote models. "
                              "Reads HF_TOKEN env var if not provided.")
-    parser.add_argument("--bg-vol", type=float, default=BG_AUDIO_VOL,
-                        help="Original audio volume in dubbed mix "
-                             f"(default {BG_AUDIO_VOL}).")
     parser.add_argument("--gender-thresh", type=float,
                         default=_FEMALE_CONFIDENCE_THRESH,
                         help="Min female probability to assign female voice "
@@ -844,13 +995,24 @@ if __name__ == "__main__":
     )
 
     print("\nStage 7 — Creating dubbed video …")
-    dubbed_video = create_dubbed_video(video_path, hindi_audio)
+    dubbed_video = create_dubbed_video(video_path, hindi_audio, segments=segments)
 
     print("\nStage 8 — Computing metrics …")
     has_ref   = args.input is None
     src_audio = RAW / "source_en.mp3" if has_ref else audio_path
     metrics   = compute_metrics(whisper_result, segments, src_audio,
                                 hindi_audio, has_reference=has_ref)
+    metrics["tts"]["voice_map"] = speaker_voices
+
+    print("\nStage 8b — Segment quality …")
+    seg_dir = PREPARED / f"hi_segments_{video_path.stem}"
+    iso = compute_segment_isochrony(segments, seg_dir)
+    grades = grade_translations(segments) if not args.no_llm else []
+    if grades:
+        print(f"  LLM graded {len(grades)} segments.")
+    metrics["segment_quality"] = _merge_segment_quality(
+        iso, {g["id"]: g for g in grades}
+    )
 
     save_outputs(segments, vtt, srt, metrics, src_audio, hindi_audio,
                  stem=video_path.stem)

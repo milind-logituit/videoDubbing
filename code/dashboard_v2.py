@@ -355,6 +355,64 @@ with tab4:
     fig3.update_layout(height=240, margin=dict(t=40, b=10))
     m3.plotly_chart(fig3, use_container_width=True)
 
+    # ── Segment-level quality ─────────────────────────────────────────────────
+    seg_quality = metrics.get("segment_quality", [])
+    if seg_quality:
+        st.divider()
+        st.subheader("Segment-Level Quality")
+
+        sq_df = pd.DataFrame(seg_quality)
+
+        # Isochrony chart
+        st.markdown("#### Isochrony — TTS duration / EN window")
+        st.caption(
+            "Ideal range 0.85–1.15 (green). "
+            "Above 1.3 = speech will overflow its window and sound rushed."
+        )
+        _iso = sq_df[sq_df["isochrony_ratio"].notna()].copy()
+        _iso["color"] = _iso["isochrony_ratio"].apply(
+            lambda r: "#00CC96" if 0.85 <= r <= 1.15
+            else ("#FFA15A" if r <= 1.30 else "#EF553B")
+        )
+        fig_iso = go.Figure(go.Bar(
+            x=_iso["start"], y=_iso["isochrony_ratio"],
+            marker_color=_iso["color"],
+            hovertext=[
+                f"[{r.start:.1f}–{r.end:.1f}s]  ratio={r.isochrony_ratio:.2f}"
+                for _, r in _iso.iterrows()
+            ],
+            hoverinfo="text",
+        ))
+        fig_iso.add_hline(y=1.0, line_dash="dot", line_color="black",
+                          annotation_text="1.0")
+        fig_iso.update_layout(height=260, margin=dict(t=20, b=20),
+                              yaxis_title="ratio", xaxis_title="segment start (s)")
+        st.plotly_chart(fig_iso, use_container_width=True)
+
+        # LLM scores table (only if grading was run)
+        _grade_cols = [c for c in ["fidelity", "fluency", "fit"] if c in sq_df.columns]
+        if _grade_cols:
+            st.markdown("#### LLM Translation Grades (Claude Haiku, 1–5)")
+            _display_cols = ["start", "end"] + _grade_cols + (
+                ["note"] if "note" in sq_df.columns else []
+            )
+            _show = sq_df[_display_cols].rename(
+                columns={"start": "Start (s)", "end": "End (s)",
+                         "fidelity": "Fidelity", "fluency": "Fluency",
+                         "fit": "Fit", "note": "Note"}
+            )
+            avg_scores = {c: sq_df[c].mean() for c in _grade_cols
+                          if sq_df[c].notna().any()}
+            sc1, sc2, sc3 = st.columns(3)
+            for col_widget, (label, avg) in zip(
+                [sc1, sc2, sc3],
+                [("Avg Fidelity", avg_scores.get("fidelity")),
+                 ("Avg Fluency",  avg_scores.get("fluency")),
+                 ("Avg Fit",      avg_scores.get("fit"))]
+            ):
+                col_widget.metric(label, f"{avg:.1f} / 5" if avg else "N/A")
+            st.dataframe(_show, use_container_width=True, hide_index=True)
+
 
 # ═══════════════════════════════════════════════════════════════════════════════
 with tab5:
