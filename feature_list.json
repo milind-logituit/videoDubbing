@@ -1,0 +1,97 @@
+{
+  "project": "VideoDubbing",
+  "last_updated": "2026-06-10",
+  "rules": {
+    "single_active_feature": true,
+    "passing_requires_evidence": true,
+    "do_not_skip_verification": false
+  },
+  "status_legend": {
+    "not_started": "Work has not begun.",
+    "in_progress": "This is the current active task.",
+    "blocked": "Cannot continue until documented blocker is resolved.",
+    "passing": "Verification passed and evidence is recorded.",
+    "parked": "Deprioritised — revisit when unblocked or prioritised."
+  },
+  "features": [
+    {
+      "id": "dub-001",
+      "priority": 1,
+      "area": "pipeline",
+      "title": "Stage 2–4 core dubbing pipeline",
+      "user_visible_behavior": "Given a real video file, the pipeline produces a dubbed Hindi mp4 with translated audio replacing the original, plus SRT/VTT subtitles and a metrics JSON.",
+      "status": "passing",
+      "verification": [
+        "Run pipeline on tears_of_steel_2min.mp4 with --input flag",
+        "Confirm dubbed mp4 is produced with Hindi audio",
+        "Confirm metrics_*.json, subtitles_*_hi.srt/.vtt, transcript_bilingual_*.csv are written",
+        "Duration ratio within 1.05 of original"
+      ],
+      "evidence": ["Verified on all three test clips (tears, elephants, advanced_english); duration ratio = 1.000; committed fd288fc, 4f4cd82, 27f436f"],
+      "notes": ""
+    },
+    {
+      "id": "dub-002",
+      "priority": 2,
+      "area": "pipeline",
+      "title": "Stage 4b LLM post-correction (Claude Sonnet)",
+      "user_visible_behavior": "English ASR errors are corrected and Hindi translation is rewritten as natural spoken dubbing language before TTS synthesis.",
+      "status": "passing",
+      "verification": [
+        "Run pipeline; confirm refine_segments() is called",
+        "Spot-check 3+ segments for natural Hindi phrasing vs raw Google Translate",
+        "Confirm --no-llm flag skips stage cleanly"
+      ],
+      "evidence": ["12/14 refined Tears, 12/15 Elephants, 33/34 Advanced English; natural Hindi confirmed; batched in f8295d6"],
+      "notes": "Uses Claude Sonnet 4.6 ~$0.08/clip; isochrony constraints added in c850f17"
+    },
+    {
+      "id": "dub-003",
+      "priority": 3,
+      "area": "pipeline",
+      "title": "Stage 3.5 multi-speaker diarization + gendered TTS voices",
+      "user_visible_behavior": "Different speakers in the source video are assigned distinct Hindi TTS voices (MadhurNeural male / SwaraNeural female) so characters are distinguishable in the dub.",
+      "status": "blocked",
+      "verification": [
+        "Run pipeline on tears_of_steel_2min.mp4 with --hf-token",
+        "Confirm diarize_speakers() produces ≥2 speaker turns",
+        "Confirm assign_speakers() tags each segment with a speaker id",
+        "Confirm dubbed audio uses MadhurNeural for male speaker, SwaraNeural for female",
+        "Play dubbed output and verify voices are audibly distinct"
+      ],
+      "evidence": [],
+      "notes": "Blocked: pyannote Pipeline.from_pretrained() TypeError — unexpected kwarg 'use_auth_token'. Fix: replace use_auth_token with token= (pyannote ≥3.x API). Code in pipeline_v2.py diarize_speakers() line ~200; not yet committed."
+    },
+    {
+      "id": "dub-004",
+      "priority": 4,
+      "area": "pipeline",
+      "title": "Scale to 15–30 min content",
+      "user_visible_behavior": "Pipeline processes a full 15–30 minute video (Eros/SunNxt content) end-to-end without OOM, timeout, or context-window errors.",
+      "status": "not_started",
+      "verification": [
+        "Run pipeline on a 15–30 min clip from Vijay",
+        "Confirm all stages complete without crash",
+        "Confirm Stage 4b batching handles ≥200 segments",
+        "Confirm output mp4 is playable and metrics are written"
+      ],
+      "evidence": [],
+      "notes": "Blocked on content — waiting for Vijay intro via Sandeep. Stage 4b batching already implemented (f8295d6) so this is mainly a test run."
+    },
+    {
+      "id": "dub-005",
+      "priority": 5,
+      "area": "dashboard",
+      "title": "Dashboard multi-clip selector",
+      "user_visible_behavior": "Streamlit dashboard auto-discovers all processed clips and lets the user compare original vs dubbed via a sidebar dropdown.",
+      "status": "passing",
+      "verification": [
+        "Launch dashboard_v2.py",
+        "Confirm all three test clips appear in sidebar dropdown",
+        "Confirm original and dubbed audio/video are playable for each clip"
+      ],
+      "evidence": ["Verified live — all three clips in dropdown; committed"],
+      "notes": ""
+    }
+  ]
+}

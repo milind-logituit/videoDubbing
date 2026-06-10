@@ -1,35 +1,35 @@
-id,start,end,duration,en_text,hi_text
-0,11.54,15.22,3.68,"Hello everyone, welcome back to Tinipoya Actual Speaking.","सभी को नमस्कार, टिनिपोया एक्चुअल स्पीकिंग में आपका स्वागत है।"
-1,15.56,17.1,1.54,"I'm of course, Jennifer Clyde.",मैं जेनिफर क्लाइड हूँ।
-2,17.4,19.24,1.84,Thank you so much for joining me today.,आज साथ जुड़ने का बहुत शुक्रिया।
-3,19.78,25.28,5.5,"Now today's lesson is, of course, lesson 11 and we will be talking about health.","आज का पाठ है पाठ ग्यारह, और हम बात करेंगे स्वास्थ्य की।"
-4,25.76,28.48,2.72,So how do you take care of your health?,तो आप अपनी सेहत का ख्याल कैसे रखते हैं?
-5,28.48,30.2,1.72,How do you stay healthy?,आप स्वस्थ कैसे रहते हैं?
-6,30.6,31.58,0.98,How do you stay fit?,फिट कैसे रहते हैं?
-7,31.98,35.32,3.34,"There is advice given by most doctors and it is,","ज़्यादातर डॉक्टर एक सलाह देते हैं,"
-8,35.66,41.44,5.78,those who do not find time for exercise will have to find time for illness.,"जो व्यायाम के लिए वक्त नहीं निकालते, उन्हें बीमारी के लिए वक्त निकालना पड़ेगा।"
-9,41.9,42.8,0.9,"Hmm, got it, right?","हाँ, समझे न?"
-10,43.22,46.74,3.52,"So basically they're saying that exercising is very, very important.",यानी व्यायाम करना बेहद ज़रूरी है।
-11,47.16,49.26,2.1,"There's also another old saying, it says,","एक और पुरानी कहावत है,"
-12,49.76,54.8,5.04,"After dinner rest a while and after supper, walk a while.","दोपहर के खाने के बाद थोड़ा आराम करो, और रात के खाने के बाद थोड़ा टहलो।"
-13,55.58,57.54,1.96,Walking is a great way of exercise as well.,पैदल चलना भी बढ़िया व्यायाम है।
-14,58.1,61.36,3.26,"We of course can do many, many things to improve our health,","सेहत सुधारने के लिए हम कई काम कर सकते हैं,"
-15,61.42,65.34,3.92,perhaps by taking baby steps toward better health.,बेहतर सेहत की ओर छोटे-छोटे कदम उठाकर।
-16,65.62,70.22,4.6,"You can sleep more, eat healthy foods, you can exercise,","ज़्यादा सोएँ, पौष्टिक खाना खाएँ, व्यायाम करें,"
-17,70.92,73.38,2.46,"you can cut out salts, be happy.",नमक कम करें और खुश रहें।
-18,73.64,74.02,0.38,What else?,और क्या?
-19,74.32,75.8,1.48,"You can check your feet, people say.",पैरों की जाँच करें।
-20,76.24,78.24,2.0,"Checking your feet is very, very important.",पैरों की जाँच बहुत ज़रूरी है।
-21,78.56,82.56,4.0,Maybe do it once a week or twice a week to see how your feet are doing.,हफ्ते में एक-दो बार देखें कि पैर ठीक हैं या नहीं।
-22,83.0,86.16,3.16,"Also, floss daily and cut back the coffee","रोज़ फ्लॉस करें और कॉफी कम पिएँ,"
-23,86.16,88.94,2.78,"and most importantly, eat breakfast.",और सबसे ज़रूरी — नाश्ता ज़रूर करें।
-24,89.58,93.4,3.82,Now this is something very interesting that I found in a 2004 study,"एक बहुत दिलचस्प बात है जो मुझे 2004 की एक स्टडी में मिली,"
-25,93.4,97.36,3.96,"that was published in the journal called Heart and it said,","'हार्ट' नाम की पत्रिका में छपी थी, उसमें कहा गया,"
-26,98.16,99.06,0.9,Build a Network.,एक नेटवर्क बनाओ।
-27,99.6,102.94,3.34,"Now you might think, Build a Network, what does that have to do with health?","आप सोचेंगे, नेटवर्क का सेहत से क्या वास्ता?"
-28,103.12,106.0,2.88,"But they said, if you survive a heart attack,","लेकिन उन्होंने कहा, अगर आप हार्ट अटैक से बच जाते हैं,"
-29,106.54,109.78,3.24,you're half as likely to have a second heart attack within a year,तो दोबारा हार्ट अटैक की संभावना आधी रह जाती है
-30,109.78,112.14,2.36,if you have close friends and family.,अगर आपके करीबी दोस्त और परिवार हों।
-31,112.14,115.88,3.74,"That means friends and family are very, very important.",यानी दोस्त और परिवार बहुत ज़रूरी हैं।
-32,116.46,118.5,2.04,"Anyhow, we're talking about health today,","खैर, आज हम बात कर रहे हैं सेहत की,"
-33,118.72,119.98,1.26,so let's begin with our...,तो चलिए शुरू करते हैं...
+id,start,end,duration,en_text,hi_text,speaker
+0,11.54,15.22,3.68,"Hello everyone, welcome back to Tinipoya Actual Speaking.","सभी को नमस्कार, टिनिपोया एक्चुअल स्पीकिंग में आपका फिर से स्वागत है।",SPEAKER_00
+1,15.56,17.1,1.54,"I'm of course, Jennifer Clyde.",मैं हूँ जेनिफर क्लाइड।,SPEAKER_00
+2,17.4,19.24,1.84,Thank you so much for joining me today.,आज साथ आने का बहुत धन्यवाद।,SPEAKER_00
+3,19.78,25.28,5.5,"Now today's lesson is, of course, lesson 11 and we will be talking about health.","आज का पाठ है पाठ 11, और हम बात करेंगे स्वास्थ्य के बारे में।",SPEAKER_00
+4,25.76,28.48,2.72,So how do you take care of your health?,तो आप अपनी सेहत का ख्याल कैसे रखते हैं?,SPEAKER_00
+5,28.48,30.2,1.72,How do you stay healthy?,आप स्वस्थ कैसे रहते हैं?,SPEAKER_00
+6,30.6,31.58,0.98,How do you stay fit?,फिट कैसे रहते हैं?,SPEAKER_00
+7,31.98,35.32,3.34,"There is advice given by most doctors and it is,","ज़्यादातर डॉक्टर एक सलाह देते हैं,",SPEAKER_00
+8,35.66,41.44,5.78,those who do not find time for exercise will have to find time for illness.,"जो व्यायाम के लिए वक्त नहीं निकालते, उन्हें बीमारी के लिए वक्त निकालना पड़ेगा।",SPEAKER_00
+9,41.9,42.8,0.9,"Hmm, got it, right?","हाँ, समझे ना?",SPEAKER_00
+10,43.22,46.74,3.52,"So basically they're saying that exercising is very, very important.",यानी व्यायाम करना बेहद ज़रूरी है।,SPEAKER_00
+11,47.16,49.26,2.1,"There's also another old saying, it says,","एक और पुरानी कहावत है,",SPEAKER_00
+12,49.76,54.8,5.04,"After dinner rest a while and after supper, walk a while.","दोपहर के खाने के बाद थोड़ा आराम करो, और रात के खाने के बाद थोड़ा टहलो।",SPEAKER_00
+13,55.58,57.54,1.96,Walking is a great way of exercise as well.,पैदल चलना भी बढ़िया व्यायाम है।,SPEAKER_00
+14,58.1,61.36,3.26,"We of course can do many, many things to improve our health,","सेहत सुधारने के लिए हम बहुत कुछ कर सकते हैं,",SPEAKER_00
+15,61.42,65.34,3.92,perhaps by taking baby steps toward better health.,बस छोटे-छोटे कदम उठाने होंगे।,SPEAKER_00
+16,65.62,70.22,4.6,"You can sleep more, eat healthy foods, you can exercise,","ज़्यादा सोएं, पौष्टिक खाना खाएं, व्यायाम करें,",SPEAKER_00
+17,70.92,73.38,2.46,"you can cut out salts, be happy.","नमक कम करें, खुश रहें।",SPEAKER_00
+18,73.64,74.02,0.38,What else?,और क्या?,SPEAKER_00
+19,74.32,75.8,1.48,"You can check your feet, people say.",पैरों की जाँच करें।,SPEAKER_00
+20,76.24,78.24,2.0,"Checking your feet is very, very important.",पैरों की जाँच बेहद ज़रूरी है।,SPEAKER_00
+21,78.56,82.56,4.0,Maybe do it once a week or twice a week to see how your feet are doing.,हफ्ते में एक-दो बार देखें कि पैर कैसे हैं।,SPEAKER_00
+22,83.0,86.16,3.16,"Also, floss daily and cut back the coffee","रोज़ फ्लॉस करें और कॉफी कम पिएं,",SPEAKER_00
+23,86.16,88.94,2.78,"and most importantly, eat breakfast.","और सबसे ज़रूरी, नाश्ता ज़रूर करें।",SPEAKER_00
+24,89.58,93.4,3.82,Now this is something very interesting that I found in a 2004 study,"2004 के एक अध्ययन में मुझे बड़ी दिलचस्प बात मिली,",SPEAKER_00
+25,93.4,97.36,3.96,"that was published in the journal called Heart and it said,","जो 'हार्ट' नामक पत्रिका में छपा था, उसमें कहा गया—",SPEAKER_00
+26,98.16,99.06,0.9,Build a Network.,नेटवर्क बनाओ।,SPEAKER_00
+27,99.6,102.94,3.34,"Now you might think, Build a Network, what does that have to do with health?","आप सोचेंगे, नेटवर्क का सेहत से क्या लेना-देना?",SPEAKER_00
+28,103.12,106.0,2.88,"But they said, if you survive a heart attack,","लेकिन उन्होंने कहा, अगर आप दिल का दौरा झेल जाएं,",SPEAKER_00
+29,106.54,109.78,3.24,you're half as likely to have a second heart attack within a year,"तो दूसरा दौरा पड़ने की संभावना आधी रह जाती है एक साल में,",SPEAKER_00
+30,109.78,112.14,2.36,if you have close friends and family.,अगर आपके पास करीबी दोस्त और परिवार हों।,SPEAKER_00
+31,112.14,115.88,3.74,"That means friends and family are very, very important.",यानी दोस्त और परिवार बेहद ज़रूरी हैं।,SPEAKER_00
+32,116.46,118.5,2.04,"Anyhow, we're talking about health today,","खैर, आज हम बात कर रहे हैं सेहत की,",SPEAKER_00
+33,118.72,119.98,1.26,so let's begin with our...,तो शुरू करते हैं...,SPEAKER_00

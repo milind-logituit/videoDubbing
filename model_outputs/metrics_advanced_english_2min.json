@@ -12,7 +12,10 @@
     "note": "N/A — no reference text for this clip"
   },
   "tts": {
-    "voice": "hi-IN-SwaraNeural"
+    "voice": "hi-IN-SwaraNeural",
+    "voice_map": {
+      "SPEAKER_00": "hi-IN-SwaraNeural"
+    }
   },
   "alignment": {
     "source_duration_s": 120.0,
@@ -20,5 +23,386 @@
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.3,
     "hi_chars_per_sec": 8.5
-  }
+  },
+  "segment_quality": [
+    {
+      "id": 0,
+      "start": 11.54,
+      "end": 15.22,
+      "en_duration_s": 3.68,
+      "tts_duration_s": 4.66,
+      "isochrony_ratio": 1.266,
+      "fit": 4,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 1,
+      "start": 15.56,
+      "end": 17.1,
+      "en_duration_s": 1.54,
+      "tts_duration_s": 2.04,
+      "isochrony_ratio": 1.325,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 4,
+      "note": "Minor: 'मैं हूँ' is slightly formal; 'मैं हूँ' or just 'मैं जेनिफर क्लाइड हूँ' would be more natural"
+    },
+    {
+      "id": 2,
+      "start": 17.4,
+      "end": 19.24,
+      "en_duration_s": 1.84,
+      "tts_duration_s": 2.83,
+      "isochrony_ratio": 1.538,
+      "fit": 2,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 3,
+      "start": 19.78,
+      "end": 25.28,
+      "en_duration_s": 5.5,
+      "tts_duration_s": 4.1,
+      "isochrony_ratio": 0.745,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 4,
+      "start": 25.76,
+      "end": 28.48,
+      "en_duration_s": 2.72,
+      "tts_duration_s": 3.98,
+      "isochrony_ratio": 1.463,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 5,
+      "start": 28.48,
+      "end": 30.2,
+      "en_duration_s": 1.72,
+      "tts_duration_s": 2.02,
+      "isochrony_ratio": 1.174,
+      "fit": 4,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 6,
+      "start": 30.6,
+      "end": 31.58,
+      "en_duration_s": 0.98,
+      "tts_duration_s": 1.75,
+      "isochrony_ratio": 1.786,
+      "fit": 2,
+      "fidelity": 5,
+      "fluency": 4,
+      "note": "Missing subject 'आप'; should be 'आप फिट कैसे रहते हैं?'"
+    },
+    {
+      "id": 7,
+      "start": 31.98,
+      "end": 35.32,
+      "en_duration_s": 3.34,
+      "tts_duration_s": 2.52,
+      "isochrony_ratio": 0.754,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 8,
+      "start": 35.66,
+      "end": 41.44,
+      "en_duration_s": 5.78,
+      "tts_duration_s": 6.7,
+      "isochrony_ratio": 1.159,
+      "fit": 4,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 9,
+      "start": 41.9,
+      "end": 42.8,
+      "en_duration_s": 0.9,
+      "tts_duration_s": 2.5,
+      "isochrony_ratio": 2.778,
+      "fit": 1,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 10,
+      "start": 43.22,
+      "end": 46.74,
+      "en_duration_s": 3.52,
+      "tts_duration_s": 3.53,
+      "isochrony_ratio": 1.003,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 11,
+      "start": 47.16,
+      "end": 49.26,
+      "en_duration_s": 2.1,
+      "tts_duration_s": 2.81,
+      "isochrony_ratio": 1.338,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 12,
+      "start": 49.76,
+      "end": 54.8,
+      "en_duration_s": 5.04,
+      "tts_duration_s": 6.7,
+      "isochrony_ratio": 1.329,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 13,
+      "start": 55.58,
+      "end": 57.54,
+      "en_duration_s": 1.96,
+      "tts_duration_s": 2.42,
+      "isochrony_ratio": 1.235,
+      "fit": 4,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 14,
+      "start": 58.1,
+      "end": 61.36,
+      "en_duration_s": 3.26,
+      "tts_duration_s": 4.58,
+      "isochrony_ratio": 1.405,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 15,
+      "start": 61.42,
+      "end": 65.34,
+      "en_duration_s": 3.92,
+      "tts_duration_s": 3.7,
+      "isochrony_ratio": 0.944,
+      "fit": 5,
+      "fidelity": 4,
+      "fluency": 4,
+      "note": "'baby steps' nuance partially lost; 'छोटे-छोटे कदम' is accurate but 'baby steps' implies gradual/manageable progression"
+    },
+    {
+      "id": 16,
+      "start": 65.62,
+      "end": 70.22,
+      "en_duration_s": 4.6,
+      "tts_duration_s": 5.14,
+      "isochrony_ratio": 1.117,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 17,
+      "start": 70.92,
+      "end": 73.38,
+      "en_duration_s": 2.46,
+      "tts_duration_s": 3.29,
+      "isochrony_ratio": 1.337,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 18,
+      "start": 73.64,
+      "end": 74.02,
+      "en_duration_s": 0.38,
+      "tts_duration_s": 1.1,
+      "isochrony_ratio": 2.895,
+      "fit": 1,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 19,
+      "start": 74.32,
+      "end": 75.8,
+      "en_duration_s": 1.48,
+      "tts_duration_s": 1.94,
+      "isochrony_ratio": 1.311,
+      "fit": 3,
+      "fidelity": 4,
+      "fluency": 4,
+      "note": "'people say' lost; should retain 'लोग कहते हैं' for complete fidelity"
+    },
+    {
+      "id": 20,
+      "start": 76.24,
+      "end": 78.24,
+      "en_duration_s": 2.0,
+      "tts_duration_s": 2.5,
+      "isochrony_ratio": 1.25,
+      "fit": 4,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 21,
+      "start": 78.56,
+      "end": 82.56,
+      "en_duration_s": 4.0,
+      "tts_duration_s": 3.19,
+      "isochrony_ratio": 0.797,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 22,
+      "start": 83.0,
+      "end": 86.16,
+      "en_duration_s": 3.16,
+      "tts_duration_s": 2.81,
+      "isochrony_ratio": 0.889,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 23,
+      "start": 86.16,
+      "end": 88.94,
+      "en_duration_s": 2.78,
+      "tts_duration_s": 2.93,
+      "isochrony_ratio": 1.054,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 24,
+      "start": 89.58,
+      "end": 93.4,
+      "en_duration_s": 3.82,
+      "tts_duration_s": 3.98,
+      "isochrony_ratio": 1.042,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 25,
+      "start": 93.4,
+      "end": 97.36,
+      "en_duration_s": 3.96,
+      "tts_duration_s": 5.45,
+      "isochrony_ratio": 1.376,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 26,
+      "start": 98.16,
+      "end": 99.06,
+      "en_duration_s": 0.9,
+      "tts_duration_s": 1.61,
+      "isochrony_ratio": 1.789,
+      "fit": 2,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 27,
+      "start": 99.6,
+      "end": 102.94,
+      "en_duration_s": 3.34,
+      "tts_duration_s": 3.43,
+      "isochrony_ratio": 1.027,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 28,
+      "start": 103.12,
+      "end": 106.0,
+      "en_duration_s": 2.88,
+      "tts_duration_s": 4.94,
+      "isochrony_ratio": 1.715,
+      "fit": 2,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 29,
+      "start": 106.54,
+      "end": 109.78,
+      "en_duration_s": 3.24,
+      "tts_duration_s": 4.68,
+      "isochrony_ratio": 1.444,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 30,
+      "start": 109.78,
+      "end": 112.14,
+      "en_duration_s": 2.36,
+      "tts_duration_s": 3.84,
+      "isochrony_ratio": 1.627,
+      "fit": 2,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 31,
+      "start": 112.14,
+      "end": 115.88,
+      "en_duration_s": 3.74,
+      "tts_duration_s": 3.86,
+      "isochrony_ratio": 1.032,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 32,
+      "start": 116.46,
+      "end": 118.5,
+      "en_duration_s": 2.04,
+      "tts_duration_s": 4.08,
+      "isochrony_ratio": 2.0,
+      "fit": 2,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 33,
+      "start": 118.72,
+      "end": 119.98,
+      "en_duration_s": 1.26,
+      "tts_duration_s": 2.59,
+      "isochrony_ratio": 2.056,
+      "fit": 1,
+      "fidelity": 4,
+      "fluency": 4,
+      "note": "Incomplete; should be 'तो शुरू करते हैं अपने...' or similar to match English continuation"
+    }
+  ]
 }

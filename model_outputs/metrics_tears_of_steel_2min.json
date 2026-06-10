@@ -12,13 +12,181 @@
     "note": "N/A — no reference text for this clip"
   },
   "tts": {
-    "voice": "hi-IN-SwaraNeural"
+    "voice": "hi-IN-SwaraNeural",
+    "voice_map": {
+      "SPEAKER_01": "hi-IN-SwaraNeural",
+      "SPEAKER_02": "hi-IN-MadhurNeural",
+      "SPEAKER_03": "hi-IN-MadhurNeural",
+      "SPEAKER_00": "hi-IN-MadhurNeural"
+    }
   },
   "alignment": {
     "source_duration_s": 120.0,
     "dubbed_duration_s": 120.0,
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.3,
-    "hi_chars_per_sec": 2.7
-  }
+    "hi_chars_per_sec": 2.8
+  },
+  "segment_quality": [
+    {
+      "id": 0,
+      "start": 4.1,
+      "end": 6.18,
+      "en_duration_s": 2.08,
+      "tts_duration_s": 1.7,
+      "isochrony_ratio": 0.817,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 1,
+      "start": 6.56,
+      "end": 10.0,
+      "en_duration_s": 3.44,
+      "tts_duration_s": 3.19,
+      "isochrony_ratio": 0.927,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 2,
+      "start": 23.82,
+      "end": 26.86,
+      "en_duration_s": 3.04,
+      "tts_duration_s": 4.46,
+      "isochrony_ratio": 1.467,
+      "fit": 3,
+      "fidelity": 4,
+      "fluency": 4,
+      "note": "जीना is slightly awkward; 'अपना जुनून अनुसरण करना' would be more natural"
+    },
+    {
+      "id": 3,
+      "start": 26.86,
+      "end": 30.04,
+      "en_duration_s": 3.18,
+      "tts_duration_s": 5.06,
+      "isochrony_ratio": 1.591,
+      "fit": 2,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 4,
+      "start": 30.48,
+      "end": 34.28,
+      "en_duration_s": 3.8,
+      "tts_duration_s": 4.73,
+      "isochrony_ratio": 1.245,
+      "fit": 4,
+      "fidelity": 4,
+      "fluency": 4,
+      "note": "'डरे हुए हो' changes subject; 'तुम्हें चिंता है' would better capture 'freaked out'"
+    },
+    {
+      "id": 5,
+      "start": 34.64,
+      "end": 35.86,
+      "en_duration_s": 1.22,
+      "tts_duration_s": 2.06,
+      "isochrony_ratio": 1.689,
+      "fit": 2,
+      "fidelity": 4,
+      "fluency": 4,
+      "note": "Incomplete sentence in Hindi mirrors English but sounds abrupt in dubbing"
+    },
+    {
+      "id": 6,
+      "start": 37.26,
+      "end": 39.4,
+      "en_duration_s": 2.14,
+      "tts_duration_s": 2.11,
+      "isochrony_ratio": 0.986,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 7,
+      "start": 39.54,
+      "end": 42.46,
+      "en_duration_s": 2.92,
+      "tts_duration_s": 6.77,
+      "isochrony_ratio": 2.318,
+      "fit": 1,
+      "fidelity": 4,
+      "fluency": 3,
+      "note": "'खून से सने' is awkward; 'खूनी' or 'खून भरे' would be more natural. Word order feels forced"
+    },
+    {
+      "id": 8,
+      "start": 42.46,
+      "end": 44.84,
+      "en_duration_s": 2.38,
+      "tts_duration_s": 3.91,
+      "isochrony_ratio": 1.643,
+      "fit": 2,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 9,
+      "start": 50.18,
+      "end": 53.24,
+      "en_duration_s": 3.06,
+      "tts_duration_s": 2.71,
+      "isochrony_ratio": 0.886,
+      "fit": 5,
+      "fidelity": 3,
+      "fluency": 2,
+      "note": "Structure is unclear; 'synced' translation incomplete. 'की मेमोरी सिंक हुई' would be clearer"
+    },
+    {
+      "id": 10,
+      "start": 53.24,
+      "end": 53.52,
+      "en_duration_s": 0.28,
+      "tts_duration_s": 0.94,
+      "isochrony_ratio": 3.357,
+      "fit": 1,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 11,
+      "start": 58.46,
+      "end": 62.22,
+      "en_duration_s": 3.76,
+      "tts_duration_s": 2.5,
+      "isochrony_ratio": 0.665,
+      "fit": 3,
+      "fidelity": 2,
+      "fluency": 2,
+      "note": "'This is pretty freaking' doesn't match 'यह तो बड़ा अजीब है'. Should be 'यह तो बड़ा डरावना/भयानक है' or similar"
+    },
+    {
+      "id": 12,
+      "start": 113.36,
+      "end": 113.88,
+      "en_duration_s": 0.52,
+      "tts_duration_s": 0.94,
+      "isochrony_ratio": 1.808,
+      "fit": 2,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 13,
+      "start": 117.62,
+      "end": 118.5,
+      "en_duration_s": 0.88,
+      "tts_duration_s": 1.51,
+      "isochrony_ratio": 1.716,
+      "fit": 2,
+      "fidelity": 5,
+      "fluency": 5
+    }
+  ]
 }

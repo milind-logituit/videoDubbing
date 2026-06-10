@@ -12,13 +12,187 @@
     "note": "N/A — no reference text for this clip"
   },
   "tts": {
-    "voice": "hi-IN-SwaraNeural"
+    "voice": "hi-IN-SwaraNeural",
+    "voice_map": {
+      "SPEAKER_00": "hi-IN-SwaraNeural",
+      "SPEAKER_01": "hi-IN-MadhurNeural",
+      "SPEAKER_02": "hi-IN-MadhurNeural"
+    }
   },
   "alignment": {
     "source_duration_s": 120.0,
     "dubbed_duration_s": 120.0,
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.3,
-    "hi_chars_per_sec": 1.4
-  }
+    "hi_chars_per_sec": 1.5
+  },
+  "segment_quality": [
+    {
+      "id": 0,
+      "start": 14.22,
+      "end": 14.98,
+      "en_duration_s": 0.76,
+      "tts_duration_s": null,
+      "isochrony_ratio": null,
+      "fit": 3
+    },
+    {
+      "id": 1,
+      "start": 14.98,
+      "end": 16.46,
+      "en_duration_s": 1.48,
+      "tts_duration_s": 2.28,
+      "isochrony_ratio": 1.541,
+      "fit": 2,
+      "fidelity": 4,
+      "fluency": 3,
+      "note": "Missing 'हम' (we) and 'सकते हैं' (can) - incomplete translation of 'we can see'"
+    },
+    {
+      "id": 2,
+      "start": 16.46,
+      "end": 20.98,
+      "en_duration_s": 4.52,
+      "tts_duration_s": 3.74,
+      "isochrony_ratio": 0.827,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 3,
+      "start": 20.98,
+      "end": 24.0,
+      "en_duration_s": 3.02,
+      "tts_duration_s": 4.15,
+      "isochrony_ratio": 1.374,
+      "fit": 3,
+      "fidelity": 2,
+      "fluency": 3,
+      "note": "'Nullers' is unclear/possibly corrupted English; Hindi translation doesn't clarify the meaning"
+    },
+    {
+      "id": 4,
+      "start": 24.66,
+      "end": 25.5,
+      "en_duration_s": 0.84,
+      "tts_duration_s": 1.49,
+      "isochrony_ratio": 1.774,
+      "fit": 2,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 5,
+      "start": 42.84,
+      "end": 44.24,
+      "en_duration_s": 1.4,
+      "tts_duration_s": 1.39,
+      "isochrony_ratio": 0.993,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 6,
+      "start": 46.0,
+      "end": 48.38,
+      "en_duration_s": 2.38,
+      "tts_duration_s": 2.16,
+      "isochrony_ratio": 0.908,
+      "fit": 5,
+      "fidelity": 4,
+      "fluency": 4,
+      "note": "क्या तुम ठीक हो literally means 'are you okay' rather than 'are you hurt' - slight semantic shift"
+    },
+    {
+      "id": 7,
+      "start": 48.38,
+      "end": 53.82,
+      "en_duration_s": 5.44,
+      "tts_duration_s": 2.86,
+      "isochrony_ratio": 0.526,
+      "fit": 3,
+      "fidelity": 3,
+      "fluency": 2,
+      "note": "Incomplete translation; English clause appears truncated, Hindi doesn't fully correspond to source"
+    },
+    {
+      "id": 8,
+      "start": 54.82,
+      "end": 56.3,
+      "en_duration_s": 1.48,
+      "tts_duration_s": 2.26,
+      "isochrony_ratio": 1.527,
+      "fit": 2,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 9,
+      "start": 56.82,
+      "end": 60.98,
+      "en_duration_s": 4.16,
+      "tts_duration_s": 3.91,
+      "isochrony_ratio": 0.94,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 10,
+      "start": 61.82,
+      "end": 64.54,
+      "en_duration_s": 2.72,
+      "tts_duration_s": 2.86,
+      "isochrony_ratio": 1.051,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 11,
+      "start": 64.56,
+      "end": 68.82,
+      "en_duration_s": 4.26,
+      "tts_duration_s": 2.88,
+      "isochrony_ratio": 0.676,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 12,
+      "start": 75.82,
+      "end": 77.68,
+      "en_duration_s": 1.86,
+      "tts_duration_s": 2.18,
+      "isochrony_ratio": 1.172,
+      "fit": 4,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 13,
+      "start": 93.44,
+      "end": 95.68,
+      "en_duration_s": 2.24,
+      "tts_duration_s": 2.18,
+      "isochrony_ratio": 0.973,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 14,
+      "start": 115.62,
+      "end": 115.82,
+      "en_duration_s": 0.2,
+      "tts_duration_s": 1.49,
+      "isochrony_ratio": 7.45,
+      "fit": 1,
+      "fidelity": 5,
+      "fluency": 5
+    }
+  ]
 }
