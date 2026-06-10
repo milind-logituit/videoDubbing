@@ -22,6 +22,9 @@ dependencies = [
     "pydub>=0.25.1",
     "gtts>=2.5.4",
     "anthropic>=0.107.1",
+    "pyannote-audio>=3.3",
+    "librosa>=0.11.0",
+    "transformers>=5.10.2",
 ]
 
 [dependency-groups]
