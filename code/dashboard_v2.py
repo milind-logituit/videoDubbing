@@ -51,7 +51,7 @@ def _find_processed_clips() -> dict[str, tuple[Path, Path, Path, Path, Path, Pat
 
 # ── Cached loaders ────────────────────────────────────────────────────────────
 
-@st.cache_data
+@st.cache_data(ttl=60)
 def load_clip_outputs(stem: str, metrics_path: str, vtt_path: str,
                       srt_path: str, transcript_path: str):
     with open(metrics_path) as f:
@@ -187,27 +187,24 @@ else:
 
 # ── KPI row ───────────────────────────────────────────────────────────────────
 al = metrics["alignment"]
-k1, k2, k3, k4, k5 = st.columns(5)
 _wer_pct = metrics["asr"]["wer_pct"]
 _bleu    = metrics["translation"]["bleu"]
-k1.metric("ASR Accuracy",
-          f"{100 - _wer_pct:.1f}%" if _wer_pct is not None else "N/A")
-k2.metric("BLEU Score",
-          f"{_bleu:.1f}" if _bleu is not None else "N/A")
-k3.metric("Segments",        str(metrics["translation"]["n_segments"]))
-k4.metric("Source",          f"{al['source_duration_s']:.1f}s")
-k5.metric("Dubbed (HI)",     f"{al['dubbed_duration_s']:.1f}s",
+k1, k2, k3 = st.columns(3)
+k1.metric("Segments",    str(metrics["translation"]["n_segments"]))
+k2.metric("Source",      f"{al['source_duration_s']:.1f}s")
+k3.metric("Dubbed (HI)", f"{al['dubbed_duration_s']:.1f}s",
           f"{(al['duration_ratio'] - 1)*100:+.1f}% vs original",
           delta_color="off")
 
 st.divider()
 
 # ── Tabs ──────────────────────────────────────────────────────────────────────
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "🇮🇳  Use Case 1 — Hindi Subtitles",
     "🔊  Use Case 2 — Hindi Dubbed Audio",
     "⚖️  Side by Side",
     "📝  Bilingual Transcript",
+    "📊  Quality Metrics",
     "⚙️  How It Works",
 ])
 
@@ -306,15 +303,16 @@ with tab4:
         "transcript_bilingual.csv", "text/csv",
     )
 
+
+# ═══════════════════════════════════════════════════════════════════════════════
+with tab5:
     st.subheader("Quality Metrics")
+
     m1, m2, m3 = st.columns(3)
 
-    _wer_pct_tab4 = metrics["asr"]["wer_pct"]
-    _bleu_tab4    = metrics["translation"]["bleu"]
-
-    if _wer_pct_tab4 is not None:
+    if _wer_pct is not None:
         fig1 = go.Figure(go.Indicator(
-            mode="gauge+number", value=100 - _wer_pct_tab4,
+            mode="gauge+number", value=100 - _wer_pct,
             title={"text": "ASR Accuracy (1 − WER)"},
             gauge={"axis": {"range": [0, 100]}, "bar": {"color": "#00CC96"},
                    "steps": [{"range": [0,  70], "color": "#EF553B"},
@@ -327,9 +325,9 @@ with tab4:
     else:
         m1.metric("ASR Accuracy", "N/A — no reference")
 
-    if _bleu_tab4 is not None:
+    if _bleu is not None:
         fig2 = go.Figure(go.Indicator(
-            mode="gauge+number", value=_bleu_tab4,
+            mode="gauge+number", value=_bleu,
             title={"text": "Translation BLEU"},
             gauge={"axis": {"range": [0, 50]}, "bar": {"color": "#636EFA"},
                    "steps": [{"range": [0,  10], "color": "#EF553B"},
@@ -363,7 +361,6 @@ with tab4:
 
         sq_df = pd.DataFrame(seg_quality)
 
-        # Isochrony chart
         st.markdown("#### Isochrony — TTS duration / EN window")
         st.caption(
             "Ideal range 0.85–1.15 (green). "
@@ -389,7 +386,6 @@ with tab4:
                               yaxis_title="ratio", xaxis_title="segment start (s)")
         st.plotly_chart(fig_iso, use_container_width=True)
 
-        # LLM scores table (only if grading was run)
         _grade_cols = [c for c in ["fidelity", "fluency", "fit"] if c in sq_df.columns]
         if _grade_cols:
             st.markdown("#### LLM Translation Grades (Claude Haiku, 1–5)")
@@ -415,7 +411,7 @@ with tab4:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-with tab5:
+with tab6:
     st.subheader("How the Pipeline Works")
     st.markdown("""
     ```
