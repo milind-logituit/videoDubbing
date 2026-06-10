@@ -227,13 +227,34 @@ def translate_segments(whisper_result: dict) -> list[dict]:
 # Stage 4b — LLM post-correction (Claude)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def refine_segments(segments: list[dict], *, skip: bool = False) -> list[dict]:
-    """Fix ASR errors and rewrite Hindi as natural dubbing-quality speech via Claude."""
-    if skip:
-        print("  Stage 4b skipped (--no-llm).")
-        return segments
+_LLM_BATCH = 100  # max segments per Claude call (~2 min of audio at ~50 seg/min)
 
-    client = anthropic.Anthropic()
+_REFINE_SYSTEM = (
+    "You are a professional Hindi dubbing editor for OTT streaming content "
+    "(Eros Now / SunNxt).\n"
+    "Input: JSON array of segments, each with ASR English (en_text), "
+    "Google-Translate Hindi (hi_text), and duration_s (seconds available "
+    "to speak this line).\n"
+    "For each segment:\n"
+    "  1. Fix ASR transcription errors in en_text "
+    "(e.g. 'half is likely' → 'half as likely').\n"
+    "  2. Rewrite hi_text as natural spoken Hindi for dubbing that fits "
+    "within duration_s seconds.\n"
+    "     • Hindi TTS speaks at ~3.5 words/second — use this to judge "
+    "length. A 2s window fits ~7 Hindi words maximum.\n"
+    "     • Prefer shorter, natural phrasing over complete sentences when "
+    "the window is tight. Cut filler and subordinate clauses first.\n"
+    "     • Distinguish dinner vs supper, couch vs sofa, etc.\n"
+    "     • Fillers: 'Hmm' → 'हाँ', 'Uh'/'Um' → empty string, "
+    "'Ah' → 'अच्छा'.\n"
+    "Return ONLY a valid JSON array: "
+    '[{"id": int, "en_text": str, "hi_text": str}, …]. '
+    "Do NOT include duration_s in output. "
+    "Same count and IDs as input. No markdown, no explanation."
+)
+
+
+def _refine_batch(client: anthropic.Anthropic, batch: list[dict]) -> dict[int, dict]:
     payload = [
         {
             "id": s["id"],
@@ -241,45 +262,40 @@ def refine_segments(segments: list[dict], *, skip: bool = False) -> list[dict]:
             "hi_text": s["hi_text"],
             "duration_s": round(s["duration"], 2),
         }
-        for s in segments
+        for s in batch
     ]
-    print(f"  Calling Claude (claude-sonnet-4-6) to refine {len(payload)} segments …")
-
     response = client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=8192,
-        system=(
-            "You are a professional Hindi dubbing editor for OTT streaming content "
-            "(Eros Now / SunNxt).\n"
-            "Input: JSON array of segments, each with ASR English (en_text), "
-            "Google-Translate Hindi (hi_text), and duration_s (seconds available "
-            "to speak this line).\n"
-            "For each segment:\n"
-            "  1. Fix ASR transcription errors in en_text "
-            "(e.g. 'half is likely' → 'half as likely').\n"
-            "  2. Rewrite hi_text as natural spoken Hindi for dubbing that fits "
-            "within duration_s seconds.\n"
-            "     • Hindi TTS speaks at ~3.5 words/second — use this to judge "
-            "length. A 2s window fits ~7 Hindi words maximum.\n"
-            "     • Prefer shorter, natural phrasing over complete sentences when "
-            "the window is tight. Cut filler and subordinate clauses first.\n"
-            "     • Distinguish dinner vs supper, couch vs sofa, etc.\n"
-            "     • Fillers: 'Hmm' → 'हाँ', 'Uh'/'Um' → empty string, "
-            "'Ah' → 'अच्छा'.\n"
-            "Return ONLY a valid JSON array: "
-            '[{"id": int, "en_text": str, "hi_text": str}, …]. '
-            "Do NOT include duration_s in output. "
-            "Same count and IDs as input. No markdown, no explanation."
-        ),
+        system=_REFINE_SYSTEM,
         messages=[{"role": "user", "content": json.dumps(payload, ensure_ascii=False)}],
     )
-
-    # Collect all text content, strip markdown fences if present
     raw = "".join(b.text for b in response.content if b.type == "text").strip()
     if raw.startswith("```"):
         raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
-    refined_list: list[dict] = json.loads(raw)
-    refined = {r["id"]: r for r in refined_list}
+    return {r["id"]: r for r in json.loads(raw)}
+
+
+def refine_segments(segments: list[dict], *, skip: bool = False) -> list[dict]:
+    """Fix ASR errors and rewrite Hindi as natural dubbing-quality speech via Claude."""
+    if skip:
+        print("  Stage 4b skipped (--no-llm).")
+        return segments
+
+    client = anthropic.Anthropic()
+    n = len(segments)
+    n_batches = (n + _LLM_BATCH - 1) // _LLM_BATCH
+    print(
+        f"  Calling Claude (claude-sonnet-4-6) to refine {n} segments "
+        f"in {n_batches} batch(es) …"
+    )
+
+    refined: dict[int, dict] = {}
+    for i in range(n_batches):
+        batch = segments[i * _LLM_BATCH : (i + 1) * _LLM_BATCH]
+        if n_batches > 1:
+            print(f"    Batch {i + 1}/{n_batches} ({len(batch)} segments) …")
+        refined.update(_refine_batch(client, batch))
 
     out = []
     for seg in segments:
