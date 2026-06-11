@@ -6,7 +6,6 @@ Use Case 2: original video with Hindi audio track (dubbed MP4)
 Run: uv run streamlit run code/dashboard_v2.py
 """
 import json
-import tempfile
 from pathlib import Path
 
 import pandas as pd
@@ -62,84 +61,28 @@ def load_clip_outputs(stem: str, metrics_path: str, vtt_path: str,
     return transcript, metrics, vtt, srt
 
 
-@st.cache_data(show_spinner=False)
-def process_uploaded_video(video_bytes: bytes, filename: str):
-    """Run the full v2 pipeline on an uploaded video."""
-    import sys
-    sys.path.insert(0, str(ROOT / "code"))
-    from pipeline_v2 import (
-        extract_audio, transcribe, translate_segments,
-        generate_vtt, generate_srt,
-        create_dubbed_video, compute_metrics,
-    )
-
-    with tempfile.TemporaryDirectory() as tmpdir:
-        tmp = Path(tmpdir)
-        video_path = tmp / filename
-        video_path.write_bytes(video_bytes)
-
-        audio_path = extract_audio(video_path)
-        w_result   = transcribe(audio_path)
-        segments   = translate_segments(w_result)
-        vtt        = generate_vtt(segments)
-        srt        = generate_srt(segments)
-
-        hindi_audio = tmp / "hindi.mp3"
-        import asyncio
-        import edge_tts
-        import gtts
-        from pydub import AudioSegment
-        combined = AudioSegment.empty()
-        for seg in segments:
-            if not seg["hi_text"].strip():
-                continue
-            seg_path = tmp / f"seg_{seg['id']}.mp3"
-            try:
-                async def _s(t=seg["hi_text"], p=seg_path):
-                    communicate = edge_tts.Communicate(t, "hi-IN-SwaraNeural")
-                    await communicate.save(str(p))
-                asyncio.run(_s())
-            except Exception:
-                gtts.gTTS(seg["hi_text"], lang="hi").save(str(seg_path))
-            combined += AudioSegment.from_mp3(str(seg_path))
-        combined.export(str(hindi_audio), format="mp3")
-
-        dubbed_path  = create_dubbed_video(video_path, hindi_audio)
-        dubbed_bytes = dubbed_path.read_bytes()
-        src_audio    = ROOT / "data/raw/source_en.mp3"
-        metrics      = compute_metrics(w_result, segments, src_audio,
-                                       hindi_audio)
-        transcript   = pd.DataFrame(segments)
-
-    return vtt, srt, dubbed_bytes, transcript, metrics
 
 
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 
 st.sidebar.title("Video Source")
-source_mode = st.sidebar.radio("", ["Sample clip", "Upload your own"], index=0)
 
-uploaded_file     = None
+processed_clips = _find_processed_clips()
 selected_clip_key = None
-processed_clips: dict = {}
-
-if source_mode == "Upload your own":
-    uploaded_file = st.sidebar.file_uploader(
-        "Drop an MP4 or MOV", type=["mp4", "mov", "avi"],
-        help="Max ~100MB. Processing takes ~30-60s.",
+if processed_clips:
+    selected_clip_key = st.sidebar.selectbox(
+        "Choose a clip", list(processed_clips.keys()),
+        format_func=lambda k: k.replace("_", " ").title(),
     )
 else:
-    processed_clips = _find_processed_clips()
-    if processed_clips:
-        selected_clip_key = st.sidebar.selectbox(
-            "Choose a clip", list(processed_clips.keys()),
-            format_func=lambda k: k.replace("_", " ").title(),
-        )
-    else:
-        st.sidebar.warning(
-            "No processed clips found. "
-            "Run `pipeline_v2.py --input <video>` first."
-        )
+    st.sidebar.warning(
+        "No processed clips found. "
+        "Run `pipeline_v2.py --input <video>` first."
+    )
+
+st.sidebar.caption(
+    "Pipeline runs on-premises — contact us to process your own content."
+)
 
 st.sidebar.divider()
 st.sidebar.markdown("**Pipeline**")
@@ -162,16 +105,7 @@ st.caption(
 )
 
 # ── Load / process ────────────────────────────────────────────────────────────
-if uploaded_file is not None:
-    with st.spinner(
-        f"Processing **{uploaded_file.name}** — transcribing, translating, dubbing…"
-    ):
-        vtt, srt, dubbed_bytes, transcript, metrics = process_uploaded_video(
-            uploaded_file.read(), uploaded_file.name
-        )
-    video_src    = uploaded_file
-    dubbed_src   = dubbed_bytes
-elif selected_clip_key:
+if selected_clip_key:
     orig, dubbed, metrics_p, vtt_p, srt_p, transcript_p = (
         processed_clips[selected_clip_key]
     )
@@ -182,7 +116,7 @@ elif selected_clip_key:
     video_src  = orig.read_bytes()
     dubbed_src = dubbed.read_bytes()
 else:
-    st.info("Select a processed clip from the sidebar or upload your own video.")
+    st.info("Select a processed clip from the sidebar.")
     st.stop()
 
 # ── KPI row ───────────────────────────────────────────────────────────────────
