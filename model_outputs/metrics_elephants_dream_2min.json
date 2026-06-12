@@ -204,5 +204,10 @@
     "best_lag_ms": 0.0,
     "faces_pct": 21.3,
     "note": null
+  },
+  "lipsync_wav2lip": {
+    "sync_score": null,
+    "faces_pct": 4.4,
+    "note": "Face detected in only 4.4% of frames \u2014 not enough for scoring"
   }
 }
