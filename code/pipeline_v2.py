@@ -28,6 +28,8 @@ import jiwer
 import sacrebleu
 import pandas as pd
 
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).parent))
 from eval_lipsync import compute_lipsync_score
 
 ROOT      = Path(__file__).parent.parent
@@ -69,10 +71,12 @@ REFERENCE_HINDI = (
 )
 
 WHISPER_MODEL       = "base"
+WHISPER_MODEL_HI    = "medium"   # larger model for Hindi back-translation ASR
 TTS_VOICE_FEMALE_HI = "hi-IN-SwaraNeural"
 TTS_VOICE_MALE_HI   = "hi-IN-MadhurNeural"
 TTS_VOICE_HI        = TTS_VOICE_FEMALE_HI   # default / backwards-compat
 TTS_VOICE_EN        = "en-US-JennyNeural"
+TTS_BASE_RATE_PCT   = -10        # slow TTS down 10% to reduce syllable cramming
 VIDEO_SIZE    = (1280, 720)
 VIDEO_FPS     = 24
 BG_COLOR      = (15, 23, 42)      # #0f172a — dark slate
@@ -482,6 +486,10 @@ _REFINE_SYSTEM = (
     "length. A 2s window fits ~7 Hindi words maximum.\n"
     "     • Prefer shorter, natural phrasing over complete sentences when "
     "the window is tight. Cut filler and subordinate clauses first.\n"
+    "     • Use common, everyday Hindi vocabulary (Hindustani/Bollywood register) "
+    "that speech recognition systems reliably transcribe. "
+    "Avoid rare, Sanskritised, or literary Hindi words — prefer their "
+    "everyday equivalents (e.g. 'काम' over 'कार्य', 'बात' over 'वार्तालाप').\n"
     "     • Distinguish dinner vs supper, couch vs sofa, etc.\n"
     "     • Fillers: 'Hmm' → 'हाँ', 'Uh'/'Um' → empty string, "
     "'Ah' → 'अच्छा'.\n"
@@ -619,7 +627,7 @@ def _synth_pass1(valid: list[dict], seg_dir: Path,
         v = _seg_voice(seg, voices)
         p = seg_dir / f"seg_{seg['id']:03d}_{_voice_tag(v)}.mp3"
         if not p.exists():
-            _synth_segment(seg["hi_text"], p, voice=v)
+            _synth_segment(seg["hi_text"], p, rate=f"{TTS_BASE_RATE_PCT:+d}%", voice=v)
     return sum(
         len(AudioSegment.from_mp3(
             str(seg_dir / f"seg_{s['id']:03d}_{_voice_tag(_seg_voice(s, voices))}.mp3")
@@ -635,11 +643,12 @@ def _synth_pass2(valid: list[dict], seg_dir: Path, voices: dict[str, str],
     for seg in valid:
         v = _seg_voice(seg, voices)
         tag = _voice_tag(v)
-        if global_rate > 5:
-            p_fast = seg_dir / f"seg_{seg['id']:03d}_{tag}_r{global_rate}.mp3"
+        effective_rate = TTS_BASE_RATE_PCT + global_rate
+        if effective_rate != 0:
+            p_fast = seg_dir / f"seg_{seg['id']:03d}_{tag}_r{effective_rate}.mp3"
             if not p_fast.exists():
                 _synth_segment(seg["hi_text"], p_fast,
-                               rate=f"+{global_rate}%", voice=v)
+                               rate=f"{effective_rate:+d}%", voice=v)
             seg_audio = AudioSegment.from_mp3(str(p_fast))
         else:
             seg_audio = AudioSegment.from_mp3(
@@ -841,7 +850,7 @@ def compute_back_translation_bleu(
     """
     try:
         print("  Transcribing dubbed Hindi audio …")
-        hi_model = whisper.load_model(WHISPER_MODEL)
+        hi_model = whisper.load_model(WHISPER_MODEL_HI)
         hi_result = hi_model.transcribe(str(dubbed_audio), language="hi")
         hi_transcript = hi_result["text"].strip()
 
