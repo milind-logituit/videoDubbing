@@ -8,3 +8,8 @@ data/raw/sample_en_dubbed_hi.mp4
 # Full-length clips too large for git
 test_clips/*_full.mp4
 .DS_Store
+# Intermediate pipeline working files
+data/prepared/*.wav
+data/prepared/*.ducked.wav
+data/prepared/*.diarization.json
+data/prepared/hi_segments_*/

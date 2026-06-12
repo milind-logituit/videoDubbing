@@ -25,7 +25,7 @@
     "dubbed_duration_s": 120.0,
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.3,
-    "hi_chars_per_sec": 2.8
+    "hi_chars_per_sec": 2.9
   },
   "segment_quality": [
     {
@@ -58,9 +58,8 @@
       "tts_duration_s": 4.46,
       "isochrony_ratio": 1.467,
       "fit": 3,
-      "fidelity": 4,
-      "fluency": 4,
-      "note": "जीना is slightly awkward; 'अपना जुनून अनुसरण करना' would be more natural"
+      "fidelity": 5,
+      "fluency": 5
     },
     {
       "id": 3,
@@ -83,7 +82,7 @@
       "fit": 4,
       "fidelity": 4,
       "fluency": 4,
-      "note": "'डरे हुए हो' changes subject; 'तुम्हें चिंता है' would better capture 'freaked out'"
+      "note": "पhrasing 'मान लो ना कि' is slightly informal; 'स्वीकार करो' would be more natural"
     },
     {
       "id": 5,
@@ -93,9 +92,8 @@
       "tts_duration_s": 2.06,
       "isochrony_ratio": 1.689,
       "fit": 2,
-      "fidelity": 4,
-      "fluency": 4,
-      "note": "Incomplete sentence in Hindi mirrors English but sounds abrupt in dubbing"
+      "fidelity": 5,
+      "fluency": 5
     },
     {
       "id": 6,
@@ -105,8 +103,9 @@
       "tts_duration_s": 2.11,
       "isochrony_ratio": 0.986,
       "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
+      "fidelity": 4,
+      "fluency": 4,
+      "note": "'मैं डरा हुआ हूँ' is correct but 'मुझे डर लगता है' would flow more naturally"
     },
     {
       "id": 7,
@@ -118,7 +117,7 @@
       "fit": 1,
       "fidelity": 4,
       "fluency": 3,
-      "note": "'खून से सने' is awkward; 'खूनी' or 'खून भरे' would be more natural. Word order feels forced"
+      "note": "'खून से सने' is awkward; 'खूनी' or 'खून-खराबे वाले' would be more natural"
     },
     {
       "id": 8,
@@ -128,8 +127,9 @@
       "tts_duration_s": 3.91,
       "isochrony_ratio": 1.643,
       "fit": 2,
-      "fidelity": 5,
-      "fluency": 5
+      "fidelity": 2,
+      "fluency": 2,
+      "note": "English says 'I'm not a dumb' (grammatically odd); Hindi translation misses the intent. Should be 'मैं मूर्ख नहीं हूँ' or 'मेरे साथ ऐसा मत करो'"
     },
     {
       "id": 9,
@@ -140,8 +140,8 @@
       "isochrony_ratio": 0.886,
       "fit": 5,
       "fidelity": 3,
-      "fluency": 2,
-      "note": "Structure is unclear; 'synced' translation incomplete. 'की मेमोरी सिंक हुई' would be clearer"
+      "fluency": 3,
+      "note": "Incomplete thought; 'सिंक हो गई' is technical but 'synced' in English is also incomplete"
     },
     {
       "id": 10,
@@ -164,7 +164,7 @@
       "fit": 3,
       "fidelity": 2,
       "fluency": 2,
-      "note": "'This is pretty freaking' doesn't match 'यह तो बड़ा अजीब है'. Should be 'यह तो बड़ा डरावना/भयानक है' or similar"
+      "note": "'This is pretty freaking' is vague English; Hindi 'यह तो बड़ा अजीब है' doesn't capture 'freaking' properly"
     },
     {
       "id": 12,
