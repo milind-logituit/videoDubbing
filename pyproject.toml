@@ -28,6 +28,7 @@ dependencies = [
     "opencv-python>=4.13.0.92",
     "scipy>=1.17.1",
     "mediapipe>=0.10.35",
+    "gdown>=6.1.0",
 ]
 
 [dependency-groups]
@@ -35,3 +36,6 @@ dev = [
     "pytest>=9.0.3",
     "ruff>=0.15.16",
 ]
+
+[tool.ruff]
+exclude = ["vendor/"]
