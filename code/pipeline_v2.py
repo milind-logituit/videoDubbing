@@ -907,12 +907,30 @@ def grade_translations(segments: list[dict]) -> list[dict]:
     )
     raw = msg.content[0].text.strip()
     if raw.startswith("```"):
-        raw = raw.split("```")[1].lstrip("json").strip()
+        raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
     try:
         return json.loads(raw)
     except Exception as exc:
-        print(f"  [warn] grade_translations parse failed: {exc}")
-        return []
+        # Retry once: ask Claude to return only the JSON array
+        print(f"  [warn] grade_translations parse failed ({exc}), retrying …")
+        retry = client.messages.create(
+            model="claude-haiku-4-5",
+            max_tokens=1024,
+            messages=[
+                {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
+                {"role": "assistant", "content": raw},
+                {"role": "user", "content": "Return ONLY the JSON array, no markdown, no explanation."},
+            ],
+            system=_GRADE_SYSTEM,
+        )
+        raw2 = retry.content[0].text.strip()
+        if raw2.startswith("```"):
+            raw2 = raw2.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+        try:
+            return json.loads(raw2)
+        except Exception as exc2:
+            print(f"  [warn] grade_translations retry also failed ({exc2}), skipping grades.")
+            return []
 
 
 def _merge_segment_quality(
