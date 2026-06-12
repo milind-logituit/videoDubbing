@@ -19,7 +19,7 @@ def apply_wav2lip(
     face_video: Path,
     dubbed_audio: Path,
     output_path: Path,
-    resize_factor: int = 2,
+    resize_factor: int = 4,
     pads: tuple[int, int, int, int] = (0, 20, 0, 0),
 ) -> dict:
     """
@@ -63,7 +63,7 @@ def apply_wav2lip(
             cwd=str(_WAV2LIP_DIR),
             capture_output=True,
             text=True,
-            timeout=1800,  # 30 min; MPS is slow without CUDA
+            timeout=3600,  # 60 min; MPS is slow without CUDA
         )
         if result.returncode != 0:
             return {

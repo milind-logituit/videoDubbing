@@ -200,5 +200,12 @@
     "best_lag_ms": 41.7,
     "faces_pct": 51.4,
     "note": null
+  },
+  "lipsync_wav2lip": {
+    "sync_score": 0.519,
+    "pearson_r": 0.0382,
+    "best_lag_ms": 0.0,
+    "faces_pct": 6.6,
+    "note": null
   }
 }

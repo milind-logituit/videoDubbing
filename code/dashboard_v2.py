@@ -115,6 +115,8 @@ if selected_clip_key:
     )
     video_src  = orig.read_bytes()
     dubbed_src = dubbed.read_bytes()
+    _lipsync_path = RAW / f"{selected_clip_key}_lipsync_hi.mp4"
+    lipsync_src = _lipsync_path.read_bytes() if _lipsync_path.exists() else None
 else:
     st.info("Select a processed clip from the sidebar.")
     st.stop()
@@ -176,13 +178,26 @@ with tab2:
         f"Speaker diarization assigns per-character voices (♀ hi-IN-SwaraNeural, "
         f"♂ hi-IN-MadhurNeural). Recorded as: **{_voice_display}**."
     )
-    st.video(dubbed_src)
+
+    if lipsync_src:
+        _t2a, _t2b = st.tabs(["🔊 Dubbed (AI Audio)", "👄 Lip-Synced (Wav2Lip)"])
+        with _t2a:
+            st.video(dubbed_src)
+            st.caption("AI-dubbed audio only — mouth movements unchanged from original.")
+        with _t2b:
+            st.video(lipsync_src)
+            st.caption("Wav2Lip re-generates mouth movements to match the Hindi audio.")
+    else:
+        st.video(dubbed_src)
 
     with st.expander("⬇️  Download dubbed video"):
         st.download_button("Download dubbed MP4",
-                           dubbed_src if isinstance(dubbed_src, bytes)
-                           else dubbed_src,
+                           dubbed_src,
                            "video_dubbed_hindi.mp4", "video/mp4")
+        if lipsync_src:
+            st.download_button("Download lip-synced MP4",
+                               lipsync_src,
+                               "video_lipsync_hindi.mp4", "video/mp4")
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
