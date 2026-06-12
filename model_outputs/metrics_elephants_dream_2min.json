@@ -3,13 +3,13 @@
     "model": "base",
     "wer": null,
     "wer_pct": null,
-    "note": "N/A — no reference text for this clip"
+    "note": "N/A \u2014 no reference text for this clip"
   },
   "translation": {
-    "model": "Google Translate (en→hi)",
+    "model": "Google Translate (en\u2192hi)",
     "bleu": null,
     "n_segments": 15,
-    "note": "N/A — no reference text for this clip"
+    "note": "N/A \u2014 no reference text for this clip"
   },
   "tts": {
     "voice": "hi-IN-SwaraNeural",
@@ -112,7 +112,7 @@
       "fit": 3,
       "fidelity": 3,
       "fluency": 3,
-      "note": "Hindi translation is incomplete and awkward; 'आप' (you formal) doesn't fit the casual context and the sentence structure is fragmented compared to the English"
+      "note": "Hindi translation is incomplete and awkward; '\u0906\u092a' (you formal) doesn't fit the casual context and the sentence structure is fragmented compared to the English"
     },
     {
       "id": 8,
@@ -157,7 +157,7 @@
       "fit": 3,
       "fidelity": 4,
       "fluency": 4,
-      "note": "Literal translation 'देखते जाओ' is slightly awkward; 'तुम देखोगे, तुम देखोगे' would be more natural for this context"
+      "note": "Literal translation '\u0926\u0947\u0916\u0924\u0947 \u091c\u093e\u0913' is slightly awkward; '\u0924\u0941\u092e \u0926\u0947\u0916\u094b\u0917\u0947, \u0924\u0941\u092e \u0926\u0947\u0916\u094b\u0917\u0947' would be more natural for this context"
     },
     {
       "id": 12,
@@ -195,7 +195,14 @@
   ],
   "back_translation": {
     "hi_transcript_chars": 279,
-    "back_translated_en": "To the left and right we can see a cannon. Everything is absolutely safe with Dolas Hour. Amo… Avar… No, this is Joth Dhaan, it was not me, you. No it is not. Dwar is not everything. So no no it isn't? You will give, you will jump. You will wake up and get extinguished. Pyaav. Inferior itch after itch after itch. Inferior scratches.",
+    "back_translated_en": "To the left and right we can see a cannon. Everything is absolutely safe with Dolas Hour. Amo\u2026 Avar\u2026 No, this is Joth Dhaan, it was not me, you. No it is not. Dwar is not everything. So no no it isn't? You will give, you will jump. You will wake up and get extinguished. Pyaav. Inferior itch after itch after itch. Inferior scratches.",
     "bleu": 4.41
+  },
+  "lipsync": {
+    "sync_score": 0.514,
+    "pearson_r": 0.0279,
+    "best_lag_ms": 0.0,
+    "faces_pct": 21.3,
+    "note": null
   }
 }

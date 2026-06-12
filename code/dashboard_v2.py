@@ -123,8 +123,10 @@ else:
 al = metrics["alignment"]
 _wer_pct = metrics["asr"]["wer_pct"]
 _bleu    = metrics["translation"]["bleu"]
-_bt      = metrics.get("back_translation", {})
-_bt_bleu = _bt.get("bleu")
+_bt        = metrics.get("back_translation", {})
+_bt_bleu   = _bt.get("bleu")
+_ls        = metrics.get("lipsync", {})
+_sync      = _ls.get("sync_score")
 k1, k2, k3 = st.columns(3)
 k1.metric("Segments",    str(metrics["translation"]["n_segments"]))
 k2.metric("Source",      f"{al['source_duration_s']:.1f}s")
@@ -244,7 +246,7 @@ with tab4:
 with tab5:
     st.subheader("Quality Metrics")
 
-    m1, m2, m3, m4 = st.columns(4)
+    m1, m2, m3, m4, m5 = st.columns(5)
 
     if _wer_pct is not None:
         fig1 = go.Figure(go.Indicator(
@@ -305,6 +307,29 @@ with tab5:
                 st.write(_bt["back_translated_en"])
     else:
         m4.metric("Back-Translation BLEU", "N/A")
+
+    if _sync is not None:
+        fig5 = go.Figure(go.Indicator(
+            mode="gauge+number", value=_sync,
+            title={"text": "Lip-Sync Score"},
+            gauge={"axis": {"range": [0, 1]}, "bar": {"color": "#19D3F3"},
+                   "steps": [{"range": [0,    0.45], "color": "#EF553B"},
+                             {"range": [0.45, 0.60], "color": "#FFA15A"},
+                             {"range": [0.60, 1.0],  "color": "#00CC96"}]},
+            number={"valueformat": ".3f"},
+        ))
+        fig5.update_layout(height=240, margin=dict(t=40, b=10))
+        m5.plotly_chart(fig5, use_container_width=True)
+        if _ls.get("faces_pct") is not None:
+            m5.caption(
+                f"Pearson r={_ls.get('pearson_r', 'N/A')}  "
+                f"lag={_ls.get('best_lag_ms', 'N/A')}ms  "
+                f"face {_ls['faces_pct']}% of frames"
+            )
+    else:
+        note = _ls.get("note", "not computed")
+        m5.metric("Lip-Sync Score", "N/A")
+        m5.caption(note)
 
     # ── Segment-level quality ─────────────────────────────────────────────────
     seg_quality = metrics.get("segment_quality", [])

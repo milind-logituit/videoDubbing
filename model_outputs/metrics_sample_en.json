@@ -3,13 +3,13 @@
     "model": "base",
     "wer": null,
     "wer_pct": null,
-    "note": "N/A — no reference text for this clip"
+    "note": "N/A \u2014 no reference text for this clip"
   },
   "translation": {
-    "model": "Google Translate (en→hi)",
+    "model": "Google Translate (en\u2192hi)",
     "bleu": null,
     "n_segments": 7,
-    "note": "N/A — no reference text for this clip"
+    "note": "N/A \u2014 no reference text for this clip"
   },
   "tts": {
     "voice": "hi-IN-SwaraNeural"
@@ -20,5 +20,10 @@
     "duration_ratio": 1.0,
     "en_chars_per_sec": 12.2,
     "hi_chars_per_sec": 9.9
+  },
+  "lipsync": {
+    "sync_score": null,
+    "faces_pct": 0.0,
+    "note": "Face detected in only 0.0% of frames \u2014 not enough for scoring"
   }
 }

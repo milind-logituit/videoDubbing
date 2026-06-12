@@ -28,6 +28,8 @@ import jiwer
 import sacrebleu
 import pandas as pd
 
+from eval_lipsync import compute_lipsync_score
+
 ROOT      = Path(__file__).parent.parent
 RAW       = ROOT / "data/raw"
 PREPARED  = ROOT / "data/prepared"
@@ -1072,15 +1074,26 @@ if __name__ == "__main__":
         hindi_audio, original_en
     )
 
+    print("\nStage 8d — Lip-sync score …")
+    metrics["lipsync"] = compute_lipsync_score(dubbed_video)
+    ls = metrics["lipsync"]
+    if ls.get("sync_score") is not None:
+        print(f"  sync_score={ls['sync_score']}  pearson_r={ls['pearson_r']}  "
+              f"lag={ls['best_lag_ms']}ms  faces={ls['faces_pct']}%")
+    else:
+        print(f"  Lip-sync score unavailable: {ls.get('note')}")
+
     save_outputs(segments, vtt, srt, metrics, src_audio, hindi_audio,
                  stem=video_path.stem)
 
     print("\n── Quality metrics ──")
-    wer_pct = metrics["asr"]["wer_pct"]
-    bleu    = metrics["translation"]["bleu"]
-    bt_bleu = metrics["back_translation"].get("bleu")
+    wer_pct    = metrics["asr"]["wer_pct"]
+    bleu       = metrics["translation"]["bleu"]
+    bt_bleu    = metrics["back_translation"].get("bleu")
+    sync_score = metrics["lipsync"].get("sync_score")
     print(f"  ASR WER              : {f'{wer_pct:.1f}%' if wer_pct is not None else 'N/A'}")
     print(f"  Translation BLEU     : {f'{bleu:.1f}' if bleu is not None else 'N/A'}")
     print(f"  Back-translation BLEU: {f'{bt_bleu:.1f}' if bt_bleu is not None else 'N/A'}")
-    print(f"  Duration ratio   : {metrics['alignment']['duration_ratio']:.3f}")
+    print(f"  Lip-sync score       : {f'{sync_score:.3f}' if sync_score is not None else 'N/A'}")
+    print(f"  Duration ratio       : {metrics['alignment']['duration_ratio']:.3f}")
     print("\nDone.")
