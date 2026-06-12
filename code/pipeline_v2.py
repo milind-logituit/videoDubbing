@@ -825,6 +825,40 @@ def compute_metrics(whisper_result: dict, segments: list[dict],
 
 
 # ─────────────────────────────────────────────────────────────────────────────
+# Stage 8c — Back-translation BLEU
+# ─────────────────────────────────────────────────────────────────────────────
+
+def compute_back_translation_bleu(
+    dubbed_audio: Path,
+    original_en_text: str,
+) -> dict:
+    """ASR the dubbed Hindi audio, back-translate to English, score with BLEU.
+
+    Returns a dict ready to merge into metrics["back_translation"].
+    Uses the same Whisper model already loaded for Stage 3.
+    """
+    try:
+        print("  Transcribing dubbed Hindi audio …")
+        hi_model = whisper.load_model(WHISPER_MODEL)
+        hi_result = hi_model.transcribe(str(dubbed_audio), language="hi")
+        hi_transcript = hi_result["text"].strip()
+
+        print("  Back-translating Hindi → English …")
+        bt_en = GoogleTranslator(source="hi", target="en").translate(hi_transcript)
+
+        bleu_obj = sacrebleu.corpus_bleu([bt_en], [[original_en_text]])
+        bleu_score = round(bleu_obj.score, 2)
+
+        return {
+            "hi_transcript_chars": len(hi_transcript),
+            "back_translated_en": bt_en,
+            "bleu": bleu_score,
+        }
+    except Exception as exc:
+        return {"bleu": None, "note": f"Failed: {exc}"}
+
+
+# ─────────────────────────────────────────────────────────────────────────────
 # Stage 8b — Segment-level quality (isochrony + LLM grading)
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -1014,13 +1048,21 @@ if __name__ == "__main__":
         iso, {g["id"]: g for g in grades}
     )
 
+    print("\nStage 8c — Back-translation BLEU …")
+    original_en = whisper_result["text"].strip()
+    metrics["back_translation"] = compute_back_translation_bleu(
+        hindi_audio, original_en
+    )
+
     save_outputs(segments, vtt, srt, metrics, src_audio, hindi_audio,
                  stem=video_path.stem)
 
     print("\n── Quality metrics ──")
     wer_pct = metrics["asr"]["wer_pct"]
     bleu    = metrics["translation"]["bleu"]
-    print(f"  ASR WER          : {f'{wer_pct:.1f}%' if wer_pct is not None else 'N/A'}")
-    print(f"  Translation BLEU : {f'{bleu:.1f}' if bleu is not None else 'N/A'}")
+    bt_bleu = metrics["back_translation"].get("bleu")
+    print(f"  ASR WER              : {f'{wer_pct:.1f}%' if wer_pct is not None else 'N/A'}")
+    print(f"  Translation BLEU     : {f'{bleu:.1f}' if bleu is not None else 'N/A'}")
+    print(f"  Back-translation BLEU: {f'{bt_bleu:.1f}' if bt_bleu is not None else 'N/A'}")
     print(f"  Duration ratio   : {metrics['alignment']['duration_ratio']:.3f}")
     print("\nDone.")

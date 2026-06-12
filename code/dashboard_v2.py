@@ -123,6 +123,8 @@ else:
 al = metrics["alignment"]
 _wer_pct = metrics["asr"]["wer_pct"]
 _bleu    = metrics["translation"]["bleu"]
+_bt      = metrics.get("back_translation", {})
+_bt_bleu = _bt.get("bleu")
 k1, k2, k3 = st.columns(3)
 k1.metric("Segments",    str(metrics["translation"]["n_segments"]))
 k2.metric("Source",      f"{al['source_duration_s']:.1f}s")
@@ -242,7 +244,7 @@ with tab4:
 with tab5:
     st.subheader("Quality Metrics")
 
-    m1, m2, m3 = st.columns(3)
+    m1, m2, m3, m4 = st.columns(4)
 
     if _wer_pct is not None:
         fig1 = go.Figure(go.Indicator(
@@ -286,6 +288,23 @@ with tab5:
     ))
     fig3.update_layout(height=240, margin=dict(t=40, b=10))
     m3.plotly_chart(fig3, use_container_width=True)
+
+    if _bt_bleu is not None:
+        fig4 = go.Figure(go.Indicator(
+            mode="gauge+number", value=_bt_bleu,
+            title={"text": "Back-Translation BLEU"},
+            gauge={"axis": {"range": [0, 50]}, "bar": {"color": "#AB63FA"},
+                   "steps": [{"range": [0,  10], "color": "#EF553B"},
+                             {"range": [10, 20], "color": "#FFA15A"},
+                             {"range": [20, 50], "color": "#00CC96"}]},
+        ))
+        fig4.update_layout(height=240, margin=dict(t=40, b=10))
+        m4.plotly_chart(fig4, use_container_width=True)
+        if _bt.get("back_translated_en"):
+            with st.expander("Back-translated English (Hindi ASR → EN)"):
+                st.write(_bt["back_translated_en"])
+    else:
+        m4.metric("Back-Translation BLEU", "N/A")
 
     # ── Segment-level quality ─────────────────────────────────────────────────
     seg_quality = metrics.get("segment_quality", [])
