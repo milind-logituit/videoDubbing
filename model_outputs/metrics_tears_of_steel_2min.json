@@ -25,7 +25,7 @@
     "dubbed_duration_s": 120.0,
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.3,
-    "hi_chars_per_sec": 2.9
+    "hi_chars_per_sec": 2.7
   },
   "segment_quality": [
     {
@@ -48,7 +48,7 @@
       "isochrony_ratio": 0.927,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 4
     },
     {
       "id": 2,
@@ -58,8 +58,9 @@
       "tts_duration_s": 4.46,
       "isochrony_ratio": 1.467,
       "fit": 3,
-      "fidelity": 5,
-      "fluency": 5
+      "fidelity": 4,
+      "fluency": 4,
+      "note": "अपना जुनून जीना is slightly awkward; 'अपने जुनून का पालन करना' would be more natural"
     },
     {
       "id": 3,
@@ -69,8 +70,9 @@
       "tts_duration_s": 5.06,
       "isochrony_ratio": 1.591,
       "fit": 2,
-      "fidelity": 5,
-      "fluency": 5
+      "fidelity": 3,
+      "fluency": 3,
+      "note": "'मुझे बस अंतरिक्ष में जाना है' misses 'be awesome'; should convey 'अंतरिक्ष में शानदार बनना' or similar"
     },
     {
       "id": 4,
@@ -81,8 +83,7 @@
       "isochrony_ratio": 1.245,
       "fit": 4,
       "fidelity": 4,
-      "fluency": 4,
-      "note": "पhrasing 'मान लो ना कि' is slightly informal; 'स्वीकार करो' would be more natural"
+      "fluency": 4
     },
     {
       "id": 5,
@@ -103,9 +104,8 @@
       "tts_duration_s": 2.11,
       "isochrony_ratio": 0.986,
       "fit": 5,
-      "fidelity": 4,
-      "fluency": 4,
-      "note": "'मैं डरा हुआ हूँ' is correct but 'मुझे डर लगता है' would flow more naturally"
+      "fidelity": 5,
+      "fluency": 5
     },
     {
       "id": 7,
@@ -115,9 +115,9 @@
       "tts_duration_s": 6.77,
       "isochrony_ratio": 2.318,
       "fit": 1,
-      "fidelity": 4,
+      "fidelity": 3,
       "fluency": 3,
-      "note": "'खून से सने' is awkward; 'खूनी' or 'खून-खराबे वाले' would be more natural"
+      "note": "'खून भरा विशाल रोबोटिक पंजा' is unclear; 'खून से सना हुआ' or 'खूनी' would be clearer. Also missing 'being chased by' nuance in phrasing"
     },
     {
       "id": 8,
@@ -129,7 +129,7 @@
       "fit": 2,
       "fidelity": 2,
       "fluency": 2,
-      "note": "English says 'I'm not a dumb' (grammatically odd); Hindi translation misses the intent. Should be 'मैं मूर्ख नहीं हूँ' or 'मेरे साथ ऐसा मत करो'"
+      "note": "'मुझे नहीं करना' is incorrect grammar (should be 'मुझे नहीं करना चाहिए' or 'मैं नहीं हूँ'); 'हो गया खत्म' is awkward word order"
     },
     {
       "id": 9,
@@ -139,9 +139,9 @@
       "tts_duration_s": 2.71,
       "isochrony_ratio": 0.886,
       "fit": 5,
-      "fidelity": 3,
+      "fidelity": 4,
       "fluency": 3,
-      "note": "Incomplete thought; 'सिंक हो गई' is technical but 'synced' in English is also incomplete"
+      "note": "'सिंक हो गई' is colloquial; 'synchronize' in technical context might need 'सिंक्रोनाइज' or 'सिंक्रनाइजेशन पूरी हुई'"
     },
     {
       "id": 10,
@@ -163,8 +163,8 @@
       "isochrony_ratio": 0.665,
       "fit": 3,
       "fidelity": 2,
-      "fluency": 2,
-      "note": "'This is pretty freaking' is vague English; Hindi 'यह तो बड़ा अजीब है' doesn't capture 'freaking' properly"
+      "fluency": 3,
+      "note": "'This is pretty freaking' is unclear English; Hindi translation 'यह तो बड़ा अजीब है' misses intended meaning. Context suggests incomplete thought or slang usage"
     },
     {
       "id": 12,
@@ -188,5 +188,10 @@
       "fidelity": 5,
       "fluency": 5
     }
-  ]
+  ],
+  "back_translation": {
+    "hi_transcript_chars": 380,
+    "back_translated_en": "Crazy engine start 4 3 2 1 Let's see why we are crazy about you We have robot tax I'm crazy about my robot's hand I'm not scared but but I'm not crazy, but it's okay, I'm scared I have dreams full of blood The robot's claws are chasing me just finished Robot's memory got synced and is it so bad Such things Amazing Unt correct That's it",
+    "bleu": 2.32
+  }
 }

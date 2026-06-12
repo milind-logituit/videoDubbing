@@ -45,8 +45,7 @@
       "isochrony_ratio": 1.541,
       "fit": 2,
       "fidelity": 4,
-      "fluency": 3,
-      "note": "Missing 'हम' (we) and 'सकते हैं' (can) - incomplete translation of 'we can see'"
+      "fluency": 4
     },
     {
       "id": 2,
@@ -67,9 +66,8 @@
       "tts_duration_s": 4.15,
       "isochrony_ratio": 1.374,
       "fit": 3,
-      "fidelity": 2,
-      "fluency": 3,
-      "note": "'Nullers' is unclear/possibly corrupted English; Hindi translation doesn't clarify the meaning"
+      "fidelity": 5,
+      "fluency": 5
     },
     {
       "id": 4,
@@ -101,9 +99,8 @@
       "tts_duration_s": 2.16,
       "isochrony_ratio": 0.908,
       "fit": 5,
-      "fidelity": 4,
-      "fluency": 4,
-      "note": "क्या तुम ठीक हो literally means 'are you okay' rather than 'are you hurt' - slight semantic shift"
+      "fidelity": 5,
+      "fluency": 5
     },
     {
       "id": 7,
@@ -114,8 +111,8 @@
       "isochrony_ratio": 0.526,
       "fit": 3,
       "fidelity": 3,
-      "fluency": 2,
-      "note": "Incomplete translation; English clause appears truncated, Hindi doesn't fully correspond to source"
+      "fluency": 3,
+      "note": "Hindi translation is incomplete and awkward; 'आप' (you formal) doesn't fit the casual context and the sentence structure is fragmented compared to the English"
     },
     {
       "id": 8,
@@ -158,8 +155,9 @@
       "tts_duration_s": 2.88,
       "isochrony_ratio": 0.676,
       "fit": 3,
-      "fidelity": 5,
-      "fluency": 5
+      "fidelity": 4,
+      "fluency": 4,
+      "note": "Literal translation 'देखते जाओ' is slightly awkward; 'तुम देखोगे, तुम देखोगे' would be more natural for this context"
     },
     {
       "id": 12,
@@ -194,5 +192,10 @@
       "fidelity": 5,
       "fluency": 5
     }
-  ]
+  ],
+  "back_translation": {
+    "hi_transcript_chars": 279,
+    "back_translated_en": "To the left and right we can see a cannon. Everything is absolutely safe with Dolas Hour. Amo… Avar… No, this is Joth Dhaan, it was not me, you. No it is not. Dwar is not everything. So no no it isn't? You will give, you will jump. You will wake up and get extinguished. Pyaav. Inferior itch after itch after itch. Inferior scratches.",
+    "bleu": 4.41
+  }
 }

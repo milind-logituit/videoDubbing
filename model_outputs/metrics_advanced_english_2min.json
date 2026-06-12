@@ -22,7 +22,7 @@
     "dubbed_duration_s": 120.0,
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.3,
-    "hi_chars_per_sec": 8.5
+    "hi_chars_per_sec": 8.4
   },
   "segment_quality": [
     {
@@ -32,9 +32,7 @@
       "en_duration_s": 3.68,
       "tts_duration_s": 4.66,
       "isochrony_ratio": 1.266,
-      "fit": 4,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 4
     },
     {
       "id": 1,
@@ -43,10 +41,7 @@
       "en_duration_s": 1.54,
       "tts_duration_s": 2.04,
       "isochrony_ratio": 1.325,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 4,
-      "note": "Minor: 'मैं हूँ' is slightly formal; 'मैं हूँ' or just 'मैं जेनिफर क्लाइड हूँ' would be more natural"
+      "fit": 3
     },
     {
       "id": 2,
@@ -55,9 +50,7 @@
       "en_duration_s": 1.84,
       "tts_duration_s": 2.83,
       "isochrony_ratio": 1.538,
-      "fit": 2,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 2
     },
     {
       "id": 3,
@@ -66,9 +59,7 @@
       "en_duration_s": 5.5,
       "tts_duration_s": 4.1,
       "isochrony_ratio": 0.745,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 3
     },
     {
       "id": 4,
@@ -77,9 +68,7 @@
       "en_duration_s": 2.72,
       "tts_duration_s": 3.98,
       "isochrony_ratio": 1.463,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 3
     },
     {
       "id": 5,
@@ -88,9 +77,7 @@
       "en_duration_s": 1.72,
       "tts_duration_s": 2.02,
       "isochrony_ratio": 1.174,
-      "fit": 4,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 4
     },
     {
       "id": 6,
@@ -99,10 +86,7 @@
       "en_duration_s": 0.98,
       "tts_duration_s": 1.75,
       "isochrony_ratio": 1.786,
-      "fit": 2,
-      "fidelity": 5,
-      "fluency": 4,
-      "note": "Missing subject 'आप'; should be 'आप फिट कैसे रहते हैं?'"
+      "fit": 2
     },
     {
       "id": 7,
@@ -111,9 +95,7 @@
       "en_duration_s": 3.34,
       "tts_duration_s": 2.52,
       "isochrony_ratio": 0.754,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 3
     },
     {
       "id": 8,
@@ -122,9 +104,7 @@
       "en_duration_s": 5.78,
       "tts_duration_s": 6.7,
       "isochrony_ratio": 1.159,
-      "fit": 4,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 4
     },
     {
       "id": 9,
@@ -133,9 +113,7 @@
       "en_duration_s": 0.9,
       "tts_duration_s": 2.5,
       "isochrony_ratio": 2.778,
-      "fit": 1,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 1
     },
     {
       "id": 10,
@@ -144,9 +122,7 @@
       "en_duration_s": 3.52,
       "tts_duration_s": 3.53,
       "isochrony_ratio": 1.003,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 5
     },
     {
       "id": 11,
@@ -155,9 +131,7 @@
       "en_duration_s": 2.1,
       "tts_duration_s": 2.81,
       "isochrony_ratio": 1.338,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 3
     },
     {
       "id": 12,
@@ -166,9 +140,7 @@
       "en_duration_s": 5.04,
       "tts_duration_s": 6.7,
       "isochrony_ratio": 1.329,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 3
     },
     {
       "id": 13,
@@ -177,9 +149,7 @@
       "en_duration_s": 1.96,
       "tts_duration_s": 2.42,
       "isochrony_ratio": 1.235,
-      "fit": 4,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 4
     },
     {
       "id": 14,
@@ -188,9 +158,7 @@
       "en_duration_s": 3.26,
       "tts_duration_s": 4.58,
       "isochrony_ratio": 1.405,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 3
     },
     {
       "id": 15,
@@ -199,10 +167,7 @@
       "en_duration_s": 3.92,
       "tts_duration_s": 3.7,
       "isochrony_ratio": 0.944,
-      "fit": 5,
-      "fidelity": 4,
-      "fluency": 4,
-      "note": "'baby steps' nuance partially lost; 'छोटे-छोटे कदम' is accurate but 'baby steps' implies gradual/manageable progression"
+      "fit": 5
     },
     {
       "id": 16,
@@ -211,9 +176,7 @@
       "en_duration_s": 4.6,
       "tts_duration_s": 5.14,
       "isochrony_ratio": 1.117,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 5
     },
     {
       "id": 17,
@@ -222,9 +185,7 @@
       "en_duration_s": 2.46,
       "tts_duration_s": 3.29,
       "isochrony_ratio": 1.337,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 3
     },
     {
       "id": 18,
@@ -233,9 +194,7 @@
       "en_duration_s": 0.38,
       "tts_duration_s": 1.1,
       "isochrony_ratio": 2.895,
-      "fit": 1,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 1
     },
     {
       "id": 19,
@@ -244,10 +203,7 @@
       "en_duration_s": 1.48,
       "tts_duration_s": 1.94,
       "isochrony_ratio": 1.311,
-      "fit": 3,
-      "fidelity": 4,
-      "fluency": 4,
-      "note": "'people say' lost; should retain 'लोग कहते हैं' for complete fidelity"
+      "fit": 3
     },
     {
       "id": 20,
@@ -256,9 +212,7 @@
       "en_duration_s": 2.0,
       "tts_duration_s": 2.5,
       "isochrony_ratio": 1.25,
-      "fit": 4,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 4
     },
     {
       "id": 21,
@@ -267,9 +221,7 @@
       "en_duration_s": 4.0,
       "tts_duration_s": 3.19,
       "isochrony_ratio": 0.797,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 3
     },
     {
       "id": 22,
@@ -278,9 +230,7 @@
       "en_duration_s": 3.16,
       "tts_duration_s": 2.81,
       "isochrony_ratio": 0.889,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 5
     },
     {
       "id": 23,
@@ -289,9 +239,7 @@
       "en_duration_s": 2.78,
       "tts_duration_s": 2.93,
       "isochrony_ratio": 1.054,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 5
     },
     {
       "id": 24,
@@ -300,9 +248,7 @@
       "en_duration_s": 3.82,
       "tts_duration_s": 3.98,
       "isochrony_ratio": 1.042,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 5
     },
     {
       "id": 25,
@@ -311,9 +257,7 @@
       "en_duration_s": 3.96,
       "tts_duration_s": 5.45,
       "isochrony_ratio": 1.376,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 3
     },
     {
       "id": 26,
@@ -322,9 +266,7 @@
       "en_duration_s": 0.9,
       "tts_duration_s": 1.61,
       "isochrony_ratio": 1.789,
-      "fit": 2,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 2
     },
     {
       "id": 27,
@@ -333,9 +275,7 @@
       "en_duration_s": 3.34,
       "tts_duration_s": 3.43,
       "isochrony_ratio": 1.027,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 5
     },
     {
       "id": 28,
@@ -344,9 +284,7 @@
       "en_duration_s": 2.88,
       "tts_duration_s": 4.94,
       "isochrony_ratio": 1.715,
-      "fit": 2,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 2
     },
     {
       "id": 29,
@@ -355,9 +293,7 @@
       "en_duration_s": 3.24,
       "tts_duration_s": 4.68,
       "isochrony_ratio": 1.444,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 3
     },
     {
       "id": 30,
@@ -366,9 +302,7 @@
       "en_duration_s": 2.36,
       "tts_duration_s": 3.84,
       "isochrony_ratio": 1.627,
-      "fit": 2,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 2
     },
     {
       "id": 31,
@@ -377,9 +311,7 @@
       "en_duration_s": 3.74,
       "tts_duration_s": 3.86,
       "isochrony_ratio": 1.032,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 5
     },
     {
       "id": 32,
@@ -388,9 +320,7 @@
       "en_duration_s": 2.04,
       "tts_duration_s": 4.08,
       "isochrony_ratio": 2.0,
-      "fit": 2,
-      "fidelity": 5,
-      "fluency": 5
+      "fit": 2
     },
     {
       "id": 33,
@@ -399,10 +329,12 @@
       "en_duration_s": 1.26,
       "tts_duration_s": 2.59,
       "isochrony_ratio": 2.056,
-      "fit": 1,
-      "fidelity": 4,
-      "fluency": 4,
-      "note": "Incomplete; should be 'तो शुरू करते हैं अपने...' or similar to match English continuation"
+      "fit": 1
     }
-  ]
+  ],
+  "back_translation": {
+    "hi_transcript_chars": 1134,
+    "back_translated_en": "hundred hundred hundred hundred Jasmine Nama SAW tens焼 tens焼 tens焼 tens焼 tens焼ens tens tens tens tens tens tens tens tens tens tens tens فٹھ کیسے رہتے ہیں, زیادہ تر دکٹر ایک بات کہتے ہیں جو ویایام کے لئے وقت نہیں نکالتے, اُنے بھی ماری کے لئے وقت نکالنا پڑے گا حاں, سمجھنا یانی ویایام کرنا بے ہت ضروری ہے ایک اور پرانی کہاہت ہے دو پہر کے کھانے کے بعد تھوڑا آرام کرو اور رات کے کھانے کے بعد تھوڑا ٹھلا پیدل چلنا بھی بڑیا The reality is that we can do a lot of things to improve our hands, just take small steps, ask for better sleep, take measures to eat less, reduce salt, be happy and check the feet, it is very important to check the feet, check twice to see how the feet are, floss every day and drink coffee, and the most important thing is to have breakfast. Now here's a heartwarming message which I received in the year 2004, published in a magazine called Hath. And in this it was said that create a network, you will think what network has to do with beauty but they said that if you miss the heart's journey, then the chances of taking another journey are reduced. If you have any friends and loved ones, that is, friends and love are not necessary, where today we are talking about Swaz, so let's start.",
+    "bleu": 3.49
+  }
 }

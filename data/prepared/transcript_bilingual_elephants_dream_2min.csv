@@ -1,16 +1,16 @@
 id,start,end,duration,en_text,hi_text,speaker
 0,14.22,14.98,0.76,The,,SPEAKER_01
-1,14.98,16.46,1.48,On the left we can see,बाईं ओर देखें,SPEAKER_01
-2,16.46,20.98,4.52,On the right we can see the hats,दाईं ओर हम टोपियाँ देख सकते हैं,SPEAKER_01
-3,20.98,24.0,3.02,Nullers and everything is perfectly safe,नलर्स और सब कुछ बिल्कुल सुरक्षित है,SPEAKER_01
-4,24.66,25.5,0.84,Emo,इमो,SPEAKER_01
+1,14.98,16.46,1.48,On the left we can see,बाईं तरफ देखिए,SPEAKER_01
+2,16.46,20.98,4.52,On the right we can see the hats,दाईं तरफ टोपियाँ दिख रही हैं,SPEAKER_01
+3,20.98,24.0,3.02,Rollers and everything is perfectly safe,रोलर्स और सब कुछ बिल्कुल सुरक्षित है,SPEAKER_01
+4,24.66,25.5,0.84,Emo,ईमो,SPEAKER_01
 5,42.84,44.24,1.4,Oh,ओह,SPEAKER_01
-6,46.0,48.38,2.38,Are you hurt?,क्या तुम ठीक हो?,SPEAKER_00
-7,48.38,53.82,5.44,"I don't think so, you","मुझे नहीं लगता, तुम",SPEAKER_00
+6,46.0,48.38,2.38,Are you hurt?,क्या चोट लगी?,SPEAKER_00
+7,48.38,53.82,5.44,"I don't think so, you","मुझे नहीं लगता, आप",SPEAKER_00
 8,54.82,56.3,1.48,I'm okay,मैं ठीक हूँ,SPEAKER_00
-9,56.82,60.98,4.16,"Get up, Emo — it's not safe here","उठो इमो, यहाँ सुरक्षित नहीं है",SPEAKER_02
+9,56.82,60.98,4.16,"Get up, Emo, it's not safe here","उठो ईमो, यहाँ सुरक्षित नहीं है",SPEAKER_02
 10,61.82,64.54,2.72,"Let's go, what's next?","चलो, आगे क्या है?",SPEAKER_02
-11,64.56,68.82,4.26,"You'll see, you'll see","देखोगे, देखोगे",SPEAKER_02
-12,75.82,77.68,1.86,"Emo, this way","इमो, इधर आओ",SPEAKER_02
+11,64.56,68.82,4.26,"You'll see, you'll see","देखते जाओ, देखते जाओ",SPEAKER_02
+12,75.82,77.68,1.86,"Emo, this way","ईमो, इधर आओ",SPEAKER_02
 13,93.44,95.68,2.24,Follow me,मेरे पीछे आओ,SPEAKER_01
-14,115.62,115.82,0.2,Emo,इमो,SPEAKER_01
+14,115.62,115.82,0.2,Emo,ईमो,SPEAKER_01
