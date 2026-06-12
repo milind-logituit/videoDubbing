@@ -24,13 +24,32 @@ from PIL import Image, ImageDraw
 from pydub import AudioSegment
 
 import edge_tts
-import jiwer
-import sacrebleu
 import pandas as pd
 
 import sys as _sys
 _sys.path.insert(0, str(Path(__file__).parent))
 from eval_lipsync import compute_lipsync_score
+from apply_lipsync import apply_wav2lip
+
+# Re-exported from sub-modules so tests pulling from this module still work
+from diarize import (                                         # noqa: E402
+    diarize_speakers, assign_speakers,
+    detect_speaker_genders,
+    _assign_genders, _GENDER_LABEL_MAP,                      # noqa: F401
+    _FEMALE_CONFIDENCE_THRESH,
+)
+from tts_audio import (                                       # noqa: E402
+    synthesize_hindi_audio, _duck_original_audio,
+    _seg_voice, _voice_tag, MAX_RATE_PCT,                    # noqa: F401
+    TTS_VOICE_FEMALE_HI, TTS_VOICE_MALE_HI,
+    TTS_VOICE_HI, TTS_BASE_RATE_PCT,                         # noqa: F401
+    BG_AUDIO_VOL, BG_AUDIO_VOL_SPEECH,
+)
+from metrics import (                                         # noqa: E402
+    compute_metrics, compute_back_translation_bleu,
+    compute_segment_isochrony, grade_translations,
+    _merge_segment_quality,
+)
 
 ROOT      = Path(__file__).parent.parent
 RAW       = ROOT / "data/raw"
@@ -70,17 +89,12 @@ REFERENCE_HINDI = (
     "आज, आर्टिफिशियल इंटेलिजेंस हर कहानी को हर दर्शक तक पहुंचाना संभव बनाता है।"
 )
 
-WHISPER_MODEL       = "base"
-WHISPER_MODEL_HI    = "medium"   # larger model for Hindi back-translation ASR
-TTS_VOICE_FEMALE_HI = "hi-IN-SwaraNeural"
-TTS_VOICE_MALE_HI   = "hi-IN-MadhurNeural"
-TTS_VOICE_HI        = TTS_VOICE_FEMALE_HI   # default / backwards-compat
-TTS_VOICE_EN        = "en-US-JennyNeural"
-TTS_BASE_RATE_PCT   = -10        # slow TTS down 10% to reduce syllable cramming
+WHISPER_MODEL    = "base"
+WHISPER_MODEL_HI = "medium"
 VIDEO_SIZE    = (1280, 720)
 VIDEO_FPS     = 24
-BG_COLOR      = (15, 23, 42)      # #0f172a — dark slate
-ACCENT_COLOR  = (251, 191, 36)    # #fbbf24 — amber
+BG_COLOR      = (15, 23, 42)
+ACCENT_COLOR  = (251, 191, 36)
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -93,7 +107,7 @@ def _generate_source_audio(force: bool = False) -> Path:
         return audio_path
     print("  Generating English source audio …")
     async def _synth():
-        communicate = edge_tts.Communicate(FULL_SOURCE_TEXT, TTS_VOICE_EN)
+        communicate = edge_tts.Communicate(FULL_SOURCE_TEXT, "en-US-JennyNeural")
         await communicate.save(str(audio_path))
     try:
         asyncio.run(_synth())
@@ -103,14 +117,9 @@ def _generate_source_audio(force: bool = False) -> Path:
 
 
 def _make_title_frame() -> Path:
-    """Pillow: branded dark title card for the sample video."""
     img = Image.new("RGB", VIDEO_SIZE, BG_COLOR)
     draw = ImageDraw.Draw(img)
-
-    # Accent bar at top
     draw.rectangle([0, 0, VIDEO_SIZE[0], 6], fill=ACCENT_COLOR)
-
-    # Main title text (system font fallback)
     try:
         from PIL import ImageFont
         font_lg = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", 64)
@@ -136,7 +145,6 @@ def _make_title_frame() -> Path:
     draw.rectangle(
         [0, VIDEO_SIZE[1] - 6, VIDEO_SIZE[0], VIDEO_SIZE[1]], fill=ACCENT_COLOR
     )
-
     frame_path = RAW / "title_frame.png"
     img.save(frame_path)
     return frame_path
@@ -200,241 +208,10 @@ def transcribe(audio_path: Path) -> dict:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Stage 3.5 — Speaker diarization + gender detection
-# ─────────────────────────────────────────────────────────────────────────────
-
-def diarize_speakers(audio_path: Path, hf_token: str) -> list[dict]:
-    """Run pyannote speaker-diarization-3.1. Result cached as JSON beside audio."""
-    cache = audio_path.with_suffix(".diarization.json")
-    if cache.exists():
-        print(f"  Loaded cached diarization: {cache.name}")
-        return json.loads(cache.read_text())
-
-    from pyannote.audio import Pipeline as _DPipeline
-    print("  Loading pyannote/speaker-diarization-3.1 …")
-    dia_pipeline = _DPipeline.from_pretrained(
-        "pyannote/speaker-diarization-3.1", token=hf_token
-    )
-    raw = dia_pipeline(str(audio_path))
-    annotation = (
-        raw.speaker_diarization if hasattr(raw, "speaker_diarization") else raw
-    )
-    turns = [
-        {"start": round(turn.start, 3), "end": round(turn.end, 3), "speaker": label}
-        for turn, _, label in annotation.itertracks(yield_label=True)
-    ]
-    cache.write_text(json.dumps(turns, indent=2))
-    print(f"  Diarization: {len(turns)} turns, "
-          f"{len({t['speaker'] for t in turns})} speaker(s)")
-    return turns
-
-
-def assign_speakers(segments: list[dict], turns: list[dict]) -> list[dict]:
-    """Tag each segment with the speaker that overlaps it most.
-
-    Falls back to the nearest turn (by midpoint distance) when no turn
-    overlaps a segment — this handles silence gaps at turn boundaries.
-    Runs in O(n log m) via sorted turns and early exit.
-    """
-    sorted_turns = sorted(turns, key=lambda t: t["start"])
-    out = []
-    for seg in segments:
-        # Pass A — find best overlap using early-exit (O(log m) amortised)
-        best: str | None = None
-        best_overlap = 0.0
-        for turn in sorted_turns:
-            if turn["start"] > seg["end"]:
-                break
-            overlap = min(seg["end"], turn["end"]) - max(seg["start"], turn["start"])
-            if overlap > best_overlap:
-                best_overlap, best = overlap, turn["speaker"]
-
-        # Pass B — no overlap (silence gap): nearest turn by midpoint distance
-        if best is None:
-            seg_mid = (seg["start"] + seg["end"]) / 2
-            best_dist = float("inf")
-            for turn in sorted_turns:
-                dist = abs((turn["start"] + turn["end"]) / 2 - seg_mid)
-                if dist < best_dist:
-                    best_dist, best = dist, turn["speaker"]
-
-        if best is None:
-            best = "SPEAKER_00"
-            print(f"  [warn] no speaker found for segment "
-                  f"{seg['start']:.1f}–{seg['end']:.1f}s; defaulting to {best}")
-        out.append({**seg, "speaker": best})
-    return out
-
-
-_GENDER_MODEL_ID = "audeering/wav2vec2-large-robust-24-ft-age-gender"
-# {0: female, 1: male, 2: child} — child maps to female voice
-_GENDER_LABEL_MAP: dict[int, str] = {0: "female", 1: "male", 2: "female"}
-_gender_model_cache: tuple | None = None  # (model, processor) loaded once per process
-_FEMALE_CONFIDENCE_THRESH = 0.70  # require 70% confidence to assign female voice
-BG_AUDIO_VOL = 0.20       # original audio vol during silence gaps (ambience)
-BG_AUDIO_VOL_SPEECH = 0.04  # original audio vol during Hindi TTS (suppress EN dialogue)
-
-
-def _load_gender_model() -> tuple:
-    """Load audeering age-gender model, caching it for the process lifetime."""
-    global _gender_model_cache
-    if _gender_model_cache is not None:
-        return _gender_model_cache
-
-    import torch
-    import torch.nn as nn
-    from transformers import Wav2Vec2Processor, AutoConfig
-    from transformers.models.wav2vec2.modeling_wav2vec2 import Wav2Vec2Model
-    from huggingface_hub import hf_hub_download
-
-    class _Head(nn.Module):
-        def __init__(self, config: object, n: int) -> None:
-            super().__init__()
-            self.dense = nn.Linear(config.hidden_size, config.hidden_size)  # type: ignore[arg-type]
-            self.dropout = nn.Dropout(config.final_dropout)  # type: ignore[arg-type]
-            self.out_proj = nn.Linear(config.hidden_size, n)  # type: ignore[arg-type]
-
-        def forward(self, x: torch.Tensor) -> torch.Tensor:
-            return self.out_proj(torch.tanh(self.dense(self.dropout(x))))
-
-    class _AgeGenderModel(nn.Module):
-        def __init__(self, config: object) -> None:
-            super().__init__()
-            self.wav2vec2 = Wav2Vec2Model(config)  # type: ignore[arg-type]
-            self.age = _Head(config, 1)
-            self.gender = _Head(config, 3)
-
-        def forward(self, input_values: torch.Tensor) -> torch.Tensor:
-            hidden = self.wav2vec2(input_values)[0].mean(dim=1)
-            return torch.softmax(self.gender(hidden), dim=1)
-
-    print(f"  Loading gender classifier ({_GENDER_MODEL_ID}) …")
-    config = AutoConfig.from_pretrained(_GENDER_MODEL_ID)  # nosec B615
-    model = _AgeGenderModel(config)
-    ckpt = hf_hub_download(_GENDER_MODEL_ID, "pytorch_model.bin")  # nosec B615
-    missing, unexpected = model.load_state_dict(
-        torch.load(ckpt, map_location="cpu", weights_only=True), strict=False
-    )
-    if missing or unexpected:
-        print(f"  [warn] gender model: missing={missing}, unexpected={unexpected}")
-    model.eval()
-    processor = Wav2Vec2Processor.from_pretrained(_GENDER_MODEL_ID)  # nosec B615
-    _gender_model_cache = (model, processor)
-    return _gender_model_cache
-
-
-def _collect_speaker_chunks(
-    audio: list, sr: int, segments: list[dict]
-) -> dict[str, list]:
-    speaker_chunks: dict[str, list] = {}
-    for seg in segments:
-        sp = seg.get("speaker", "SPEAKER_00")
-        s_idx = int(seg["start"] * sr)
-        e_idx = int(seg["end"] * sr)
-        if e_idx > s_idx:
-            speaker_chunks.setdefault(sp, []).append(audio[s_idx:e_idx])
-    return speaker_chunks
-
-
-def _assign_genders(
-    speaker_probs: dict[str, tuple[float, float]],
-    female_thresh: float = _FEMALE_CONFIDENCE_THRESH,
-    relative_margin: float = 0.20,
-) -> dict[str, str]:
-    """
-    Assign gender labels given per-speaker (f_prob, m_prob) tuples.
-
-    Rules (in order):
-    1. f_prob >= female_thresh          → female  (high confidence)
-    2. f_prob < 0.50                    → male    (majority male)
-    3. 0.50 ≤ f_prob < female_thresh    → borderline: female only if this speaker
-       has the highest f_prob among all speakers by >= relative_margin, else male.
-       Handles mixed-cast clips where one character is clearly "more female" than
-       the rest without reaching the absolute threshold.
-    """
-    sorted_by_f = sorted(speaker_probs.items(), key=lambda x: -x[1][0])
-    f_probs_desc = [v[0] for _, v in sorted_by_f]
-
-    genders: dict[str, str] = {}
-    for rank, (sp, (f_prob, _)) in enumerate(sorted_by_f):
-        if f_prob >= female_thresh:
-            genders[sp] = "female"
-        elif f_prob < 0.50:
-            genders[sp] = "male"
-        else:
-            # borderline: assign female only to the top-ranked speaker and only
-            # if they lead the next speaker by at least relative_margin
-            next_f = f_probs_desc[rank + 1] if rank + 1 < len(f_probs_desc) else 0.0
-            if rank == 0 and (f_prob - next_f) >= relative_margin:
-                genders[sp] = "female"
-            else:
-                genders[sp] = "male"
-    return genders
-
-
-def detect_speaker_genders(
-    audio_path: Path,
-    segments: list[dict],
-    female_thresh: float = _FEMALE_CONFIDENCE_THRESH,
-) -> dict[str, str]:
-    """Classify gender per speaker using a wav2vec2 age-gender model."""
-    import numpy as np
-    import torch
-    import librosa
-
-    model, processor = _load_gender_model()
-    audio, sr = librosa.load(str(audio_path), sr=16000, mono=True)
-    speaker_chunks = _collect_speaker_chunks(audio, sr, segments)
-
-    speaker_probs: dict[str, tuple[float, float]] = {}
-    for sp, chunks in speaker_chunks.items():
-        chunk = np.concatenate(chunks).astype(np.float32)
-        inputs = processor(chunk, sampling_rate=16000, return_tensors="pt",
-                           padding=True)
-        with torch.no_grad():
-            probs = model(inputs["input_values"])
-        speaker_probs[sp] = (float(probs[0, 0]), float(probs[0, 1]))
-
-    genders = _assign_genders(speaker_probs, female_thresh=female_thresh)
-    for sp, gender in genders.items():
-        f_prob, m_prob = speaker_probs[sp]
-        print(f"    {sp}: {gender} (f={f_prob:.2f} m={m_prob:.2f})")
-    return genders
-
-
-# ─────────────────────────────────────────────────────────────────────────────
 # Stage 4 — Translation
 # ─────────────────────────────────────────────────────────────────────────────
 
 FILLER_MAP = {"hmm": "हाँ", "uh": "", "um": "", "ah": "अच्छा"}
-
-_GRADE_SYSTEM = """\
-You are a professional Hindi dubbing quality assessor.
-Rate each segment on two dimensions (1 = poor, 5 = excellent):
-- fidelity: semantic accuracy of Hindi vs English
-- fluency: naturalness of the Hindi phrasing (grammar, word choice, register)
-
-Respond ONLY with a JSON array in input order:
-[{"id": <int>, "fidelity": <1-5>, "fluency": <1-5>}, ...]
-Add "note": "..." only for scores ≤ 2. Omit otherwise.\
-"""
-
-
-def _isochrony_fit(ratio: float | None) -> int:
-    """Map isochrony ratio to 1-5 fit score (algorithmic, reliable)."""
-    if ratio is None:
-        return 3
-    if ratio <= 0.80:
-        return 3  # too short — may sound slow
-    if ratio <= 1.15:
-        return 5  # perfect
-    if ratio <= 1.30:
-        return 4  # slightly over
-    if ratio <= 1.50:
-        return 3  # noticeably rushed
-    if ratio <= 2.00:
-        return 2  # significantly rushed
-    return 1     # badly overflow
 
 
 def translate_segments(whisper_result: dict) -> list[dict]:
@@ -445,7 +222,6 @@ def translate_segments(whisper_result: dict) -> list[dict]:
         if not en:
             continue
         hi = translator.translate(en)
-        # Post-process: replace or drop filler-only segments
         if en.lower().rstrip(".!?,") in FILLER_MAP:
             hi = FILLER_MAP[en.lower().rstrip(".!?,")]
         entry: dict = {
@@ -469,7 +245,7 @@ def translate_segments(whisper_result: dict) -> list[dict]:
 # Stage 4b — LLM post-correction (Claude)
 # ─────────────────────────────────────────────────────────────────────────────
 
-_LLM_BATCH = 100  # max segments per Claude call (~2 min of audio at ~50 seg/min)
+_LLM_BATCH = 100
 
 _REFINE_SYSTEM = (
     "You are a professional Hindi dubbing editor for OTT streaming content "
@@ -592,148 +368,8 @@ def generate_srt(segments: list[dict]) -> str:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Stage 6 — Hindi TTS  (timestamp-aligned + rate-controlled re-synthesis)
-# ─────────────────────────────────────────────────────────────────────────────
-
-MAX_RATE_PCT = 40  # cap edge-tts speed-up; 40% keeps speech intelligible
-
-
-def _synth_segment(text: str, path: Path, rate: str = "+0%",
-                   voice: str = TTS_VOICE_FEMALE_HI) -> None:
-    """Synthesize one segment via edge-tts at the given rate; gTTS fallback."""
-    async def _run() -> None:
-        communicate = edge_tts.Communicate(text, voice, rate=rate)
-        await communicate.save(str(path))
-    try:
-        asyncio.run(_run())
-    except Exception as exc:
-        print(f"  [warn] edge-tts failed ({exc}); falling back to gTTS")
-        gTTS(text, lang="hi", slow=False).save(str(path))
-
-
-def _seg_voice(seg: dict, voices: dict[str, str]) -> str:
-    return voices.get(seg.get("speaker", ""), TTS_VOICE_FEMALE_HI)
-
-
-def _voice_tag(voice: str) -> str:
-    """Single-char cache key distinguishing male/female segment files."""
-    return "m" if voice == TTS_VOICE_MALE_HI else "f"
-
-
-def _synth_pass1(valid: list[dict], seg_dir: Path,
-                 voices: dict[str, str]) -> float:
-    """Synthesize all segments at normal rate; return total TTS duration in s."""
-    for seg in valid:
-        v = _seg_voice(seg, voices)
-        p = seg_dir / f"seg_{seg['id']:03d}_{_voice_tag(v)}.mp3"
-        if not p.exists():
-            _synth_segment(seg["hi_text"], p, rate=f"{TTS_BASE_RATE_PCT:+d}%", voice=v)
-    return sum(
-        len(AudioSegment.from_mp3(
-            str(seg_dir / f"seg_{s['id']:03d}_{_voice_tag(_seg_voice(s, voices))}.mp3")
-        )) / 1000
-        for s in valid
-    )
-
-
-def _synth_pass2(valid: list[dict], seg_dir: Path, voices: dict[str, str],
-                 global_rate: int, total_ms: int) -> AudioSegment:
-    """Re-synthesize at global_rate and overlay each segment at its timestamp."""
-    combined = AudioSegment.silent(duration=total_ms)
-    for seg in valid:
-        v = _seg_voice(seg, voices)
-        tag = _voice_tag(v)
-        effective_rate = TTS_BASE_RATE_PCT + global_rate
-        if effective_rate != 0:
-            p_fast = seg_dir / f"seg_{seg['id']:03d}_{tag}_r{effective_rate}.mp3"
-            if not p_fast.exists():
-                _synth_segment(seg["hi_text"], p_fast,
-                               rate=f"{effective_rate:+d}%", voice=v)
-            seg_audio = AudioSegment.from_mp3(str(p_fast))
-        else:
-            seg_audio = AudioSegment.from_mp3(
-                str(seg_dir / f"seg_{seg['id']:03d}_{tag}.mp3")
-            )
-        combined = combined.overlay(seg_audio, position=int(seg["start"] * 1000))
-    return combined
-
-
-def synthesize_hindi_audio(segments: list[dict], stem: str = "sample",
-                           src_audio: Path | None = None,
-                           speaker_voices: dict[str, str] | None = None,
-                           force: bool = False) -> Path:
-    dubbed_path = RAW / f"dubbed_hi_{stem}.mp3"
-    if dubbed_path.exists() and not force:
-        print(f"  Hindi audio already exists: {dubbed_path.name}")
-        return dubbed_path
-
-    seg_dir = PREPARED / f"hi_segments_{stem}"
-    seg_dir.mkdir(exist_ok=True)
-    voices = speaker_voices or {}
-
-    if src_audio and src_audio.exists():
-        total_ms = len(AudioSegment.from_file(str(src_audio)))
-    else:
-        total_ms = int(segments[-1]["end"] * 1000) + 500 if segments else 5000
-
-    valid = [s for s in segments if s["hi_text"].strip()]
-    combined_hi = " ".join(s["hi_text"] for s in valid)
-    print(f"  Synthesising Hindi audio ({len(combined_hi)} chars, "
-          f"base={total_ms / 1000:.1f}s) …")
-
-    total_tts_s = _synth_pass1(valid, seg_dir, voices)
-    total_speech_s = sum(s["duration"] for s in valid)
-    raw_rate = int((total_tts_s / total_speech_s - 1) * 100)
-    global_rate = max(0, min(raw_rate, MAX_RATE_PCT))
-    print(f"  TTS {total_tts_s:.1f}s over {total_speech_s:.1f}s speech "
-          f"→ uniform rate: +{global_rate}%")
-
-    combined = _synth_pass2(valid, seg_dir, voices, global_rate, total_ms)
-    combined.export(str(dubbed_path), format="mp3")
-    print(f"  Hindi dubbed audio: {dubbed_path.name}  ({len(combined) / 1000:.1f}s)")
-    return dubbed_path
-
-
-# ─────────────────────────────────────────────────────────────────────────────
 # Stage 7 — Create dubbed video
 # ─────────────────────────────────────────────────────────────────────────────
-
-def _duck_original_audio(
-    audio_path: Path, segments: list[dict],
-) -> Path:
-    """Build ducked original audio: quiet during speech segments, fuller in gaps.
-
-    pydub `+N` means +N dB. Convert linear ratios via 20*log10(ratio).
-    """
-    import math
-    db_gap    = 20 * math.log10(BG_AUDIO_VOL)         # -14 dB @ 20%
-    db_speech = 20 * math.log10(BG_AUDIO_VOL_SPEECH)  # -28 dB @ 4%
-
-    orig = AudioSegment.from_file(str(audio_path))
-    ducked = AudioSegment.silent(duration=len(orig))
-
-    intervals = sorted(
-        (int(s["start"] * 1000), int(s["end"] * 1000))
-        for s in segments if s.get("hi_text", "").strip()
-    )
-
-    prev_end = 0
-    for start_ms, end_ms in intervals:
-        if start_ms > prev_end:
-            ducked = ducked.overlay(
-                orig[prev_end:start_ms] + db_gap, position=prev_end
-            )
-        ducked = ducked.overlay(
-            orig[start_ms:end_ms] + db_speech, position=start_ms
-        )
-        prev_end = end_ms
-    if prev_end < len(orig):
-        ducked = ducked.overlay(orig[prev_end:] + db_gap, position=prev_end)
-
-    out = audio_path.with_suffix(".ducked.wav")
-    ducked.export(str(out), format="wav")
-    return out
-
 
 def create_dubbed_video(
     video_path: Path,
@@ -779,190 +415,6 @@ def create_dubbed_video(
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Stage 8 — Quality metrics
-# ─────────────────────────────────────────────────────────────────────────────
-
-def compute_metrics(whisper_result: dict, segments: list[dict],
-                    src_audio: Path, dubbed_audio: Path,
-                    has_reference: bool = True) -> dict:
-    machine_hindi = " ".join(s["hi_text"] for s in segments)
-
-    if has_reference:
-        wer_score = jiwer.wer(FULL_SOURCE_TEXT.lower(),
-                               whisper_result["text"].lower())
-        bleu_obj  = sacrebleu.corpus_bleu([machine_hindi], [[REFERENCE_HINDI]])
-        wer_val: float | None       = round(wer_score, 4)
-        wer_pct_val: float | None   = round(wer_score * 100, 2)
-        bleu_val: float | None      = round(bleu_obj.score, 2)
-        wer_note  = None
-        bleu_note = None
-    else:
-        wer_val = wer_pct_val = bleu_val = None
-        wer_note  = "N/A — no reference text for this clip"
-        bleu_note = "N/A — no reference text for this clip"
-
-    try:
-        src_dur = len(AudioSegment.from_file(str(src_audio))) / 1000
-        dub_dur = len(AudioSegment.from_mp3(str(dubbed_audio))) / 1000
-        dar     = dub_dur / src_dur
-    except Exception:
-        src_dur = dub_dur = dar = 0.0
-
-    asr_block: dict = {"model": WHISPER_MODEL, "wer": wer_val,
-                       "wer_pct": wer_pct_val}
-    if wer_note is not None:
-        asr_block["note"] = wer_note
-
-    trans_block: dict = {"model": "Google Translate (en→hi)",
-                         "bleu": bleu_val,
-                         "n_segments": len(segments)}
-    if bleu_note is not None:
-        trans_block["note"] = bleu_note
-
-    return {
-        "asr":         asr_block,
-        "translation": trans_block,
-        "tts":         {"voice": TTS_VOICE_HI},
-        "alignment":   {"source_duration_s": round(src_dur, 2),
-                        "dubbed_duration_s": round(dub_dur, 2),
-                        "duration_ratio": round(dar, 3),
-                        "en_chars_per_sec": round(
-                            len(FULL_SOURCE_TEXT.replace(" ", "")) / src_dur, 1
-                        ) if src_dur else 0,
-                        "hi_chars_per_sec": round(
-                            len(machine_hindi.replace(" ", "")) / dub_dur, 1
-                        ) if dub_dur else 0},
-    }
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Stage 8c — Back-translation BLEU
-# ─────────────────────────────────────────────────────────────────────────────
-
-def compute_back_translation_bleu(
-    dubbed_audio: Path,
-    original_en_text: str,
-) -> dict:
-    """ASR the dubbed Hindi audio, back-translate to English, score with BLEU.
-
-    Returns a dict ready to merge into metrics["back_translation"].
-    Uses the same Whisper model already loaded for Stage 3.
-    """
-    try:
-        print("  Transcribing dubbed Hindi audio …")
-        hi_model = whisper.load_model(WHISPER_MODEL_HI)
-        hi_result = hi_model.transcribe(str(dubbed_audio), language="hi")
-        hi_transcript = hi_result["text"].strip()
-
-        print("  Back-translating Hindi → English …")
-        bt_en = GoogleTranslator(source="hi", target="en").translate(hi_transcript)
-
-        bleu_obj = sacrebleu.corpus_bleu([bt_en], [[original_en_text]])
-        bleu_score = round(bleu_obj.score, 2)
-
-        return {
-            "hi_transcript_chars": len(hi_transcript),
-            "back_translated_en": bt_en,
-            "bleu": bleu_score,
-        }
-    except Exception as exc:
-        return {"bleu": None, "note": f"Failed: {exc}"}
-
-
-# ─────────────────────────────────────────────────────────────────────────────
-# Stage 8b — Segment-level quality (isochrony + LLM grading)
-# ─────────────────────────────────────────────────────────────────────────────
-
-def compute_segment_isochrony(
-    segments: list[dict], seg_dir: Path
-) -> list[dict]:
-    """Per-segment isochrony ratio: TTS duration / EN window duration."""
-    results = []
-    for seg in segments:
-        sid = int(seg["id"])
-        en_dur = round(float(seg["end"]) - float(seg["start"]), 2)
-        candidates = list(seg_dir.glob(f"seg_{sid:03d}_*.mp3"))
-        if candidates:
-            tts_dur = round(len(AudioSegment.from_mp3(str(candidates[0]))) / 1000.0, 2)
-            ratio = round(tts_dur / en_dur, 3) if en_dur > 0 else None
-        else:
-            tts_dur = ratio = None
-        results.append({
-            "id": sid,
-            "start": float(seg["start"]),
-            "end": float(seg["end"]),
-            "en_duration_s": en_dur,
-            "tts_duration_s": tts_dur,
-            "isochrony_ratio": ratio,
-        })
-    return results
-
-
-def grade_translations(segments: list[dict]) -> list[dict]:
-    """Call Claude Haiku to rate fidelity / fluency / fit per segment."""
-    payload = [
-        {"id": int(seg["id"]), "en": seg["en_text"], "hi": seg["hi_text"],
-         "duration_s": round(float(seg["end"]) - float(seg["start"]), 1)}
-        for seg in segments
-        if seg.get("hi_text", "").strip()
-    ]
-    if not payload:
-        return []
-    client = anthropic.Anthropic()
-    msg = client.messages.create(
-        model="claude-haiku-4-5",
-        max_tokens=1024,
-        system=_GRADE_SYSTEM,
-        messages=[{"role": "user",
-                   "content": json.dumps(payload, ensure_ascii=False)}],
-    )
-    raw = msg.content[0].text.strip()
-    if raw.startswith("```"):
-        raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
-    try:
-        return json.loads(raw)
-    except Exception as exc:
-        # Retry once: ask Claude to return only the JSON array
-        print(f"  [warn] grade_translations parse failed ({exc}), retrying …")
-        retry = client.messages.create(
-            model="claude-haiku-4-5",
-            max_tokens=1024,
-            messages=[
-                {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
-                {"role": "assistant", "content": raw},
-                {"role": "user", "content": "Return ONLY the JSON array, no markdown, no explanation."},
-            ],
-            system=_GRADE_SYSTEM,
-        )
-        raw2 = retry.content[0].text.strip()
-        if raw2.startswith("```"):
-            raw2 = raw2.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
-        try:
-            return json.loads(raw2)
-        except Exception as exc2:
-            print(f"  [warn] grade_translations retry also failed ({exc2}), skipping grades.")
-            return []
-
-
-def _merge_segment_quality(
-    isochrony: list[dict], grades_by_id: dict[int, dict]
-) -> list[dict]:
-    out = []
-    for row in isochrony:
-        g = grades_by_id.get(row["id"], {})
-        merged = dict(row)
-        # fit is always algorithmic; fidelity/fluency come from LLM
-        merged["fit"] = _isochrony_fit(row.get("isochrony_ratio"))
-        if g:
-            merged["fidelity"] = g.get("fidelity")
-            merged["fluency"]  = g.get("fluency")
-            if "note" in g:
-                merged["note"] = g["note"]
-        out.append(merged)
-    return out
-
-
-# ─────────────────────────────────────────────────────────────────────────────
 # Save outputs
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -1000,6 +452,9 @@ if __name__ == "__main__":
                         default=_FEMALE_CONFIDENCE_THRESH,
                         help="Min female probability to assign female voice "
                              f"(default {_FEMALE_CONFIDENCE_THRESH}).")
+    parser.add_argument("--lipsync", action="store_true",
+                        help="Run Wav2Lip (Stage 7b) to re-generate mouth movements. "
+                             "Slow — adds ~5 min per 2 min of video.")
     args = parser.parse_args()
 
     if args.input:
@@ -1060,6 +515,19 @@ if __name__ == "__main__":
     print("\nStage 7 — Creating dubbed video …")
     dubbed_video = create_dubbed_video(video_path, hindi_audio, segments=segments)
 
+    if args.lipsync:
+        print("\nStage 7b — Wav2Lip lip-sync …")
+        ls_out = RAW / f"{video_path.stem}_lipsync_hi.mp4"
+        wav2lip_result = apply_wav2lip(video_path, hindi_audio, ls_out)
+        if wav2lip_result["success"]:
+            print(f"  Lip-synced video: {ls_out.name}")
+            metrics_lipsync_video = ls_out
+        else:
+            print(f"  [warn] Wav2Lip failed: {wav2lip_result['note']}")
+            metrics_lipsync_video = dubbed_video
+    else:
+        metrics_lipsync_video = dubbed_video
+
     print("\nStage 8 — Computing metrics …")
     has_ref   = args.input is None
     src_audio = RAW / "source_en.mp3" if has_ref else audio_path
@@ -1084,7 +552,8 @@ if __name__ == "__main__":
     )
 
     print("\nStage 8d — Lip-sync score …")
-    metrics["lipsync"] = compute_lipsync_score(dubbed_video)
+    metrics["lipsync"] = compute_lipsync_score(metrics_lipsync_video)
+    metrics["lipsync"]["wav2lip_applied"] = args.lipsync
     ls = metrics["lipsync"]
     if ls.get("sync_score") is not None:
         print(f"  sync_score={ls['sync_score']}  pearson_r={ls['pearson_r']}  "
@@ -1106,3 +575,4 @@ if __name__ == "__main__":
     print(f"  Lip-sync score       : {f'{sync_score:.3f}' if sync_score is not None else 'N/A'}")
     print(f"  Duration ratio       : {metrics['alignment']['duration_ratio']:.3f}")
     print("\nDone.")
+
