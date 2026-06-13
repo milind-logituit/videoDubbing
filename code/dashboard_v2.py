@@ -6,6 +6,7 @@ Use Case 2: original video with Hindi audio track (dubbed MP4)
 Run: uv run streamlit run code/dashboard_v2.py
 """
 import json
+import re
 from pathlib import Path
 
 import pandas as pd
@@ -26,25 +27,30 @@ MODEL_OUT = ROOT / "model_outputs"
 
 
 def _find_processed_clips() -> dict[str, tuple[Path, Path, Path, Path, Path, Path]]:
-    """Return {stem: (orig, dubbed, metrics, vtt, transcript)} for ready clips."""
-    clips: dict[str, tuple[Path, Path, Path, Path, Path]] = {}
+    """Return {stem: (orig, dubbed, metrics, vtt, srt, transcript)} for ready clips."""
+    clips: dict[str, tuple[Path, Path, Path, Path, Path, Path]] = {}
+    _dubbed_re = re.compile(r"_dubbed_([a-z]{2})$")
     for d in [RAW, ROOT / "test_clips"]:
         if not d.exists():
             continue
         for mp4 in sorted(d.glob("*.mp4")):
-            if mp4.stem.endswith("_dubbed_hi") or mp4.stem == "sample_en":
+            if _dubbed_re.search(mp4.stem) or mp4.stem == "sample_en":
                 continue
-            stem   = mp4.stem
-            dubbed = RAW / f"{stem}_dubbed_hi.mp4"
-            metrics_path = MODEL_OUT / f"metrics_{stem}.json"
-            vtt_path     = MODEL_OUT / f"subtitles_{stem}_hi.vtt"
-            srt_path     = MODEL_OUT / f"subtitles_{stem}_hi.srt"
-            transcript   = (
-                ROOT / "data/prepared" / f"transcript_bilingual_{stem}.csv"
-            )
-            if dubbed.exists() and metrics_path.exists():
+            stem = mp4.stem
+            # Find any dubbed version for this clip (hi, en, …)
+            for lang in ("hi", "en", "de"):
+                dubbed = RAW / f"{stem}_dubbed_{lang}.mp4"
+                if not dubbed.exists():
+                    continue
+                metrics_path = MODEL_OUT / f"metrics_{stem}.json"
+                if not metrics_path.exists():
+                    continue
+                vtt_path   = MODEL_OUT / f"subtitles_{stem}_{lang}.vtt"
+                srt_path   = MODEL_OUT / f"subtitles_{stem}_{lang}.srt"
+                transcript = ROOT / "data/prepared" / f"transcript_bilingual_{stem}.csv"
                 clips[stem] = (mp4, dubbed, metrics_path, vtt_path, srt_path,
                                transcript)
+                break  # first matching lang wins
     return clips
 
 
@@ -115,7 +121,8 @@ if selected_clip_key:
     )
     video_src  = orig.read_bytes()
     dubbed_src = dubbed.read_bytes()
-    _lipsync_path = RAW / f"{selected_clip_key}_lipsync_hi.mp4"
+    _dubbed_lang  = re.search(r"_dubbed_([a-z]{2})\.mp4$", str(dubbed)).group(1) if dubbed else "hi"
+    _lipsync_path = RAW / f"{selected_clip_key}_lipsync_{_dubbed_lang}.mp4"
     lipsync_src = _lipsync_path.read_bytes() if _lipsync_path.exists() else None
 else:
     st.info("Select a processed clip from the sidebar.")
@@ -129,6 +136,8 @@ _bt        = metrics.get("back_translation", {})
 _bt_bleu   = _bt.get("bleu")
 _ls        = metrics.get("lipsync", {})
 _sync      = _ls.get("sync_score")
+_emo       = metrics.get("emotion", {})
+_emo_match = _emo.get("match_pct")
 k1, k2, k3 = st.columns(3)
 k1.metric("Segments",    str(metrics["translation"]["n_segments"]))
 k2.metric("Source",      f"{al['source_duration_s']:.1f}s")
@@ -261,7 +270,7 @@ with tab4:
 with tab5:
     st.subheader("Quality Metrics")
 
-    m1, m2, m3, m4, m5 = st.columns(5)
+    m1, m2, m3, m4, m5, m6 = st.columns(6)
 
     if _wer_pct is not None:
         fig1 = go.Figure(go.Indicator(
@@ -317,9 +326,9 @@ with tab5:
         ))
         fig4.update_layout(height=240, margin=dict(t=40, b=10))
         m4.plotly_chart(fig4, use_container_width=True)
-        if _bt.get("back_translated_en"):
+        if _bt.get("back_translated_en") or _bt.get("back_translated"):
             with st.expander("Back-translated English (Hindi ASR → EN)"):
-                st.write(_bt["back_translated_en"])
+                st.write(_bt.get("back_translated_en") or _bt.get("back_translated"))
     else:
         m4.metric("Back-Translation BLEU", "N/A")
 
@@ -345,6 +354,27 @@ with tab5:
         note = _ls.get("note", "not computed")
         m5.metric("Lip-Sync Score", "N/A")
         m5.caption(note)
+
+    if _emo_match is not None:
+        fig6 = go.Figure(go.Indicator(
+            mode="gauge+number", value=_emo_match,
+            title={"text": "Emotion Match %"},
+            gauge={"axis": {"range": [0, 100]}, "bar": {"color": "#FF6692"},
+                   "steps": [{"range": [0,  50], "color": "#EF553B"},
+                             {"range": [50, 70], "color": "#FFA15A"},
+                             {"range": [70, 100], "color": "#00CC96"}]},
+            number={"suffix": "%"},
+        ))
+        fig6.update_layout(height=240, margin=dict(t=40, b=10))
+        m6.plotly_chart(fig6, use_container_width=True)
+        segs = _emo.get("segments", [])
+        if segs:
+            emo_dist = {}
+            for s in segs:
+                emo_dist[s["source_emotion"]] = emo_dist.get(s["source_emotion"], 0) + 1
+            m6.caption("  ".join(f"{k}:{v}" for k, v in sorted(emo_dist.items())))
+    else:
+        m6.metric("Emotion Match", "N/A")
 
     # ── Segment-level quality ─────────────────────────────────────────────────
     seg_quality = metrics.get("segment_quality", [])

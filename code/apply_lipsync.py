@@ -19,7 +19,7 @@ def apply_wav2lip(
     face_video: Path,
     dubbed_audio: Path,
     output_path: Path,
-    resize_factor: int = 4,
+    resize_factor: int = 2,
     pads: tuple[int, int, int, int] = (0, 20, 0, 0),
 ) -> dict:
     """
@@ -84,7 +84,8 @@ def apply_wav2lip(
 if __name__ == "__main__":
     import json
     if len(sys.argv) < 4:
-        print("Usage: uv run python code/apply_lipsync.py <face.mp4> <audio.mp3> <output.mp4>")
+        print("Usage: uv run python code/apply_lipsync.py <face.mp4> <audio.mp3> <output.mp4> [resize_factor]")
         sys.exit(1)
-    result = apply_wav2lip(Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3]))
+    rf = int(sys.argv[4]) if len(sys.argv) > 4 else 2
+    result = apply_wav2lip(Path(sys.argv[1]), Path(sys.argv[2]), Path(sys.argv[3]), resize_factor=rf)
     print(json.dumps(result, indent=2))

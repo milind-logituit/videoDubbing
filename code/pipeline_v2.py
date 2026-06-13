@@ -30,6 +30,7 @@ import sys as _sys
 _sys.path.insert(0, str(Path(__file__).parent))
 from eval_lipsync import compute_lipsync_score
 from apply_lipsync import apply_wav2lip
+from emotion import classify_segment_emotions, score_emotion_consistency
 
 # Re-exported from sub-modules so tests pulling from this module still work
 from diarize import (                                         # noqa: E402
@@ -42,6 +43,7 @@ from tts_audio import (                                       # noqa: E402
     synthesize_hindi_audio, _duck_original_audio,
     _seg_voice, _voice_tag, MAX_RATE_PCT,                    # noqa: F401
     TTS_VOICE_FEMALE_HI, TTS_VOICE_MALE_HI,
+    TTS_VOICE_FEMALE_EN, TTS_VOICE_MALE_EN,                    # noqa: F401
     TTS_VOICE_HI, TTS_BASE_RATE_PCT,                         # noqa: F401
     BG_AUDIO_VOL, BG_AUDIO_VOL_SPEECH,
 )
@@ -197,11 +199,11 @@ def extract_audio(video_path: Path) -> Path:
 # Stage 3 — ASR
 # ─────────────────────────────────────────────────────────────────────────────
 
-def transcribe(audio_path: Path) -> dict:
+def transcribe(audio_path: Path, source_lang: str = "en") -> dict:
     print(f"  Loading Whisper '{WHISPER_MODEL}' …")
     model = whisper.load_model(WHISPER_MODEL)
-    print(f"  Transcribing {audio_path.name} …")
-    result = model.transcribe(str(audio_path), language="en",
+    print(f"  Transcribing {audio_path.name} (lang={source_lang}) …")
+    result = model.transcribe(str(audio_path), language=source_lang,
                                word_timestamps=True, verbose=False)
     print(f"  Transcript: {result['text'].strip()[:100]} …")
     return result
@@ -211,19 +213,25 @@ def transcribe(audio_path: Path) -> dict:
 # Stage 4 — Translation
 # ─────────────────────────────────────────────────────────────────────────────
 
-FILLER_MAP = {"hmm": "हाँ", "uh": "", "um": "", "ah": "अच्छा"}
+_FILLER_MAPS: dict[str, dict[str, str]] = {
+    "hi": {"hmm": "हाँ", "uh": "", "um": "", "ah": "अच्छा"},
+    "en": {"hmm": "yeah", "uh": "", "um": "", "ah": "ah"},
+}
 
 
-def translate_segments(whisper_result: dict) -> list[dict]:
-    translator   = GoogleTranslator(source="en", target="hi")
+def translate_segments(whisper_result: dict,
+                       source_lang: str = "en",
+                       target_lang: str = "hi") -> list[dict]:
+    translator   = GoogleTranslator(source=source_lang, target=target_lang)
+    filler_map   = _FILLER_MAPS.get(target_lang, {})
     segments_out = []
     for seg in whisper_result["segments"]:
         en = seg["text"].strip()
         if not en:
             continue
         hi = translator.translate(en)
-        if en.lower().rstrip(".!?,") in FILLER_MAP:
-            hi = FILLER_MAP[en.lower().rstrip(".!?,")]
+        if en.lower().rstrip(".!?,") in filler_map:
+            hi = filler_map[en.lower().rstrip(".!?,")]
         entry: dict = {
             "id":       seg["id"],
             "start":    round(seg["start"], 3),
@@ -247,49 +255,77 @@ def translate_segments(whisper_result: dict) -> list[dict]:
 
 _LLM_BATCH = 100
 
-_REFINE_SYSTEM = (
-    "You are a professional Hindi dubbing editor for OTT streaming content "
-    "(Eros Now / SunNxt).\n"
-    "Input: JSON array of segments, each with ASR English (en_text), "
-    "Google-Translate Hindi (hi_text), and duration_s (seconds available "
-    "to speak this line).\n"
-    "For each segment:\n"
-    "  1. Fix ASR transcription errors in en_text "
-    "(e.g. 'half is likely' → 'half as likely').\n"
-    "  2. Rewrite hi_text as natural spoken Hindi for dubbing that fits "
-    "within duration_s seconds.\n"
-    "     • Hindi TTS speaks at ~3.5 words/second — use this to judge "
-    "length. A 2s window fits ~7 Hindi words maximum.\n"
-    "     • Prefer shorter, natural phrasing over complete sentences when "
-    "the window is tight. Cut filler and subordinate clauses first.\n"
-    "     • Use common, everyday Hindi vocabulary (Hindustani/Bollywood register) "
-    "that speech recognition systems reliably transcribe. "
-    "Avoid rare, Sanskritised, or literary Hindi words — prefer their "
-    "everyday equivalents (e.g. 'काम' over 'कार्य', 'बात' over 'वार्तालाप').\n"
-    "     • Distinguish dinner vs supper, couch vs sofa, etc.\n"
-    "     • Fillers: 'Hmm' → 'हाँ', 'Uh'/'Um' → empty string, "
-    "'Ah' → 'अच्छा'.\n"
-    "Return ONLY a valid JSON array: "
-    '[{"id": int, "en_text": str, "hi_text": str}, …]. '
-    "Do NOT include duration_s in output. "
-    "Same count and IDs as input. No markdown, no explanation."
-)
+_LANG_NAMES = {"en": "English", "hi": "Hindi", "de": "German"}
+
+_REFINE_TARGET_GUIDANCE = {
+    "hi": (
+        "     • Hindi TTS speaks at ~3.5 words/second — use this to judge "
+        "length. A 2s window fits ~7 Hindi words maximum.\n"
+        "     • Prefer shorter, natural phrasing over complete sentences when "
+        "the window is tight. Cut filler and subordinate clauses first.\n"
+        "     • Use common, everyday Hindi vocabulary (Hindustani/Bollywood register) "
+        "that speech recognition systems reliably transcribe. "
+        "Avoid rare, Sanskritised, or literary Hindi words — prefer their "
+        "everyday equivalents (e.g. 'काम' over 'कार्य', 'बात' over 'वार्तालाप').\n"
+        "     • Fillers: 'Hmm' → 'हाँ', 'Uh'/'Um' → empty string, 'Ah' → 'अच्छा'.\n"
+    ),
+    "en": (
+        "     • English TTS speaks at ~3.0–3.5 words/second — a 2s window "
+        "fits ~6–7 words maximum.\n"
+        "     • Prefer shorter, natural phrasing when the window is tight.\n"
+        "     • Use natural broadcast English — clear, idiomatic, suitable for "
+        "OTT dubbing. Avoid overly literal translations.\n"
+        "     • Fillers: 'Hmm' → 'Yeah', 'Uh'/'Um' → empty string, 'Ah' → 'Ah'.\n"
+    ),
+}
 
 
-def _refine_batch(client: anthropic.Anthropic, batch: list[dict]) -> dict[int, dict]:
+def _make_refine_system(source_lang: str = "en", target_lang: str = "hi") -> str:
+    src_name = _LANG_NAMES.get(source_lang, source_lang.upper())
+    tgt_name = _LANG_NAMES.get(target_lang, target_lang.upper())
+    guidance = _REFINE_TARGET_GUIDANCE.get(
+        target_lang,
+        f"     • Use natural, idiomatic {tgt_name} suitable for OTT dubbing.\n",
+    )
+    return (
+        f"You are a professional {tgt_name} dubbing editor for OTT streaming content "
+        f"(Eros Now / SunNxt).\n"
+        f"Input: JSON array of segments, each with ASR {src_name} (en_text), "
+        f"machine-translated {tgt_name} (hi_text), and duration_s (seconds available "
+        "to speak this line).\n"
+        "For each segment:\n"
+        "  1. Fix ASR transcription errors in en_text "
+        "(e.g. 'half is likely' → 'half as likely').\n"
+        f"  2. Rewrite hi_text as natural spoken {tgt_name} for dubbing that fits "
+        "within duration_s seconds.\n"
+        + guidance +
+        "     • Distinguish dinner vs supper, couch vs sofa, etc.\n"
+        "If an 'emotion' field is present, preserve that emotional register in the "
+        f"rewritten {tgt_name} — e.g. 'angry' → forceful/urgent phrasing; "
+        "'sad' → soft/subdued phrasing; 'happy' → upbeat/energetic phrasing.\n"
+        "Return ONLY a valid JSON array: "
+        '[{"id": int, "en_text": str, "hi_text": str}, …]. '
+        "Do NOT include duration_s or emotion in output. "
+        "Same count and IDs as input. No markdown, no explanation."
+    )
+
+
+def _refine_batch(client: anthropic.Anthropic, batch: list[dict],
+                  refine_system: str) -> dict[int, dict]:
     payload = [
         {
             "id": s["id"],
             "en_text": s["en_text"],
             "hi_text": s["hi_text"],
             "duration_s": round(s["duration"], 2),
+            **({"emotion": s["emotion"]} if s.get("emotion") else {}),
         }
         for s in batch
     ]
     response = client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=8192,
-        system=_REFINE_SYSTEM,
+        system=refine_system,
         messages=[{"role": "user", "content": json.dumps(payload, ensure_ascii=False)}],
     )
     raw = "".join(b.text for b in response.content if b.type == "text").strip()
@@ -298,18 +334,21 @@ def _refine_batch(client: anthropic.Anthropic, batch: list[dict]) -> dict[int, d
     return {r["id"]: r for r in json.loads(raw)}
 
 
-def refine_segments(segments: list[dict], *, skip: bool = False) -> list[dict]:
-    """Fix ASR errors and rewrite Hindi as natural dubbing-quality speech via Claude."""
+def refine_segments(segments: list[dict], *, skip: bool = False,
+                    source_lang: str = "en", target_lang: str = "hi") -> list[dict]:
+    """Fix ASR errors and rewrite target language as natural dubbing speech via Claude."""
     if skip:
         print("  Stage 4b skipped (--no-llm).")
         return segments
 
+    refine_system = _make_refine_system(source_lang, target_lang)
     client = anthropic.Anthropic()
     n = len(segments)
     n_batches = (n + _LLM_BATCH - 1) // _LLM_BATCH
+    tgt_name = _LANG_NAMES.get(target_lang, target_lang.upper())
     print(
         f"  Calling Claude (claude-sonnet-4-6) to refine {n} segments "
-        f"in {n_batches} batch(es) …"
+        f"→ {tgt_name} in {n_batches} batch(es) …"
     )
 
     refined: dict[int, dict] = {}
@@ -317,7 +356,7 @@ def refine_segments(segments: list[dict], *, skip: bool = False) -> list[dict]:
         batch = segments[i * _LLM_BATCH : (i + 1) * _LLM_BATCH]
         if n_batches > 1:
             print(f"    Batch {i + 1}/{n_batches} ({len(batch)} segments) …")
-        refined.update(_refine_batch(client, batch))
+        refined.update(_refine_batch(client, batch, refine_system))
 
     out = []
     for seg in segments:
@@ -376,8 +415,9 @@ def create_dubbed_video(
     hindi_audio_path: Path,
     segments: list[dict] | None = None,
     force: bool = False,
+    target_lang: str = "hi",
 ) -> Path:
-    dubbed_video = RAW / f"{video_path.stem}_dubbed_hi.mp4"
+    dubbed_video = RAW / f"{video_path.stem}_dubbed_{target_lang}.mp4"
     if dubbed_video.exists() and not force:
         print(f"  Dubbed video already exists: {dubbed_video.name}")
         return dubbed_video
@@ -419,12 +459,12 @@ def create_dubbed_video(
 # ─────────────────────────────────────────────────────────────────────────────
 
 def save_outputs(segments, vtt, srt, metrics, src_audio, dubbed_audio,
-                 stem: str = "sample"):
+                 stem: str = "sample", target_lang: str = "hi"):
     pd.DataFrame(segments).to_csv(
         PREPARED / f"transcript_bilingual_{stem}.csv", index=False
     )
-    (MODEL_OUT / f"subtitles_{stem}_hi.vtt").write_text(vtt, encoding="utf-8")
-    (MODEL_OUT / f"subtitles_{stem}_hi.srt").write_text(srt, encoding="utf-8")
+    (MODEL_OUT / f"subtitles_{stem}_{target_lang}.vtt").write_text(vtt, encoding="utf-8")
+    (MODEL_OUT / f"subtitles_{stem}_{target_lang}.srt").write_text(srt, encoding="utf-8")
     with open(MODEL_OUT / f"metrics_{stem}.json", "w") as f:
         json.dump(metrics, f, indent=2, ensure_ascii=False)
     print(f"\nSaved outputs to {MODEL_OUT}/")
@@ -455,7 +495,13 @@ if __name__ == "__main__":
     parser.add_argument("--lipsync", action="store_true",
                         help="Run Wav2Lip (Stage 7b) to re-generate mouth movements. "
                              "Slow — adds ~5 min per 2 min of video.")
+    parser.add_argument("--source-lang", type=str, default="en",
+                        help="Source language for ASR (Whisper language code, default: en).")
+    parser.add_argument("--target-lang", type=str, default="hi",
+                        help="Target language for translation and TTS (default: hi).")
     args = parser.parse_args()
+    source_lang = args.source_lang
+    target_lang = args.target_lang
 
     if args.input:
         if not args.input.exists():
@@ -470,7 +516,16 @@ if __name__ == "__main__":
     audio_path = extract_audio(video_path)
 
     print("\nStage 3 — ASR (Whisper) …")
-    whisper_result = transcribe(audio_path)
+    whisper_result = transcribe(audio_path, source_lang=source_lang)
+
+    print("\nStage 2.5 — Emotion analysis (SER) …")
+    whisper_result["segments"] = classify_segment_emotions(
+        audio_path, whisper_result["segments"]
+    )
+    emo_counts: dict[str, int] = {}
+    for s in whisper_result["segments"]:
+        emo_counts[s.get("emotion", "neutral")] = emo_counts.get(s.get("emotion", "neutral"), 0) + 1
+    print(f"  Emotion distribution: {emo_counts}")
 
     print("\nStage 3.5 — Speaker diarization …")
     speaker_voices: dict[str, str] = {}
@@ -489,35 +544,41 @@ if __name__ == "__main__":
             )
             genders = detect_speaker_genders(audio_path,
                                              whisper_result["segments"])
+            _male_v   = TTS_VOICE_MALE_EN   if target_lang == "en" else TTS_VOICE_MALE_HI
+            _female_v = TTS_VOICE_FEMALE_EN if target_lang == "en" else TTS_VOICE_FEMALE_HI
             speaker_voices = {
-                sp: (TTS_VOICE_MALE_HI if g == "male" else TTS_VOICE_FEMALE_HI)
+                sp: (_male_v if g == "male" else _female_v)
                 for sp, g in genders.items()
             }
             print(f"  Voice map: {speaker_voices}")
 
     print("\nStage 4 — Translation (Google Translate) …")
-    segments = translate_segments(whisper_result)
+    segments = translate_segments(whisper_result,
+                                  source_lang=source_lang, target_lang=target_lang)
 
     print("\nStage 4b — LLM post-correction (Claude) …")
-    segments = refine_segments(segments, skip=args.no_llm)
+    segments = refine_segments(segments, skip=args.no_llm,
+                               source_lang=source_lang, target_lang=target_lang)
 
     print("\nStage 5 — Generating subtitle files …")
     vtt = generate_vtt(segments)
     srt = generate_srt(segments)
     print(f"  VTT: {len(vtt)} chars  |  SRT: {len(srt)} chars")
 
-    print("\nStage 6 — Hindi TTS …")
+    tgt_name = _LANG_NAMES.get(target_lang, target_lang.upper())
+    print(f"\nStage 6 — {tgt_name} TTS …")
     hindi_audio = synthesize_hindi_audio(
         segments, stem=video_path.stem, src_audio=audio_path,
-        speaker_voices=speaker_voices,
+        speaker_voices=speaker_voices, target_lang=target_lang,
     )
 
     print("\nStage 7 — Creating dubbed video …")
-    dubbed_video = create_dubbed_video(video_path, hindi_audio, segments=segments)
+    dubbed_video = create_dubbed_video(video_path, hindi_audio, segments=segments,
+                                       target_lang=target_lang)
 
     if args.lipsync:
         print("\nStage 7b — Wav2Lip lip-sync …")
-        ls_out = RAW / f"{video_path.stem}_lipsync_hi.mp4"
+        ls_out = RAW / f"{video_path.stem}_lipsync_{target_lang}.mp4"
         wav2lip_result = apply_wav2lip(video_path, hindi_audio, ls_out)
         if wav2lip_result["success"]:
             print(f"  Lip-synced video: {ls_out.name}")
@@ -546,9 +607,10 @@ if __name__ == "__main__":
     )
 
     print("\nStage 8c — Back-translation BLEU …")
-    original_en = whisper_result["text"].strip()
+    original_src = whisper_result["text"].strip()
     metrics["back_translation"] = compute_back_translation_bleu(
-        hindi_audio, original_en
+        hindi_audio, original_src,
+        source_lang=source_lang, target_lang=target_lang,
     )
 
     print("\nStage 8d — Lip-sync score …")
@@ -561,18 +623,31 @@ if __name__ == "__main__":
     else:
         print(f"  Lip-sync score unavailable: {ls.get('note')}")
 
+    print("\nStage 8e — Emotion consistency score …")
+    try:
+        metrics["emotion"] = score_emotion_consistency(
+            audio_path, hindi_audio, segments
+        )
+        ep = metrics["emotion"]
+        print(f"  Emotion match: {ep['match_pct']}% over {ep['n_segments']} segments")
+    except Exception as exc:
+        metrics["emotion"] = {"match_pct": None, "note": str(exc)}
+        print(f"  [warn] Emotion scoring failed: {exc}")
+
     save_outputs(segments, vtt, srt, metrics, src_audio, hindi_audio,
-                 stem=video_path.stem)
+                 stem=video_path.stem, target_lang=target_lang)
 
     print("\n── Quality metrics ──")
     wer_pct    = metrics["asr"]["wer_pct"]
     bleu       = metrics["translation"]["bleu"]
     bt_bleu    = metrics["back_translation"].get("bleu")
     sync_score = metrics["lipsync"].get("sync_score")
+    emo_match  = metrics.get("emotion", {}).get("match_pct")
     print(f"  ASR WER              : {f'{wer_pct:.1f}%' if wer_pct is not None else 'N/A'}")
     print(f"  Translation BLEU     : {f'{bleu:.1f}' if bleu is not None else 'N/A'}")
     print(f"  Back-translation BLEU: {f'{bt_bleu:.1f}' if bt_bleu is not None else 'N/A'}")
     print(f"  Lip-sync score       : {f'{sync_score:.3f}' if sync_score is not None else 'N/A'}")
+    print(f"  Emotion match        : {f'{emo_match:.1f}%' if emo_match is not None else 'N/A'}")
     print(f"  Duration ratio       : {metrics['alignment']['duration_ratio']:.3f}")
     print("\nDone.")
 

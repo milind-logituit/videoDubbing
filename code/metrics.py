@@ -131,23 +131,30 @@ def compute_metrics(whisper_result: dict, segments: list[dict],
 
 
 def compute_back_translation_bleu(dubbed_audio: Path,
-                                   original_en_text: str) -> dict:
-    """ASR the dubbed Hindi audio, back-translate to English, score with BLEU."""
+                                   original_source_text: str,
+                                   source_lang: str = "en",
+                                   target_lang: str = "hi") -> dict:
+    """ASR dubbed audio, back-translate to source language, score with BLEU."""
     try:
-        print("  Transcribing dubbed Hindi audio …")
-        hi_model = whisper.load_model(WHISPER_MODEL_HI)
-        hi_result = hi_model.transcribe(str(dubbed_audio), language="hi")
-        hi_transcript = hi_result["text"].strip()
+        print(f"  Transcribing dubbed {target_lang.upper()} audio …")
+        model_size = WHISPER_MODEL_HI if target_lang == "hi" else WHISPER_MODEL
+        tgt_model = whisper.load_model(model_size)
+        tgt_result = tgt_model.transcribe(str(dubbed_audio), language=target_lang)
+        tgt_transcript = tgt_result["text"].strip()
 
-        print("  Back-translating Hindi → English …")
-        bt_en = GoogleTranslator(source="hi", target="en").translate(hi_transcript)
+        print(f"  Back-translating {target_lang.upper()} → {source_lang.upper()} …")
+        bt_text = GoogleTranslator(source=target_lang, target=source_lang).translate(tgt_transcript)
 
-        bleu_obj = sacrebleu.corpus_bleu([bt_en], [[original_en_text]])
-        return {
-            "hi_transcript_chars": len(hi_transcript),
-            "back_translated_en": bt_en,
+        bleu_obj = sacrebleu.corpus_bleu([bt_text], [[original_source_text]])
+        result = {
+            "tgt_transcript_chars": len(tgt_transcript),
+            "back_translated": bt_text,
             "bleu": round(bleu_obj.score, 2),
         }
+        if target_lang == "hi":
+            result["hi_transcript_chars"] = len(tgt_transcript)
+            result["back_translated_en"] = bt_text
+        return result
     except Exception as exc:
         return {"bleu": None, "note": f"Failed: {exc}"}
 
