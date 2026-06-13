@@ -3,13 +3,13 @@
     "model": "base",
     "wer": null,
     "wer_pct": null,
-    "note": "N/A \u2014 no reference text for this clip"
+    "note": "N/A — no reference text for this clip"
   },
   "translation": {
-    "model": "Google Translate (en\u2192hi)",
+    "model": "Google Translate (en→hi)",
     "bleu": null,
     "n_segments": 14,
-    "note": "N/A \u2014 no reference text for this clip"
+    "note": "N/A — no reference text for this clip"
   },
   "tts": {
     "voice": "hi-IN-SwaraNeural",
@@ -60,7 +60,7 @@
       "fit": 3,
       "fidelity": 4,
       "fluency": 4,
-      "note": "\u0905\u092a\u0928\u093e \u091c\u0941\u0928\u0942\u0928 \u091c\u0940\u0928\u093e is slightly awkward; '\u0905\u092a\u0928\u0947 \u091c\u0941\u0928\u0942\u0928 \u0915\u093e \u092a\u093e\u0932\u0928 \u0915\u0930\u0928\u093e' would be more natural"
+      "note": "अपना जुनून जीना is slightly awkward; 'अपने जुनून का पालन करना' would be more natural"
     },
     {
       "id": 3,
@@ -72,7 +72,7 @@
       "fit": 2,
       "fidelity": 3,
       "fluency": 3,
-      "note": "'\u092e\u0941\u091d\u0947 \u092c\u0938 \u0905\u0902\u0924\u0930\u093f\u0915\u094d\u0937 \u092e\u0947\u0902 \u091c\u093e\u0928\u093e \u0939\u0948' misses 'be awesome'; should convey '\u0905\u0902\u0924\u0930\u093f\u0915\u094d\u0937 \u092e\u0947\u0902 \u0936\u093e\u0928\u0926\u093e\u0930 \u092c\u0928\u0928\u093e' or similar"
+      "note": "'मुझे बस अंतरिक्ष में जाना है' misses 'be awesome'; should convey 'अंतरिक्ष में शानदार बनना' or similar"
     },
     {
       "id": 4,
@@ -117,7 +117,7 @@
       "fit": 1,
       "fidelity": 3,
       "fluency": 3,
-      "note": "'\u0916\u0942\u0928 \u092d\u0930\u093e \u0935\u093f\u0936\u093e\u0932 \u0930\u094b\u092c\u094b\u091f\u093f\u0915 \u092a\u0902\u091c\u093e' is unclear; '\u0916\u0942\u0928 \u0938\u0947 \u0938\u0928\u093e \u0939\u0941\u0906' or '\u0916\u0942\u0928\u0940' would be clearer. Also missing 'being chased by' nuance in phrasing"
+      "note": "'खून भरा विशाल रोबोटिक पंजा' is unclear; 'खून से सना हुआ' or 'खूनी' would be clearer. Also missing 'being chased by' nuance in phrasing"
     },
     {
       "id": 8,
@@ -129,7 +129,7 @@
       "fit": 2,
       "fidelity": 2,
       "fluency": 2,
-      "note": "'\u092e\u0941\u091d\u0947 \u0928\u0939\u0940\u0902 \u0915\u0930\u0928\u093e' is incorrect grammar (should be '\u092e\u0941\u091d\u0947 \u0928\u0939\u0940\u0902 \u0915\u0930\u0928\u093e \u091a\u093e\u0939\u093f\u090f' or '\u092e\u0948\u0902 \u0928\u0939\u0940\u0902 \u0939\u0942\u0901'); '\u0939\u094b \u0917\u092f\u093e \u0916\u0924\u094d\u092e' is awkward word order"
+      "note": "'मुझे नहीं करना' is incorrect grammar (should be 'मुझे नहीं करना चाहिए' or 'मैं नहीं हूँ'); 'हो गया खत्म' is awkward word order"
     },
     {
       "id": 9,
@@ -141,7 +141,7 @@
       "fit": 5,
       "fidelity": 4,
       "fluency": 3,
-      "note": "'\u0938\u093f\u0902\u0915 \u0939\u094b \u0917\u0908' is colloquial; 'synchronize' in technical context might need '\u0938\u093f\u0902\u0915\u094d\u0930\u094b\u0928\u093e\u0907\u091c' or '\u0938\u093f\u0902\u0915\u094d\u0930\u0928\u093e\u0907\u091c\u0947\u0936\u0928 \u092a\u0942\u0930\u0940 \u0939\u0941\u0908'"
+      "note": "'सिंक हो गई' is colloquial; 'synchronize' in technical context might need 'सिंक्रोनाइज' or 'सिंक्रनाइजेशन पूरी हुई'"
     },
     {
       "id": 10,
@@ -164,7 +164,7 @@
       "fit": 3,
       "fidelity": 2,
       "fluency": 3,
-      "note": "'This is pretty freaking' is unclear English; Hindi translation '\u092f\u0939 \u0924\u094b \u092c\u0921\u093c\u093e \u0905\u091c\u0940\u092c \u0939\u0948' misses intended meaning. Context suggests incomplete thought or slang usage"
+      "note": "'This is pretty freaking' is unclear English; Hindi translation 'यह तो बड़ा अजीब है' misses intended meaning. Context suggests incomplete thought or slang usage"
     },
     {
       "id": 12,
@@ -207,5 +207,123 @@
     "best_lag_ms": 0.0,
     "faces_pct": 6.6,
     "note": null
+  },
+  "emotion": {
+    "match_pct": 50.0,
+    "n_segments": 14,
+    "segments": [
+      {
+        "id": 0,
+        "source_emotion": "neutral",
+        "source_score": 0.869,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.978,
+        "match": true
+      },
+      {
+        "id": 1,
+        "source_emotion": "neutral",
+        "source_score": 0.849,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.993,
+        "match": true
+      },
+      {
+        "id": 2,
+        "source_emotion": "angry",
+        "source_score": 0.759,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.773,
+        "match": true
+      },
+      {
+        "id": 3,
+        "source_emotion": "angry",
+        "source_score": 0.989,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.643,
+        "match": false
+      },
+      {
+        "id": 4,
+        "source_emotion": "angry",
+        "source_score": 0.634,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.956,
+        "match": true
+      },
+      {
+        "id": 5,
+        "source_emotion": "angry",
+        "source_score": 0.975,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.988,
+        "match": true
+      },
+      {
+        "id": 6,
+        "source_emotion": "angry",
+        "source_score": 0.996,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.655,
+        "match": false
+      },
+      {
+        "id": 7,
+        "source_emotion": "angry",
+        "source_score": 0.529,
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.616,
+        "match": false
+      },
+      {
+        "id": 8,
+        "source_emotion": "happy",
+        "source_score": 0.995,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.737,
+        "match": false
+      },
+      {
+        "id": 9,
+        "source_emotion": "happy",
+        "source_score": 0.909,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.844,
+        "match": false
+      },
+      {
+        "id": 10,
+        "source_emotion": "neutral",
+        "source_score": 1.0,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 1.0,
+        "match": true
+      },
+      {
+        "id": 11,
+        "source_emotion": "sad",
+        "source_score": 1.0,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.647,
+        "match": false
+      },
+      {
+        "id": 12,
+        "source_emotion": "neutral",
+        "source_score": 0.999,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.924,
+        "match": false
+      },
+      {
+        "id": 13,
+        "source_emotion": "neutral",
+        "source_score": 0.944,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.44,
+        "match": true
+      }
+    ]
   }
 }

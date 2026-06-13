@@ -3,13 +3,13 @@
     "model": "base",
     "wer": null,
     "wer_pct": null,
-    "note": "N/A \u2014 no reference text for this clip"
+    "note": "N/A — no reference text for this clip"
   },
   "translation": {
-    "model": "Google Translate (en\u2192hi)",
+    "model": "Google Translate (en→hi)",
     "bleu": null,
     "n_segments": 15,
-    "note": "N/A \u2014 no reference text for this clip"
+    "note": "N/A — no reference text for this clip"
   },
   "tts": {
     "voice": "hi-IN-SwaraNeural",
@@ -112,7 +112,7 @@
       "fit": 3,
       "fidelity": 3,
       "fluency": 3,
-      "note": "Hindi translation is incomplete and awkward; '\u0906\u092a' (you formal) doesn't fit the casual context and the sentence structure is fragmented compared to the English"
+      "note": "Hindi translation is incomplete and awkward; 'आप' (you formal) doesn't fit the casual context and the sentence structure is fragmented compared to the English"
     },
     {
       "id": 8,
@@ -157,7 +157,7 @@
       "fit": 3,
       "fidelity": 4,
       "fluency": 4,
-      "note": "Literal translation '\u0926\u0947\u0916\u0924\u0947 \u091c\u093e\u0913' is slightly awkward; '\u0924\u0941\u092e \u0926\u0947\u0916\u094b\u0917\u0947, \u0924\u0941\u092e \u0926\u0947\u0916\u094b\u0917\u0947' would be more natural for this context"
+      "note": "Literal translation 'देखते जाओ' is slightly awkward; 'तुम देखोगे, तुम देखोगे' would be more natural for this context"
     },
     {
       "id": 12,
@@ -195,7 +195,7 @@
   ],
   "back_translation": {
     "hi_transcript_chars": 279,
-    "back_translated_en": "To the left and right we can see a cannon. Everything is absolutely safe with Dolas Hour. Amo\u2026 Avar\u2026 No, this is Joth Dhaan, it was not me, you. No it is not. Dwar is not everything. So no no it isn't? You will give, you will jump. You will wake up and get extinguished. Pyaav. Inferior itch after itch after itch. Inferior scratches.",
+    "back_translated_en": "To the left and right we can see a cannon. Everything is absolutely safe with Dolas Hour. Amo… Avar… No, this is Joth Dhaan, it was not me, you. No it is not. Dwar is not everything. So no no it isn't? You will give, you will jump. You will wake up and get extinguished. Pyaav. Inferior itch after itch after itch. Inferior scratches.",
     "bleu": 4.41
   },
   "lipsync": {
@@ -208,6 +208,132 @@
   "lipsync_wav2lip": {
     "sync_score": null,
     "faces_pct": 4.4,
-    "note": "Face detected in only 4.4% of frames \u2014 not enough for scoring"
+    "note": "Face detected in only 4.4% of frames — not enough for scoring"
+  },
+  "emotion": {
+    "match_pct": 20.0,
+    "n_segments": 15,
+    "segments": [
+      {
+        "id": 0,
+        "source_emotion": "neutral",
+        "source_score": 0.989,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.975,
+        "match": false
+      },
+      {
+        "id": 1,
+        "source_emotion": "sad",
+        "source_score": 0.986,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.754,
+        "match": false
+      },
+      {
+        "id": 2,
+        "source_emotion": "happy",
+        "source_score": 0.743,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.942,
+        "match": false
+      },
+      {
+        "id": 3,
+        "source_emotion": "happy",
+        "source_score": 0.887,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.926,
+        "match": false
+      },
+      {
+        "id": 4,
+        "source_emotion": "happy",
+        "source_score": 0.89,
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.442,
+        "match": true
+      },
+      {
+        "id": 5,
+        "source_emotion": "happy",
+        "source_score": 0.871,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.71,
+        "match": false
+      },
+      {
+        "id": 6,
+        "source_emotion": "neutral",
+        "source_score": 0.568,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.97,
+        "match": false
+      },
+      {
+        "id": 7,
+        "source_emotion": "neutral",
+        "source_score": 0.499,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.961,
+        "match": true
+      },
+      {
+        "id": 8,
+        "source_emotion": "angry",
+        "source_score": 0.696,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.595,
+        "match": false
+      },
+      {
+        "id": 9,
+        "source_emotion": "sad",
+        "source_score": 0.832,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.55,
+        "match": false
+      },
+      {
+        "id": 10,
+        "source_emotion": "happy",
+        "source_score": 0.756,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.5,
+        "match": false
+      },
+      {
+        "id": 11,
+        "source_emotion": "sad",
+        "source_score": 0.912,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.996,
+        "match": false
+      },
+      {
+        "id": 12,
+        "source_emotion": "sad",
+        "source_score": 0.503,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.464,
+        "match": false
+      },
+      {
+        "id": 13,
+        "source_emotion": "happy",
+        "source_score": 0.992,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.979,
+        "match": false
+      },
+      {
+        "id": 14,
+        "source_emotion": "neutral",
+        "source_score": 1.0,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 1.0,
+        "match": true
+      }
+    ]
   }
 }

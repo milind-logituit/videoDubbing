@@ -3,13 +3,13 @@
     "model": "base",
     "wer": null,
     "wer_pct": null,
-    "note": "N/A \u2014 no reference text for this clip"
+    "note": "N/A — no reference text for this clip"
   },
   "translation": {
-    "model": "Google Translate (en\u2192hi)",
+    "model": "Google Translate (en→hi)",
     "bleu": null,
     "n_segments": 34,
-    "note": "N/A \u2014 no reference text for this clip"
+    "note": "N/A — no reference text for this clip"
   },
   "tts": {
     "voice": "hi-IN-SwaraNeural",
@@ -334,7 +334,7 @@
   ],
   "back_translation": {
     "hi_transcript_chars": 1134,
-    "back_translated_en": "hundred hundred hundred hundred Jasmine Nama SAW tens\u713c tens\u713c tens\u713c tens\u713c tens\u713cens tens tens tens tens tens tens tens tens tens tens tens \u0641\u0679\u06be \u06a9\u06cc\u0633\u06d2 \u0631\u06c1\u062a\u06d2 \u06c1\u06cc\u06ba, \u0632\u06cc\u0627\u062f\u06c1 \u062a\u0631 \u062f\u06a9\u0679\u0631 \u0627\u06cc\u06a9 \u0628\u0627\u062a \u06a9\u06c1\u062a\u06d2 \u06c1\u06cc\u06ba \u062c\u0648 \u0648\u06cc\u0627\u06cc\u0627\u0645 \u06a9\u06d2 \u0644\u0626\u06d2 \u0648\u0642\u062a \u0646\u06c1\u06cc\u06ba \u0646\u06a9\u0627\u0644\u062a\u06d2, \u0627\u064f\u0646\u06d2 \u0628\u06be\u06cc \u0645\u0627\u0631\u06cc \u06a9\u06d2 \u0644\u0626\u06d2 \u0648\u0642\u062a \u0646\u06a9\u0627\u0644\u0646\u0627 \u067e\u0691\u06d2 \u06af\u0627 \u062d\u0627\u06ba, \u0633\u0645\u062c\u06be\u0646\u0627 \u06cc\u0627\u0646\u06cc \u0648\u06cc\u0627\u06cc\u0627\u0645 \u06a9\u0631\u0646\u0627 \u0628\u06d2 \u06c1\u062a \u0636\u0631\u0648\u0631\u06cc \u06c1\u06d2 \u0627\u06cc\u06a9 \u0627\u0648\u0631 \u067e\u0631\u0627\u0646\u06cc \u06a9\u06c1\u0627\u06c1\u062a \u06c1\u06d2 \u062f\u0648 \u067e\u06c1\u0631 \u06a9\u06d2 \u06a9\u06be\u0627\u0646\u06d2 \u06a9\u06d2 \u0628\u0639\u062f \u062a\u06be\u0648\u0691\u0627 \u0622\u0631\u0627\u0645 \u06a9\u0631\u0648 \u0627\u0648\u0631 \u0631\u0627\u062a \u06a9\u06d2 \u06a9\u06be\u0627\u0646\u06d2 \u06a9\u06d2 \u0628\u0639\u062f \u062a\u06be\u0648\u0691\u0627 \u0679\u06be\u0644\u0627 \u067e\u06cc\u062f\u0644 \u0686\u0644\u0646\u0627 \u0628\u06be\u06cc \u0628\u0691\u06cc\u0627 The reality is that we can do a lot of things to improve our hands, just take small steps, ask for better sleep, take measures to eat less, reduce salt, be happy and check the feet, it is very important to check the feet, check twice to see how the feet are, floss every day and drink coffee, and the most important thing is to have breakfast. Now here's a heartwarming message which I received in the year 2004, published in a magazine called Hath. And in this it was said that create a network, you will think what network has to do with beauty but they said that if you miss the heart's journey, then the chances of taking another journey are reduced. If you have any friends and loved ones, that is, friends and love are not necessary, where today we are talking about Swaz, so let's start.",
+    "back_translated_en": "hundred hundred hundred hundred Jasmine Nama SAW tens焼 tens焼 tens焼 tens焼 tens焼ens tens tens tens tens tens tens tens tens tens tens tens فٹھ کیسے رہتے ہیں, زیادہ تر دکٹر ایک بات کہتے ہیں جو ویایام کے لئے وقت نہیں نکالتے, اُنے بھی ماری کے لئے وقت نکالنا پڑے گا حاں, سمجھنا یانی ویایام کرنا بے ہت ضروری ہے ایک اور پرانی کہاہت ہے دو پہر کے کھانے کے بعد تھوڑا آرام کرو اور رات کے کھانے کے بعد تھوڑا ٹھلا پیدل چلنا بھی بڑیا The reality is that we can do a lot of things to improve our hands, just take small steps, ask for better sleep, take measures to eat less, reduce salt, be happy and check the feet, it is very important to check the feet, check twice to see how the feet are, floss every day and drink coffee, and the most important thing is to have breakfast. Now here's a heartwarming message which I received in the year 2004, published in a magazine called Hath. And in this it was said that create a network, you will think what network has to do with beauty but they said that if you miss the heart's journey, then the chances of taking another journey are reduced. If you have any friends and loved ones, that is, friends and love are not necessary, where today we are talking about Swaz, so let's start.",
     "bleu": 3.49
   },
   "lipsync": {
@@ -347,6 +347,284 @@
   "lipsync_wav2lip": {
     "sync_score": null,
     "faces_pct": 0.0,
-    "note": "Face detected in only 0.0% of frames \u2014 not enough for scoring"
+    "note": "Face detected in only 0.0% of frames — not enough for scoring"
+  },
+  "emotion": {
+    "match_pct": 70.6,
+    "n_segments": 34,
+    "segments": [
+      {
+        "id": 0,
+        "source_emotion": "angry",
+        "source_score": 0.515,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.859,
+        "match": true
+      },
+      {
+        "id": 1,
+        "source_emotion": "angry",
+        "source_score": 0.793,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.822,
+        "match": true
+      },
+      {
+        "id": 2,
+        "source_emotion": "angry",
+        "source_score": 0.999,
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.728,
+        "match": false
+      },
+      {
+        "id": 3,
+        "source_emotion": "angry",
+        "source_score": 0.982,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.773,
+        "match": false
+      },
+      {
+        "id": 4,
+        "source_emotion": "angry",
+        "source_score": 0.999,
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.443,
+        "match": false
+      },
+      {
+        "id": 5,
+        "source_emotion": "angry",
+        "source_score": 0.999,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.656,
+        "match": true
+      },
+      {
+        "id": 6,
+        "source_emotion": "neutral",
+        "source_score": 0.883,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.811,
+        "match": true
+      },
+      {
+        "id": 7,
+        "source_emotion": "angry",
+        "source_score": 0.994,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.64,
+        "match": true
+      },
+      {
+        "id": 8,
+        "source_emotion": "angry",
+        "source_score": 0.991,
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.656,
+        "match": false
+      },
+      {
+        "id": 9,
+        "source_emotion": "neutral",
+        "source_score": 0.978,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.961,
+        "match": true
+      },
+      {
+        "id": 10,
+        "source_emotion": "angry",
+        "source_score": 0.98,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.836,
+        "match": true
+      },
+      {
+        "id": 11,
+        "source_emotion": "angry",
+        "source_score": 0.892,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.769,
+        "match": false
+      },
+      {
+        "id": 12,
+        "source_emotion": "angry",
+        "source_score": 0.96,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.781,
+        "match": true
+      },
+      {
+        "id": 13,
+        "source_emotion": "angry",
+        "source_score": 0.623,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.98,
+        "match": true
+      },
+      {
+        "id": 14,
+        "source_emotion": "angry",
+        "source_score": 0.984,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.918,
+        "match": true
+      },
+      {
+        "id": 15,
+        "source_emotion": "angry",
+        "source_score": 0.994,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.692,
+        "match": true
+      },
+      {
+        "id": 16,
+        "source_emotion": "angry",
+        "source_score": 0.52,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.82,
+        "match": false
+      },
+      {
+        "id": 17,
+        "source_emotion": "angry",
+        "source_score": 0.983,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.621,
+        "match": true
+      },
+      {
+        "id": 18,
+        "source_emotion": "neutral",
+        "source_score": 1.0,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 1.0,
+        "match": true
+      },
+      {
+        "id": 19,
+        "source_emotion": "angry",
+        "source_score": 0.925,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.874,
+        "match": true
+      },
+      {
+        "id": 20,
+        "source_emotion": "angry",
+        "source_score": 0.862,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 1.0,
+        "match": true
+      },
+      {
+        "id": 21,
+        "source_emotion": "angry",
+        "source_score": 0.997,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.831,
+        "match": false
+      },
+      {
+        "id": 22,
+        "source_emotion": "angry",
+        "source_score": 0.922,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.739,
+        "match": true
+      },
+      {
+        "id": 23,
+        "source_emotion": "neutral",
+        "source_score": 0.593,
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.849,
+        "match": false
+      },
+      {
+        "id": 24,
+        "source_emotion": "angry",
+        "source_score": 0.959,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.981,
+        "match": true
+      },
+      {
+        "id": 25,
+        "source_emotion": "angry",
+        "source_score": 0.582,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.935,
+        "match": true
+      },
+      {
+        "id": 26,
+        "source_emotion": "angry",
+        "source_score": 0.878,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.963,
+        "match": true
+      },
+      {
+        "id": 27,
+        "source_emotion": "angry",
+        "source_score": 0.938,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.58,
+        "match": true
+      },
+      {
+        "id": 28,
+        "source_emotion": "angry",
+        "source_score": 0.997,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.891,
+        "match": true
+      },
+      {
+        "id": 29,
+        "source_emotion": "angry",
+        "source_score": 0.984,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.982,
+        "match": true
+      },
+      {
+        "id": 30,
+        "source_emotion": "angry",
+        "source_score": 0.849,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.963,
+        "match": true
+      },
+      {
+        "id": 31,
+        "source_emotion": "neutral",
+        "source_score": 0.884,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.724,
+        "match": false
+      },
+      {
+        "id": 32,
+        "source_emotion": "angry",
+        "source_score": 0.978,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.932,
+        "match": true
+      },
+      {
+        "id": 33,
+        "source_emotion": "neutral",
+        "source_score": 0.847,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.899,
+        "match": false
+      }
+    ]
   }
 }
