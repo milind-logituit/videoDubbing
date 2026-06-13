@@ -4,18 +4,34 @@ from pathlib import Path
 import numpy as np
 from pydub import AudioSegment
 
-_MODEL_ID    = "superb/wav2vec2-base-superb-er"
+_MODEL_ID    = "ehcalabres/wav2vec2-lg-xlsr-en-speech-emotion-recognition"
 _SAMPLE_RATE = 16000
 _MIN_DUR_S   = 0.5
 
-_LABEL_MAP = {"neu": "neutral", "hap": "happy", "ang": "angry", "sad": "sad"}
+# Model outputs full English labels — pass through as-is, normalise to lowercase
+_LABEL_MAP: dict[str, str] = {
+    "angry":     "angry",
+    "calm":      "calm",
+    "disgust":   "disgust",
+    "fearful":   "fearful",
+    "happy":     "happy",
+    "neutral":   "neutral",
+    "sad":       "sad",
+    "surprised": "surprised",
+    # 4-class fallbacks (old model, kept for safety)
+    "neu": "neutral", "hap": "happy", "ang": "angry",
+}
 
 # SSML prosody per emotion — pitch and volume only; rate handled by isochrony
 SSML_PROSODY: dict[str, dict[str, str]] = {
-    "neutral": {"pitch": "+0%",  "volume": "medium"},
-    "happy":   {"pitch": "+15%", "volume": "loud"},
-    "angry":   {"pitch": "+5%",  "volume": "x-loud"},
-    "sad":     {"pitch": "-12%", "volume": "soft"},
+    "neutral":   {"pitch": "+0%",  "volume": "medium"},
+    "calm":      {"pitch": "-5%",  "volume": "soft"},
+    "happy":     {"pitch": "+15%", "volume": "loud"},
+    "angry":     {"pitch": "+5%",  "volume": "x-loud"},
+    "sad":       {"pitch": "-12%", "volume": "soft"},
+    "fearful":   {"pitch": "+10%", "volume": "soft"},
+    "disgust":   {"pitch": "-5%",  "volume": "medium"},
+    "surprised": {"pitch": "+20%", "volume": "loud"},
 }
 
 _pipeline = None
@@ -42,9 +58,9 @@ def classify_segment_emotions(audio_path: Path,
                                segments: list[dict]) -> list[dict]:
     """Add 'emotion' and 'emotion_score' fields to each segment dict."""
     print(f"  Loading SER model ({_MODEL_ID}) …")
-    pipe   = _get_pipeline()
+    pipe    = _get_pipeline()
     samples = _load_mono_f32(audio_path)
-    out    = []
+    out     = []
     for seg in segments:
         dur = float(seg["end"]) - float(seg["start"])
         if dur < _MIN_DUR_S:
@@ -59,7 +75,7 @@ def classify_segment_emotions(audio_path: Path,
         try:
             preds   = pipe({"array": chunk, "sampling_rate": _SAMPLE_RATE})
             top     = preds[0]
-            emotion = _LABEL_MAP.get(top["label"], "neutral")
+            emotion = _LABEL_MAP.get(top["label"].lower(), top["label"].lower())
             score   = round(float(top["score"]), 3)
         except Exception:
             emotion, score = "neutral", 1.0
@@ -79,8 +95,8 @@ def score_emotion_consistency(original_audio: Path,
     for seg in segments:
         if not seg.get("emotion"):
             continue
-        start_i = int(float(seg["start"]) * _SAMPLE_RATE)
-        end_i   = int(float(seg["end"])   * _SAMPLE_RATE)
+        start_i   = int(float(seg["start"]) * _SAMPLE_RATE)
+        end_i     = int(float(seg["end"])   * _SAMPLE_RATE)
         src_chunk = orig_s[start_i:end_i]
         dub_chunk = dubbed_s[start_i:end_i]
 
@@ -90,22 +106,22 @@ def score_emotion_consistency(original_audio: Path,
             try:
                 preds = pipe({"array": chunk, "sampling_rate": _SAMPLE_RATE})
                 top   = preds[0]
-                return _LABEL_MAP.get(top["label"], "neutral"), round(float(top["score"]), 3)
+                return _LABEL_MAP.get(top["label"].lower(), top["label"].lower()), round(float(top["score"]), 3)
             except Exception:
                 return "neutral", 1.0
 
-        src_emo,  src_score  = _classify(src_chunk)
-        dub_emo,  dub_score  = _classify(dub_chunk)
+        src_emo, src_score = _classify(src_chunk)
+        dub_emo, dub_score = _classify(dub_chunk)
         match = src_emo == dub_emo
         if match:
             matches += 1
         records.append({
-            "id": seg["id"],
-            "source_emotion":  src_emo,
-            "source_score":    src_score,
-            "dubbed_emotion":  dub_emo,
-            "dubbed_score":    dub_score,
-            "match":           match,
+            "id":             seg["id"],
+            "source_emotion": src_emo,
+            "source_score":   src_score,
+            "dubbed_emotion": dub_emo,
+            "dubbed_score":   dub_score,
+            "match":          match,
         })
 
     n = len(records)
