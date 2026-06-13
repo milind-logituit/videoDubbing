@@ -94,15 +94,23 @@ def classify_segment_emotions(audio_path: Path,
     for seg in segments:
         text = str(seg.get("en_text") or "").strip()
         if not text:
-            out.append({**seg, "emotion": "neutral", "emotion_score": 1.0})
+            out.append({**seg, "emotion": "neutral", "emotion_score": 1.0,
+                        "emotion_dist": {"neutral": 1.0}})
             continue
         try:
-            pred    = pipe(text, truncation=True, max_length=512)[0]
-            emotion = _LABEL_MAP.get(pred["label"], "neutral")
-            score   = round(float(pred["score"]), 3)
+            preds   = pipe(text, truncation=True, max_length=512, top_k=None)
+            top     = max(preds, key=lambda x: x["score"])
+            emotion = _LABEL_MAP.get(top["label"], "neutral")
+            score   = round(float(top["score"]), 3)
+            # Full distribution — only include emotions above 5% to keep payload small
+            dist    = {
+                _LABEL_MAP.get(p["label"], "neutral"): round(float(p["score"]), 3)
+                for p in preds if p["score"] >= 0.05
+            }
         except Exception:
-            emotion, score = "neutral", 1.0
-        out.append({**seg, "emotion": emotion, "emotion_score": score})
+            emotion, score, dist = "neutral", 1.0, {"neutral": 1.0}
+        out.append({**seg, "emotion": emotion, "emotion_score": score,
+                    "emotion_dist": dist})
     return out
 
 

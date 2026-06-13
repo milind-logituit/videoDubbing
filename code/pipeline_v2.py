@@ -331,7 +331,10 @@ def _make_refine_system(source_lang: str = "en", target_lang: str = "hi") -> str
         f"(Eros Now / SunNxt).\n"
         f"Input: JSON array of segments, each with ASR {src_name} (en_text), "
         f"machine-translated {tgt_name} (hi_text), duration_s (seconds available "
-        "to speak this line), and optionally an emotion label.\n"
+        "to speak this line), and optionally emotion fields.\n"
+        "When present, 'emotion' is the dominant label and 'emotion_blend' is the full "
+        "probability distribution (e.g. {fearful: 0.65, disgust: 0.20, neutral: 0.15}). "
+        "Use the blend to capture emotional undertones, not just the top label.\n"
         "For each segment:\n"
         "  1. Fix ASR transcription errors in en_text "
         "(e.g. 'half is likely' → 'half as likely').\n"
@@ -355,7 +358,10 @@ def _refine_batch(client: anthropic.Anthropic, batch: list[dict],
             "en_text": s["en_text"],
             "hi_text": s["hi_text"],
             "duration_s": round(s["duration"], 2),
-            **({"emotion": s["emotion"]} if s.get("emotion") else {}),
+            **({"emotion": s["emotion"],
+                "emotion_blend": s["emotion_dist"]}
+               if s.get("emotion_dist") and s.get("emotion") != "neutral"
+               else {"emotion": s["emotion"]} if s.get("emotion") else {}),
         }
         for s in batch
     ]
@@ -407,6 +413,97 @@ def refine_segments(segments: list[dict], *, skip: bool = False,
         if orig["en_text"] != new["en_text"] or orig["hi_text"] != new["hi_text"]
     )
     print(f"  LLM refined {changed}/{len(out)} segments.")
+    return out
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 4c — Emotion register repair loop
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _make_repair_system(source_lang: str = "en", target_lang: str = "hi") -> str:
+    tgt_name      = _LANG_NAMES.get(target_lang, target_lang.upper())
+    emotion_rules = _EMOTION_GUIDANCE.get(target_lang, _DEFAULT_EMOTION_GUIDANCE)
+    return (
+        f"You are rewriting {tgt_name} dubbing segments whose emotional register "
+        f"failed quality review.\n"
+        "Each segment includes: en_text (source), hi_text (current translation that "
+        "failed), emotion (dominant label), emotion_blend (full probability "
+        "distribution), and grade_note (the reviewer's diagnosis).\n"
+        "Your ONLY job: rewrite hi_text so it carries the intended emotional register "
+        "through word choice. Do NOT change meaning, timing, or sentence structure "
+        "unless essential for emotional impact.\n"
+        + emotion_rules +
+        "Return ONLY a valid JSON array: "
+        '[{"id": int, "en_text": str, "hi_text": str}, …]. '
+        "Same count and IDs as input. No markdown, no explanation."
+    )
+
+
+def repair_emotion_register(segments: list[dict], *,
+                             skip: bool = False,
+                             source_lang: str = "en",
+                             target_lang: str = "hi",
+                             threshold: int = 3) -> list[dict]:
+    """Stage 4c — re-refine segments where Haiku grades emotion_register < threshold."""
+    from metrics import grade_translations
+
+    emotional = [s for s in segments
+                 if s.get("emotion") and s["emotion"] != "neutral"]
+    if not emotional:
+        print("  No non-neutral segments — skipping repair.")
+        return segments
+    if skip:
+        print("  Stage 4c skipped (--no-llm).")
+        return segments
+
+    print(f"  Pre-grading {len(emotional)} emotional segment(s) …")
+    grades      = grade_translations(emotional)
+    grades_by_id = {g["id"]: g for g in grades}
+
+    to_repair = [
+        {**s, "grade_note": grades_by_id.get(s["id"], {}).get("note", "register too flat")}
+        for s in emotional
+        if grades_by_id.get(s["id"], {}).get("emotion_register", threshold) < threshold
+    ]
+
+    if not to_repair:
+        print(f"  All emotional segments pass emotion_register ≥ {threshold}.")
+        return segments
+
+    print(f"  {len(to_repair)} segment(s) below threshold — rewriting with repair prompt …")
+    client       = anthropic.Anthropic()
+    repair_system = _make_repair_system(source_lang, target_lang)
+    repair_payload = [
+        {
+            "id":           s["id"],
+            "en_text":      s["en_text"],
+            "hi_text":      s["hi_text"],
+            "emotion":      s["emotion"],
+            "emotion_blend": s.get("emotion_dist", {}),
+            "grade_note":   s["grade_note"],
+        }
+        for s in to_repair
+    ]
+    response = client.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=4096,
+        system=repair_system,
+        messages=[{"role": "user",
+                   "content": json.dumps(repair_payload, ensure_ascii=False)}],
+    )
+    raw = "".join(b.text for b in response.content if b.type == "text").strip()
+    if raw.startswith("```"):
+        raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+    repaired = {r["id"]: r for r in json.loads(raw)}
+
+    out = []
+    for seg in segments:
+        r = repaired.get(seg["id"])
+        if r:
+            seg = {**seg, "hi_text": r["hi_text"]}
+            print(f"    [{seg['start']:.1f}s] repaired ({seg['emotion']})")
+        out.append(seg)
+    print(f"  Repaired {len(repaired)} segment(s).")
     return out
 
 
@@ -596,6 +693,10 @@ if __name__ == "__main__":
     print("\nStage 4b — LLM post-correction (Claude) …")
     segments = refine_segments(segments, skip=args.no_llm,
                                source_lang=source_lang, target_lang=target_lang)
+
+    print("\nStage 4c — Emotion register repair …")
+    segments = repair_emotion_register(segments, skip=args.no_llm,
+                                       source_lang=source_lang, target_lang=target_lang)
 
     print("\nStage 5 — Generating subtitle files …")
     vtt = generate_vtt(segments)
