@@ -127,8 +127,18 @@ def synthesize_hindi_audio(segments: list[dict], stem: str = "sample",
     default_voice = _TTS_DEFAULT_VOICE.get(target_lang, TTS_VOICE_FEMALE_HI)
     dubbed_path = RAW / f"dubbed_{target_lang}_{stem}.mp3"
     if dubbed_path.exists() and not force:
-        print(f"  {target_lang.upper()} audio already exists: {dubbed_path.name}")
-        return dubbed_path
+        # Invalidate cache when segment count differs from what was synthesised.
+        # Segment count is embedded in the seg_dir file count; a mismatch means
+        # the dubbed audio was built for a different segmentation.
+        seg_dir_check = PREPARED / f"{target_lang}_segments_{stem}"
+        valid_segs    = [s for s in segments if str(s.get("hi_text") or "").strip()]
+        cached_count  = len(list(seg_dir_check.glob("seg_*.mp3"))) if seg_dir_check.exists() else 0
+        if cached_count > 0 and abs(cached_count - len(valid_segs)) > 2:
+            print(f"  Segment count changed ({cached_count} cached → {len(valid_segs)} new) "
+                  f"— invalidating TTS cache.")
+        else:
+            print(f"  {target_lang.upper()} audio already exists: {dubbed_path.name}")
+            return dubbed_path
 
     seg_dir = PREPARED / f"{target_lang}_segments_{stem}"
     seg_dir.mkdir(exist_ok=True)
