@@ -1,0 +1,629 @@
+{
+  "asr": {
+    "model": "large-v3-turbo",
+    "wer": null,
+    "wer_pct": null,
+    "note": "N/A — no reference text for this clip"
+  },
+  "translation": {
+    "model": "Google Translate (en→hi)",
+    "bleu": null,
+    "n_segments": 21,
+    "note": "N/A — no reference text for this clip"
+  },
+  "tts": {
+    "voice": "hi-IN-SwaraNeural",
+    "voice_map": {
+      "SPEAKER_00": "hi-IN-SwaraNeural"
+    }
+  },
+  "alignment": {
+    "source_duration_s": 123.0,
+    "dubbed_duration_s": 123.0,
+    "duration_ratio": 1.0,
+    "en_chars_per_sec": 3.2,
+    "hi_chars_per_sec": 4.2
+  },
+  "segment_quality": [
+    {
+      "id": 0,
+      "start": 0.0,
+      "end": 6.38,
+      "en_duration_s": 6.38,
+      "tts_duration_s": 6.07,
+      "isochrony_ratio": 0.951,
+      "fit": 5,
+      "fidelity": 4,
+      "fluency": 4
+    },
+    {
+      "id": 1,
+      "start": 9.0,
+      "end": 14.6,
+      "en_duration_s": 5.6,
+      "tts_duration_s": 3.94,
+      "isochrony_ratio": 0.704,
+      "fit": 3,
+      "fidelity": 4,
+      "fluency": 4
+    },
+    {
+      "id": 2,
+      "start": 16.0,
+      "end": 21.96,
+      "en_duration_s": 5.96,
+      "tts_duration_s": 5.3,
+      "isochrony_ratio": 0.889,
+      "fit": 5,
+      "fidelity": 4,
+      "fluency": 4
+    },
+    {
+      "id": 3,
+      "start": 21.96,
+      "end": 27.8,
+      "en_duration_s": 5.84,
+      "tts_duration_s": 5.18,
+      "isochrony_ratio": 0.887,
+      "fit": 5,
+      "fidelity": 4,
+      "fluency": 4
+    },
+    {
+      "id": 4,
+      "start": 27.8,
+      "end": 33.36,
+      "en_duration_s": 5.56,
+      "tts_duration_s": 3.38,
+      "isochrony_ratio": 0.608,
+      "fit": 3,
+      "fidelity": 4,
+      "fluency": 4
+    },
+    {
+      "id": 5,
+      "start": 34.7,
+      "end": 39.76,
+      "en_duration_s": 5.06,
+      "tts_duration_s": 3.91,
+      "isochrony_ratio": 0.773,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 6,
+      "start": 41.8,
+      "end": 49.9,
+      "en_duration_s": 8.1,
+      "tts_duration_s": 4.75,
+      "isochrony_ratio": 0.586,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 7,
+      "start": 50.8,
+      "end": 54.32,
+      "en_duration_s": 3.52,
+      "tts_duration_s": 3.48,
+      "isochrony_ratio": 0.989,
+      "fit": 5,
+      "fidelity": 4,
+      "fluency": 4
+    },
+    {
+      "id": 8,
+      "start": 61.88,
+      "end": 68.12,
+      "en_duration_s": 6.24,
+      "tts_duration_s": 4.01,
+      "isochrony_ratio": 0.643,
+      "fit": 3,
+      "fidelity": 4,
+      "fluency": 4
+    },
+    {
+      "id": 9,
+      "start": 68.8,
+      "end": 75.22,
+      "en_duration_s": 6.42,
+      "tts_duration_s": 4.08,
+      "isochrony_ratio": 0.636,
+      "fit": 3,
+      "fidelity": 3,
+      "fluency": 3,
+      "note": "Incomplete rendering of 'far away from' — missing object of preposition makes phrase feel truncated"
+    },
+    {
+      "id": 10,
+      "start": 75.22,
+      "end": 80.96,
+      "en_duration_s": 5.74,
+      "tts_duration_s": 3.79,
+      "isochrony_ratio": 0.66,
+      "fit": 3,
+      "fidelity": 4,
+      "fluency": 4
+    },
+    {
+      "id": 11,
+      "start": 82.22,
+      "end": 85.84,
+      "en_duration_s": 3.62,
+      "tts_duration_s": 3.36,
+      "isochrony_ratio": 0.928,
+      "fit": 5,
+      "fidelity": 4,
+      "fluency": 4
+    },
+    {
+      "id": 12,
+      "start": 85.84,
+      "end": 92.18,
+      "en_duration_s": 6.34,
+      "tts_duration_s": 3.91,
+      "isochrony_ratio": 0.617,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 13,
+      "start": 92.18,
+      "end": 92.84,
+      "en_duration_s": 0.66,
+      "tts_duration_s": 2.62,
+      "isochrony_ratio": 3.97,
+      "fit": 1,
+      "fidelity": 2,
+      "fluency": 2,
+      "note": "Severely truncated — only 'सवेरा आता है' omits 'जैसे रात चीर कर' (as the night breaks), losing half the imagery and semantic content"
+    },
+    {
+      "id": 14,
+      "start": 93.58,
+      "end": 102.4,
+      "en_duration_s": 8.82,
+      "tts_duration_s": 4.75,
+      "isochrony_ratio": 0.539,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 15,
+      "start": 102.4,
+      "end": 106.4,
+      "en_duration_s": 4.0,
+      "tts_duration_s": 3.48,
+      "isochrony_ratio": 0.87,
+      "fit": 5,
+      "fidelity": 4,
+      "fluency": 4
+    },
+    {
+      "id": 16,
+      "start": 106.92,
+      "end": 112.48,
+      "en_duration_s": 5.56,
+      "tts_duration_s": 4.58,
+      "isochrony_ratio": 0.824,
+      "fit": 5,
+      "fidelity": 4,
+      "fluency": 4
+    },
+    {
+      "id": 17,
+      "start": 113.88,
+      "end": 114.24,
+      "en_duration_s": 0.36,
+      "tts_duration_s": 1.99,
+      "isochrony_ratio": 5.528,
+      "fit": 1,
+      "fidelity": 1,
+      "fluency": 1,
+      "note": "Drastically incomplete — single word 'सवेरा' cannot convey 'as the dawn breaks through the night'; loses entire phrase structure and meaning"
+    },
+    {
+      "id": 18,
+      "start": 114.24,
+      "end": 117.04,
+      "en_duration_s": 2.8,
+      "tts_duration_s": 3.48,
+      "isochrony_ratio": 1.243,
+      "fit": 4,
+      "fidelity": 3,
+      "fluency": 3,
+      "note": "Missing 'longing for the home' — translation only covers 'I will fall forever', losing semantic depth"
+    },
+    {
+      "id": 19,
+      "start": 117.04,
+      "end": 122.86,
+      "en_duration_s": 5.82,
+      "tts_duration_s": 3.91,
+      "isochrony_ratio": 0.672,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 20,
+      "start": 122.86,
+      "end": 122.96,
+      "en_duration_s": 0.1,
+      "tts_duration_s": 1.92,
+      "isochrony_ratio": 19.2,
+      "fit": 1,
+      "fidelity": 1,
+      "fluency": 1,
+      "note": "Single word 'हमेशा' (forever) cannot represent full phrase 'I will fall forever' — critically incomplete"
+    }
+  ],
+  "back_translation": {
+    "tgt_transcript_chars": 668,
+    "back_translated": "I have seen, can you tell love apart from pride? I kept waiting for so long. For someone who wakes me up, someone I can call mine. When you are near, whatever is dear to you. Are you afraid of what you'll find? Like morning breaks the night. I will be lost in the yearning for that house forever. What I found in your eyes. I will keep listening to the sound of that drum. Far away from anyone who calls me. From my tender youth and that truth. Which shows what I have become. Like morning breaks the night. Morning comes. I will be lost in the yearning for that house forever. What I found in your eyes. Your voice kept me up all night. Morning. I will be lost forever. Like morning breaks the night.",
+    "bleu": 15.65,
+    "hi_transcript_chars": 668,
+    "back_translated_en": "I have seen, can you tell love apart from pride? I kept waiting for so long. For someone who wakes me up, someone I can call mine. When you are near, whatever is dear to you. Are you afraid of what you'll find? Like morning breaks the night. I will be lost in the yearning for that house forever. What I found in your eyes. I will keep listening to the sound of that drum. Far away from anyone who calls me. From my tender youth and that truth. Which shows what I have become. Like morning breaks the night. Morning comes. I will be lost in the yearning for that house forever. What I found in your eyes. Your voice kept me up all night. Morning. I will be lost forever. Like morning breaks the night."
+  },
+  "lipsync": {
+    "sync_score": 0.508,
+    "pearson_r": 0.0161,
+    "best_lag_ms": -41.7,
+    "faces_pct": 26.5,
+    "note": null,
+    "wav2lip_applied": false
+  },
+  "emotion": {
+    "match_pct": 61.9,
+    "avg_soft_score": 83.4,
+    "n_segments": 21,
+    "segments": [
+      {
+        "id": 0,
+        "source_emotion": "neutral",
+        "source_score": 0.656,
+        "dubbed_emotion": "surprised",
+        "dubbed_score": 0.408,
+        "dubbed_back_en": "I see, can you tell love apart from pride?",
+        "match": false,
+        "va_similarity": 0.597
+      },
+      {
+        "id": 1,
+        "source_emotion": "neutral",
+        "source_score": 0.853,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.768,
+        "dubbed_back_en": "I've been waiting so long",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 2,
+        "source_emotion": "neutral",
+        "source_score": 0.535,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.616,
+        "dubbed_back_en": "For someone to wake me up, someone to call mine",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 3,
+        "source_emotion": "neutral",
+        "source_score": 0.937,
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.76,
+        "dubbed_back_en": "When you are near, whatever is dear to you",
+        "match": false,
+        "va_similarity": 0.5
+      },
+      {
+        "id": 4,
+        "source_emotion": "fearful",
+        "source_score": 0.954,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.947,
+        "dubbed_back_en": "Are you afraid of what you'll find?",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 5,
+        "source_emotion": "fearful",
+        "source_score": 0.579,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.619,
+        "dubbed_back_en": "As the morning breaks the night",
+        "match": false,
+        "va_similarity": 0.57
+      },
+      {
+        "id": 6,
+        "source_emotion": "sad",
+        "source_score": 0.984,
+        "dubbed_emotion": "sad",
+        "dubbed_score": 0.987,
+        "dubbed_back_en": "I will be lost forever in the yearning for that home",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 7,
+        "source_emotion": "surprised",
+        "source_score": 0.689,
+        "dubbed_emotion": "surprised",
+        "dubbed_score": 0.762,
+        "dubbed_back_en": "what i found in your eyes",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 8,
+        "source_emotion": "neutral",
+        "source_score": 0.785,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.918,
+        "dubbed_back_en": "I will keep listening to the sound of that drum",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 9,
+        "source_emotion": "neutral",
+        "source_score": 0.411,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.438,
+        "dubbed_back_en": "Away from everyone who calls me",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 10,
+        "source_emotion": "happy",
+        "source_score": 0.8,
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.655,
+        "dubbed_back_en": "From my tender youth and that truth",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 11,
+        "source_emotion": "neutral",
+        "source_score": 0.315,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.523,
+        "dubbed_back_en": "Which shows what I have become",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 12,
+        "source_emotion": "fearful",
+        "source_score": 0.579,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.619,
+        "dubbed_back_en": "As the morning breaks the night",
+        "match": false,
+        "va_similarity": 0.57
+      },
+      {
+        "id": 13,
+        "source_emotion": "fearful",
+        "source_score": 0.579,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.612,
+        "dubbed_back_en": "morning comes",
+        "match": false,
+        "va_similarity": 0.57
+      },
+      {
+        "id": 14,
+        "source_emotion": "sad",
+        "source_score": 0.984,
+        "dubbed_emotion": "sad",
+        "dubbed_score": 0.987,
+        "dubbed_back_en": "I will be lost forever in the yearning for that home",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 15,
+        "source_emotion": "surprised",
+        "source_score": 0.689,
+        "dubbed_emotion": "surprised",
+        "dubbed_score": 0.762,
+        "dubbed_back_en": "what i found in your eyes",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 16,
+        "source_emotion": "fearful",
+        "source_score": 0.472,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.452,
+        "dubbed_back_en": "your voice kept me up all night",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 17,
+        "source_emotion": "fearful",
+        "source_score": 0.579,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.686,
+        "dubbed_back_en": "morning",
+        "match": false,
+        "va_similarity": 0.57
+      },
+      {
+        "id": 18,
+        "source_emotion": "sad",
+        "source_score": 0.914,
+        "dubbed_emotion": "sad",
+        "dubbed_score": 0.992,
+        "dubbed_back_en": "i will be lost forever",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 19,
+        "source_emotion": "fearful",
+        "source_score": 0.579,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.619,
+        "dubbed_back_en": "As the morning breaks the night",
+        "match": false,
+        "va_similarity": 0.57
+      },
+      {
+        "id": 20,
+        "source_emotion": "sad",
+        "source_score": 0.914,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.906,
+        "dubbed_back_en": "Always",
+        "match": false,
+        "va_similarity": 0.57
+      }
+    ],
+    "tts_fidelity": {
+      "avg_soft_score": 90.5,
+      "n_segments": 21,
+      "segments": [
+        {
+          "id": 0,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 1,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 2,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 3,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 4,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 5,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 6,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 7,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 8,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 9,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 10,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 11,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 12,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 13,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 14,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 15,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 16,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 17,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 18,
+          "intended": "neutral",
+          "perceived": "happy",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 19,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 20,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        }
+      ]
+    }
+  }
+}

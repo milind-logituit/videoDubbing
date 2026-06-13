@@ -1,0 +1,22 @@
+id,start,end,duration,en_text,hi_text,speaker
+0,0.0,6.38,6.38,"I have seen, can you tell me love from pride?","मैंने देखा है, क्या तुम प्यार को घमंड से अलग बता सकते हो?",SPEAKER_00
+1,9.0,14.6,5.6,I have been waiting all this time,मैं इतने समय से इंतज़ार करता रहा,SPEAKER_00
+2,16.0,21.96,5.96,"For one to wake me, one to call mine","किसी के लिए जो मुझे जगाए, जिसे मैं अपना कहूँ",SPEAKER_00
+3,21.96,27.8,5.84,"So when you're near, all that you hold dear","जब तुम पास होते हो, जो कुछ भी तुम्हें प्यारा है",SPEAKER_00
+4,27.8,33.36,5.56,Do you fear what you will find?,क्या तुम्हें डर है कि क्या मिलेगा?,SPEAKER_00
+5,34.7,39.76,5.06,As the dawn breaks through the night,जैसे रात चीर कर सवेरा आता है,SPEAKER_00
+6,41.8,49.9,8.1,I will fall forever longing for the home,मैं हमेशा के लिए उस घर की तड़प में खो जाऊँगा,SPEAKER_00
+7,50.8,54.32,3.52,I found in your eyes,जो मुझे तुम्हारी आँखों में मिला,SPEAKER_00
+8,61.88,68.12,6.24,I will be listening for the drum,मैं उस ढोल की आवाज़ सुनता रहूँगा,SPEAKER_00
+9,68.8,75.22,6.42,"To call me over, far away from","जो मुझे बुलाए, उस सब से दूर",SPEAKER_00
+10,75.22,80.96,5.74,My tender youth and the very truth,मेरी नर्म जवानी और उस सच से,SPEAKER_00
+11,82.22,85.84,3.62,Showing me what I've become,जो दिखाता है मैं क्या बन गया,SPEAKER_00
+12,85.84,92.18,6.34,As the dawn breaks through the night,जैसे रात चीर कर सवेरा आता है,SPEAKER_00
+13,92.18,92.84,0.66,As the dawn breaks through the night,सवेरा आता है,SPEAKER_00
+14,93.58,102.4,8.82,I will fall forever longing for the home,मैं हमेशा के लिए उस घर की तड़प में खो जाऊँगा,SPEAKER_00
+15,102.4,106.4,4.0,I found in your eyes,जो मुझे तुम्हारी आँखों में मिला,SPEAKER_00
+16,106.92,112.48,5.56,Your voice saw me through the night,तुम्हारी आवाज़ ने मुझे रात भर थाम रखा,SPEAKER_00
+17,113.88,114.24,0.36,As the dawn breaks through the night,सवेरा,SPEAKER_00
+18,114.24,117.04,2.8,I will fall forever,मैं हमेशा के लिए खो जाऊँगा,SPEAKER_00
+19,117.04,122.86,5.82,As the dawn breaks through the night,जैसे रात चीर कर सवेरा आता है,SPEAKER_00
+20,122.86,122.96,0.1,I will fall forever,हमेशा,SPEAKER_00
