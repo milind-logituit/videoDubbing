@@ -30,7 +30,8 @@ import sys as _sys
 _sys.path.insert(0, str(Path(__file__).parent))
 from eval_lipsync import compute_lipsync_score
 from apply_lipsync import apply_wav2lip
-from emotion import classify_segment_emotions, score_emotion_consistency
+from emotion import (classify_segment_emotions, score_emotion_consistency,
+                     score_tts_emotion_fidelity)
 
 # Re-exported from sub-modules so tests pulling from this module still work
 from diarize import (                                         # noqa: E402
@@ -279,30 +280,66 @@ _REFINE_TARGET_GUIDANCE = {
     ),
 }
 
+_EMOTION_GUIDANCE = {
+    "hi": (
+        "  3. EMOTION (hard constraint — not optional): If an 'emotion' field is present,\n"
+        "     the rewritten Hindi MUST carry that emotional register through word choice.\n"
+        "     Use these Hindi-specific cues:\n"
+        "       • angry   → forceful verbs, exclamatory particles (अरे!, क्यों!, नहीं!),\n"
+        "                    short urgent clauses, avoid soft conjunctions\n"
+        "       • fearful → tense/hesitant phrasing, words like डर, खतरा, बचाओ,\n"
+        "                    broken or incomplete clauses where natural\n"
+        "       • sad     → soft conjunctions (लेकिन, मगर, पर), reduced energy,\n"
+        "                    words like दुख, अफसोस, याद; avoid exclamations\n"
+        "       • happy   → upbeat vocab, वाह!, हाँ!, warm qualifiers (बढ़िया, शानदार)\n"
+        "       • surprised → ओह!, अरे वाह!, क्या!, wide-eyed reactive phrasing\n"
+        "       • disgust → distancing language, words like घिनौना, बेकार, छी\n"
+        "       • neutral → plain declarative; do NOT add emotion not in the source\n"
+        "     A neutral source line MUST stay neutral. Do not dramatise.\n"
+    ),
+    "en": (
+        "  3. EMOTION (hard constraint — not optional): If an 'emotion' field is present,\n"
+        "     the rewritten English MUST carry that emotional register:\n"
+        "       • angry   → forceful, clipped sentences; strong verbs; avoid hedging\n"
+        "       • fearful → hesitant, halting phrasing; 'I can't', 'we have to'\n"
+        "       • sad     → slower cadence implied by word length; 'I miss', 'it's gone'\n"
+        "       • happy   → short energetic lines; upbeat qualifiers\n"
+        "       • neutral → plain declarative; do NOT add emotion not in the source\n"
+        "     A neutral source line MUST stay neutral. Do not dramatise.\n"
+    ),
+}
+
+_DEFAULT_EMOTION_GUIDANCE = (
+    "  3. EMOTION (hard constraint — not optional): If an 'emotion' field is present,\n"
+    "     the rewritten translation MUST match that emotional register through word choice.\n"
+    "     angry → forceful/urgent; fearful → tense/hesitant; sad → subdued/soft;\n"
+    "     happy → upbeat/energetic; neutral → plain, no added drama.\n"
+    "     A neutral source MUST stay neutral. Do not dramatise.\n"
+)
+
 
 def _make_refine_system(source_lang: str = "en", target_lang: str = "hi") -> str:
-    src_name = _LANG_NAMES.get(source_lang, source_lang.upper())
-    tgt_name = _LANG_NAMES.get(target_lang, target_lang.upper())
-    guidance = _REFINE_TARGET_GUIDANCE.get(
+    src_name      = _LANG_NAMES.get(source_lang, source_lang.upper())
+    tgt_name      = _LANG_NAMES.get(target_lang, target_lang.upper())
+    pacing        = _REFINE_TARGET_GUIDANCE.get(
         target_lang,
         f"     • Use natural, idiomatic {tgt_name} suitable for OTT dubbing.\n",
     )
+    emotion_rules = _EMOTION_GUIDANCE.get(target_lang, _DEFAULT_EMOTION_GUIDANCE)
     return (
         f"You are a professional {tgt_name} dubbing editor for OTT streaming content "
         f"(Eros Now / SunNxt).\n"
         f"Input: JSON array of segments, each with ASR {src_name} (en_text), "
-        f"machine-translated {tgt_name} (hi_text), and duration_s (seconds available "
-        "to speak this line).\n"
+        f"machine-translated {tgt_name} (hi_text), duration_s (seconds available "
+        "to speak this line), and optionally an emotion label.\n"
         "For each segment:\n"
         "  1. Fix ASR transcription errors in en_text "
         "(e.g. 'half is likely' → 'half as likely').\n"
         f"  2. Rewrite hi_text as natural spoken {tgt_name} for dubbing that fits "
         "within duration_s seconds.\n"
-        + guidance +
+        + pacing +
         "     • Distinguish dinner vs supper, couch vs sofa, etc.\n"
-        "If an 'emotion' field is present, preserve that emotional register in the "
-        f"rewritten {tgt_name} — e.g. 'angry' → forceful/urgent phrasing; "
-        "'sad' → soft/subdued phrasing; 'happy' → upbeat/energetic phrasing.\n"
+        + emotion_rules +
         "Return ONLY a valid JSON array: "
         '[{"id": int, "en_text": str, "hi_text": str}, …]. '
         "Do NOT include duration_s or emotion in output. "
@@ -625,11 +662,16 @@ if __name__ == "__main__":
 
     print("\nStage 8e — Emotion consistency score …")
     try:
-        metrics["emotion"] = score_emotion_consistency(
-            audio_path, hindi_audio, segments
-        )
-        ep = metrics["emotion"]
-        print(f"  Emotion match: {ep['match_pct']}% over {ep['n_segments']} segments")
+        emo = score_emotion_consistency(audio_path, hindi_audio, segments)
+        ep  = emo
+        print(f"  Text match: {ep['match_pct']}%  soft: {ep['avg_soft_score']}%  "
+              f"over {ep['n_segments']} segments")
+        print("  Stage 8e-ii — TTS emotion fidelity (audio SER) …")
+        emo["tts_fidelity"] = score_tts_emotion_fidelity(hindi_audio, segments)
+        tf = emo["tts_fidelity"]
+        print(f"  TTS fidelity soft score: {tf.get('avg_soft_score')}% "
+              f"over {tf.get('n_segments')} segments")
+        metrics["emotion"] = emo
     except Exception as exc:
         metrics["emotion"] = {"match_pct": None, "note": str(exc)}
         print(f"  [warn] Emotion scoring failed: {exc}")
@@ -642,12 +684,17 @@ if __name__ == "__main__":
     bleu       = metrics["translation"]["bleu"]
     bt_bleu    = metrics["back_translation"].get("bleu")
     sync_score = metrics["lipsync"].get("sync_score")
-    emo_match  = metrics.get("emotion", {}).get("match_pct")
+    _emo_data    = metrics.get("emotion", {})
+    emo_match    = _emo_data.get("match_pct")
+    emo_soft     = _emo_data.get("avg_soft_score")
+    emo_tts      = _emo_data.get("tts_fidelity", {}).get("avg_soft_score")
     print(f"  ASR WER              : {f'{wer_pct:.1f}%' if wer_pct is not None else 'N/A'}")
     print(f"  Translation BLEU     : {f'{bleu:.1f}' if bleu is not None else 'N/A'}")
     print(f"  Back-translation BLEU: {f'{bt_bleu:.1f}' if bt_bleu is not None else 'N/A'}")
     print(f"  Lip-sync score       : {f'{sync_score:.3f}' if sync_score is not None else 'N/A'}")
-    print(f"  Emotion match        : {f'{emo_match:.1f}%' if emo_match is not None else 'N/A'}")
+    print(f"  Emotion match (bin)  : {f'{emo_match:.1f}%' if emo_match is not None else 'N/A'}")
+    print(f"  Emotion soft score   : {f'{emo_soft:.1f}%' if emo_soft is not None else 'N/A'}")
+    print(f"  TTS emotion fidelity : {f'{emo_tts:.1f}%' if emo_tts is not None else 'N/A'}")
     print(f"  Duration ratio       : {metrics['alignment']['duration_ratio']:.3f}")
     print("\nDone.")
 

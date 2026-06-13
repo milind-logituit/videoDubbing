@@ -136,8 +136,10 @@ _bt        = metrics.get("back_translation", {})
 _bt_bleu   = _bt.get("bleu")
 _ls        = metrics.get("lipsync", {})
 _sync      = _ls.get("sync_score")
-_emo       = metrics.get("emotion", {})
-_emo_match = _emo.get("match_pct")
+_emo        = metrics.get("emotion", {})
+_emo_match  = _emo.get("match_pct")
+_emo_soft   = _emo.get("avg_soft_score")
+_emo_tts    = _emo.get("tts_fidelity", {}).get("avg_soft_score")
 k1, k2, k3 = st.columns(3)
 k1.metric("Segments",    str(metrics["translation"]["n_segments"]))
 k2.metric("Source",      f"{al['source_duration_s']:.1f}s")
@@ -270,7 +272,7 @@ with tab4:
 with tab5:
     st.subheader("Quality Metrics")
 
-    m1, m2, m3, m4, m5, m6 = st.columns(6)
+    m1, m2, m3, m4, m5, m6, m7 = st.columns(7)
 
     if _wer_pct is not None:
         fig1 = go.Figure(go.Indicator(
@@ -355,10 +357,11 @@ with tab5:
         m5.metric("Lip-Sync Score", "N/A")
         m5.caption(note)
 
-    if _emo_match is not None:
+    _emo_gauge_val = _emo_soft if _emo_soft is not None else _emo_match
+    if _emo_gauge_val is not None:
         fig6 = go.Figure(go.Indicator(
-            mode="gauge+number", value=_emo_match,
-            title={"text": "Emotion Match %"},
+            mode="gauge+number", value=_emo_gauge_val,
+            title={"text": "Emotion Soft Score"},
             gauge={"axis": {"range": [0, 100]}, "bar": {"color": "#FF6692"},
                    "steps": [{"range": [0,  50], "color": "#EF553B"},
                              {"range": [50, 70], "color": "#FFA15A"},
@@ -373,8 +376,26 @@ with tab5:
             for s in segs:
                 emo_dist[s["source_emotion"]] = emo_dist.get(s["source_emotion"], 0) + 1
             m6.caption("  ".join(f"{k}:{v}" for k, v in sorted(emo_dist.items())))
+        if _emo_match is not None:
+            m6.caption(f"Binary match: {_emo_match}%")
     else:
-        m6.metric("Emotion Match", "N/A")
+        m6.metric("Emotion Soft Score", "N/A")
+
+    if _emo_tts is not None:
+        fig7 = go.Figure(go.Indicator(
+            mode="gauge+number", value=_emo_tts,
+            title={"text": "TTS Emotion Fidelity"},
+            gauge={"axis": {"range": [0, 100]}, "bar": {"color": "#B6E880"},
+                   "steps": [{"range": [0,  50], "color": "#EF553B"},
+                             {"range": [50, 70], "color": "#FFA15A"},
+                             {"range": [70, 100], "color": "#00CC96"}]},
+            number={"suffix": "%"},
+        ))
+        fig7.update_layout(height=240, margin=dict(t=40, b=10))
+        m7.plotly_chart(fig7, use_container_width=True)
+        m7.caption("Audio SER: does dubbed voice sound as intended?")
+    else:
+        m7.metric("TTS Fidelity", "N/A")
 
     # ── Segment-level quality ─────────────────────────────────────────────────
     seg_quality = metrics.get("segment_quality", [])

@@ -351,6 +351,7 @@
   },
   "emotion": {
     "match_pct": 76.5,
+    "avg_soft_score": 89.2,
     "n_segments": 34,
     "segments": [
       {
@@ -359,7 +360,8 @@
         "source_score": 0.598,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.744,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 1,
@@ -367,7 +369,8 @@
         "source_score": 0.859,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.636,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 2,
@@ -375,7 +378,8 @@
         "source_score": 0.885,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.724,
-        "match": false
+        "match": false,
+        "va_similarity": 0.5
       },
       {
         "id": 3,
@@ -383,7 +387,8 @@
         "source_score": 0.943,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.752,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 4,
@@ -391,7 +396,8 @@
         "source_score": 0.731,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.639,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 5,
@@ -399,7 +405,8 @@
         "source_score": 0.516,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.612,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 6,
@@ -407,7 +414,8 @@
         "source_score": 0.436,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.63,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 7,
@@ -415,7 +423,8 @@
         "source_score": 0.96,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.573,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 8,
@@ -423,7 +432,8 @@
         "source_score": 0.523,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.716,
-        "match": false
+        "match": false,
+        "va_similarity": 0.57
       },
       {
         "id": 9,
@@ -431,7 +441,8 @@
         "source_score": 0.423,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.82,
-        "match": false
+        "match": false,
+        "va_similarity": 0.597
       },
       {
         "id": 10,
@@ -439,7 +450,8 @@
         "source_score": 0.893,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.613,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 11,
@@ -447,7 +459,8 @@
         "source_score": 0.942,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.756,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 12,
@@ -455,7 +468,8 @@
         "source_score": 0.956,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.685,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 13,
@@ -463,7 +477,8 @@
         "source_score": 0.778,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.595,
-        "match": false
+        "match": false,
+        "va_similarity": 0.5
       },
       {
         "id": 14,
@@ -471,7 +486,8 @@
         "source_score": 0.949,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.731,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 15,
@@ -479,7 +495,8 @@
         "source_score": 0.862,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.63,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 16,
@@ -487,7 +504,8 @@
         "source_score": 0.836,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.733,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 17,
@@ -495,7 +513,8 @@
         "source_score": 0.888,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.764,
-        "match": false
+        "match": false,
+        "va_similarity": 0.5
       },
       {
         "id": 18,
@@ -503,7 +522,8 @@
         "source_score": 0.562,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.672,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 19,
@@ -511,7 +531,8 @@
         "source_score": 0.942,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.769,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 20,
@@ -519,7 +540,8 @@
         "source_score": 0.822,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.684,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 21,
@@ -527,7 +549,8 @@
         "source_score": 0.97,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.534,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 22,
@@ -535,7 +558,8 @@
         "source_score": 0.56,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.787,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 23,
@@ -543,7 +567,8 @@
         "source_score": 0.939,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.705,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 24,
@@ -551,7 +576,8 @@
         "source_score": 0.748,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.795,
-        "match": false
+        "match": false,
+        "va_similarity": 0.597
       },
       {
         "id": 25,
@@ -559,7 +585,8 @@
         "source_score": 0.48,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.779,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 26,
@@ -567,7 +594,8 @@
         "source_score": 0.954,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.815,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 27,
@@ -575,7 +603,8 @@
         "source_score": 0.782,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.764,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 28,
@@ -583,7 +612,8 @@
         "source_score": 0.655,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.767,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 29,
@@ -591,7 +621,8 @@
         "source_score": 0.485,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.692,
-        "match": false
+        "match": false,
+        "va_similarity": 0.57
       },
       {
         "id": 30,
@@ -599,7 +630,8 @@
         "source_score": 0.947,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.701,
-        "match": false
+        "match": false,
+        "va_similarity": 0.5
       },
       {
         "id": 31,
@@ -607,7 +639,8 @@
         "source_score": 0.521,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.614,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 32,
@@ -615,7 +648,8 @@
         "source_score": 0.929,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.75,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 33,
@@ -623,8 +657,219 @@
         "source_score": 0.775,
         "dubbed_emotion": "neutral",
         "dubbed_score": 0.711,
-        "match": true
+        "match": true,
+        "va_similarity": 1.0
       }
-    ]
+    ],
+    "tts_fidelity": {
+      "avg_soft_score": 59.2,
+      "n_segments": 34,
+      "segments": [
+        {
+          "id": 0,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 1,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 2,
+          "intended": "happy",
+          "perceived": "happy",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 3,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 4,
+          "intended": "neutral",
+          "perceived": "happy",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 5,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 6,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 7,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 8,
+          "intended": "sad",
+          "perceived": "happy",
+          "va_similarity": 0.07
+        },
+        {
+          "id": 9,
+          "intended": "surprised",
+          "perceived": "neutral",
+          "va_similarity": 0.597
+        },
+        {
+          "id": 10,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 11,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 12,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 13,
+          "intended": "happy",
+          "perceived": "angry",
+          "va_similarity": 0.293
+        },
+        {
+          "id": 14,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 15,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 16,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 17,
+          "intended": "happy",
+          "perceived": "angry",
+          "va_similarity": 0.293
+        },
+        {
+          "id": 18,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 19,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 20,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 21,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 22,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 23,
+          "intended": "neutral",
+          "perceived": "happy",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 24,
+          "intended": "surprised",
+          "perceived": "angry",
+          "va_similarity": 0.65
+        },
+        {
+          "id": 25,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 26,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 27,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 28,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 29,
+          "intended": "fearful",
+          "perceived": "angry",
+          "va_similarity": 0.929
+        },
+        {
+          "id": 30,
+          "intended": "happy",
+          "perceived": "angry",
+          "va_similarity": 0.293
+        },
+        {
+          "id": 31,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 32,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
+          "id": 33,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        }
+      ]
+    }
   }
 }
