@@ -13,8 +13,8 @@ ROOT      = Path(__file__).parent.parent
 PREPARED  = ROOT / "data/prepared"
 MODEL_OUT = ROOT / "model_outputs"
 
-WHISPER_MODEL    = "base"
-WHISPER_MODEL_HI = "medium"
+WHISPER_MODEL    = "large-v3-turbo"
+WHISPER_MODEL_HI = "large-v3-turbo"
 TTS_VOICE_HI     = "hi-IN-SwaraNeural"
 
 # Reference data — kept in sync with pipeline_v2.py SOURCE_SCRIPT / REFERENCE_HINDI
@@ -50,12 +50,16 @@ REFERENCE_HINDI = (
 
 _GRADE_SYSTEM = """\
 You are a professional Hindi dubbing quality assessor.
-Rate each segment on two dimensions (1 = poor, 5 = excellent):
+Rate each segment on three dimensions (1 = poor, 5 = excellent):
 - fidelity: semantic accuracy of Hindi vs English
 - fluency: naturalness of the Hindi phrasing (grammar, word choice, register)
+- emotion_register: ONLY when an "emotion" field is provided — does the Hindi
+  carry that emotional weight through word choice and phrasing?
+  (1 = flat/wrong register, 3 = partially preserved, 5 = fully preserved)
+  Omit this key entirely when no "emotion" field is in the input segment.
 
 Respond ONLY with a JSON array in input order:
-[{"id": <int>, "fidelity": <1-5>, "fluency": <1-5>}, ...]
+[{"id": <int>, "fidelity": <1-5>, "fluency": <1-5>, "emotion_register": <1-5 or omit>}, ...]
 Add "note": "..." only for scores ≤ 2. Omit otherwise.\
 """
 
@@ -185,10 +189,15 @@ def compute_segment_isochrony(segments: list[dict], seg_dir: Path) -> list[dict]
 def grade_translations(segments: list[dict]) -> list[dict]:
     """Call Claude Haiku to rate fidelity / fluency / fit per segment."""
     payload = [
-        {"id": int(seg["id"]), "en": seg["en_text"], "hi": seg["hi_text"],
-         "duration_s": round(float(seg["end"]) - float(seg["start"]), 1)}
+        {
+            "id": int(seg["id"]),
+            "en": str(seg.get("en_text") or ""),
+            "hi": str(seg.get("hi_text") or ""),
+            "duration_s": round(float(seg["end"]) - float(seg["start"]), 1),
+            **({"emotion": seg["emotion"]} if seg.get("emotion") and seg["emotion"] != "neutral" else {}),
+        }
         for seg in segments
-        if seg.get("hi_text", "").strip()
+        if str(seg.get("hi_text") or "").strip()
     ]
     if not payload:
         return []
@@ -239,6 +248,8 @@ def _merge_segment_quality(
         if g:
             merged["fidelity"] = g.get("fidelity")
             merged["fluency"]  = g.get("fluency")
+            if "emotion_register" in g:
+                merged["emotion_register"] = g["emotion_register"]
             if "note" in g:
                 merged["note"] = g["note"]
         out.append(merged)

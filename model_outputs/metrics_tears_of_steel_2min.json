@@ -48,7 +48,8 @@
       "isochrony_ratio": 0.927,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 4
+      "fluency": 5,
+      "note": "Devanagari numerals are authentic but 'चलो' is slightly casual for a countdown; 'शुरू करो' might be more formal."
     },
     {
       "id": 2,
@@ -60,7 +61,7 @@
       "fit": 3,
       "fidelity": 4,
       "fluency": 4,
-      "note": "अपना जुनून जीना is slightly awkward; 'अपने जुनून का पालन करना' would be more natural"
+      "note": "जुनून जीना is colloquial; 'अपने जुनून का पालन करना' would be more precise"
     },
     {
       "id": 3,
@@ -72,7 +73,7 @@
       "fit": 2,
       "fidelity": 3,
       "fluency": 3,
-      "note": "'मुझे बस अंतरिक्ष में जाना है' misses 'be awesome'; should convey 'अंतरिक्ष में शानदार बनना' or similar"
+      "note": "Missing 'awesome' semantic content; 'बस अंतरिक्ष में जाना है' doesn't capture the desire to excel/be awesome"
     },
     {
       "id": 4,
@@ -83,7 +84,9 @@
       "isochrony_ratio": 1.245,
       "fit": 4,
       "fidelity": 4,
-      "fluency": 4
+      "fluency": 4,
+      "emotion_register": 4,
+      "note": "Anger conveyed but 'डरे हुए हो' (scared) slightly softens the accusatory tone; 'घबराते हो' would be more pointed."
     },
     {
       "id": 5,
@@ -93,8 +96,10 @@
       "tts_duration_s": 2.06,
       "isochrony_ratio": 1.689,
       "fit": 2,
-      "fidelity": 5,
-      "fluency": 5
+      "fidelity": 3,
+      "fluency": 3,
+      "emotion_register": 2,
+      "note": "मैं नहीं डरा is too blunt; hesitation/anxiety not captured; 'लेकिन ये...' trails off but doesn't convey the fearful conflicted register"
     },
     {
       "id": 6,
@@ -105,7 +110,8 @@
       "isochrony_ratio": 0.986,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 4
     },
     {
       "id": 7,
@@ -115,9 +121,10 @@
       "tts_duration_s": 6.77,
       "isochrony_ratio": 2.318,
       "fit": 1,
-      "fidelity": 3,
-      "fluency": 3,
-      "note": "'खून भरा विशाल रोबोटिक पंजा' is unclear; 'खून से सना हुआ' or 'खूनी' would be clearer. Also missing 'being chased by' nuance in phrasing"
+      "fidelity": 4,
+      "fluency": 4,
+      "note": "सपने में is slightly archaic phrasing; 'मुझे सपने में' would be more natural",
+      "emotion_register": 4
     },
     {
       "id": 8,
@@ -127,9 +134,10 @@
       "tts_duration_s": 3.91,
       "isochrony_ratio": 1.643,
       "fit": 2,
-      "fidelity": 2,
+      "fidelity": 3,
       "fluency": 2,
-      "note": "'मुझे नहीं करना' is incorrect grammar (should be 'मुझे नहीं करना चाहिए' or 'मैं नहीं हूँ'); 'हो गया खत्म' is awkward word order"
+      "note": "मुझे नहीं करना is grammatically awkward; should be 'मैं नहीं करूँगा' or 'यह नहीं करूँगा'",
+      "emotion_register": 3
     },
     {
       "id": 9,
@@ -139,9 +147,9 @@
       "tts_duration_s": 2.71,
       "isochrony_ratio": 0.886,
       "fit": 5,
-      "fidelity": 4,
+      "fidelity": 3,
       "fluency": 3,
-      "note": "'सिंक हो गई' is colloquial; 'synchronize' in technical context might need 'सिंक्रोनाइज' or 'सिंक्रनाइजेशन पूरी हुई'"
+      "note": "Incomplete phrase; unclear what 'synced and...' completes to in context"
     },
     {
       "id": 10,
@@ -152,7 +160,9 @@
       "isochrony_ratio": 3.357,
       "fit": 1,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 5,
+      "note": "Surprise tone slightly muted; 'क्या!' with emphasis mark would strengthen it."
     },
     {
       "id": 11,
@@ -163,8 +173,9 @@
       "isochrony_ratio": 0.665,
       "fit": 3,
       "fidelity": 2,
-      "fluency": 3,
-      "note": "'This is pretty freaking' is unclear English; Hindi translation 'यह तो बड़ा अजीब है' misses intended meaning. Context suggests incomplete thought or slang usage"
+      "fluency": 2,
+      "note": "'बड़ा अजीब है' means 'very strange' but misses 'freaking' (disturbing/alarming); disgust register not conveyed; 'यह तो बहुत परेशान करने वाला है' would better capture disgust",
+      "emotion_register": 2
     },
     {
       "id": 12,
@@ -175,7 +186,9 @@
       "isochrony_ratio": 1.808,
       "fit": 2,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 5,
+      "note": "Surprise registered but minimal; 'क्या!' would strengthen."
     },
     {
       "id": 13,
@@ -186,7 +199,9 @@
       "isochrony_ratio": 1.716,
       "fit": 2,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 4,
+      "note": "Fearful tone present but 'नीचे जाएँ क्या?' sounds neutral; 'नीचे जाएँ... या नहीं?' would better convey apprehension."
     }
   ],
   "back_translation": {

@@ -430,7 +430,8 @@ with tab5:
                               yaxis_title="ratio", xaxis_title="segment start (s)")
         st.plotly_chart(fig_iso, use_container_width=True)
 
-        _grade_cols = [c for c in ["fidelity", "fluency", "fit"] if c in sq_df.columns]
+        _grade_cols = [c for c in ["fidelity", "fluency", "fit", "emotion_register"]
+                       if c in sq_df.columns]
         if _grade_cols:
             st.markdown("#### LLM Translation Grades (Claude Haiku, 1–5)")
             _display_cols = ["start", "end"] + _grade_cols + (
@@ -439,18 +440,21 @@ with tab5:
             _show = sq_df[_display_cols].rename(
                 columns={"start": "Start (s)", "end": "End (s)",
                          "fidelity": "Fidelity", "fluency": "Fluency",
-                         "fit": "Fit", "note": "Note"}
+                         "fit": "Fit", "emotion_register": "Emotion Register",
+                         "note": "Note"}
             )
             avg_scores = {c: sq_df[c].mean() for c in _grade_cols
                           if sq_df[c].notna().any()}
-            sc1, sc2, sc3 = st.columns(3)
-            for col_widget, (label, avg) in zip(
-                [sc1, sc2, sc3],
-                [("Avg Fidelity", avg_scores.get("fidelity")),
-                 ("Avg Fluency",  avg_scores.get("fluency")),
-                 ("Avg Fit",      avg_scores.get("fit"))]
-            ):
-                col_widget.metric(label, f"{avg:.1f} / 5" if avg else "N/A")
+            _score_items = [
+                ("Avg Fidelity",          avg_scores.get("fidelity")),
+                ("Avg Fluency",           avg_scores.get("fluency")),
+                ("Avg Fit",               avg_scores.get("fit")),
+                ("Avg Emotion Register",  avg_scores.get("emotion_register")),
+            ]
+            _score_items = [(lbl, v) for lbl, v in _score_items if v is not None]
+            _sc_cols = st.columns(len(_score_items))
+            for col_widget, (label, avg) in zip(_sc_cols, _score_items):
+                col_widget.metric(label, f"{avg:.1f} / 5")
             st.dataframe(_show, use_container_width=True, hide_index=True)
 
 

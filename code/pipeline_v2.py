@@ -92,8 +92,8 @@ REFERENCE_HINDI = (
     "आज, आर्टिफिशियल इंटेलिजेंस हर कहानी को हर दर्शक तक पहुंचाना संभव बनाता है।"
 )
 
-WHISPER_MODEL    = "base"
-WHISPER_MODEL_HI = "medium"
+WHISPER_MODEL    = "large-v3-turbo"
+WHISPER_MODEL_HI = "large-v3-turbo"
 VIDEO_SIZE    = (1280, 720)
 VIDEO_FPS     = 24
 BG_COLOR      = (15, 23, 42)

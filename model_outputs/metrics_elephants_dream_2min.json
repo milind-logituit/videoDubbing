@@ -34,7 +34,10 @@
       "en_duration_s": 0.76,
       "tts_duration_s": null,
       "isochrony_ratio": null,
-      "fit": 3
+      "fit": 3,
+      "fidelity": 1,
+      "fluency": 1,
+      "note": "Incomplete translation; 'nan' is nonsensical for 'The'"
     },
     {
       "id": 1,
@@ -78,7 +81,9 @@
       "isochrony_ratio": 1.774,
       "fit": 2,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 2,
+      "note": "Transliteration alone ('ईमो') doesn't convey disgust; needs intonational or word-choice markers"
     },
     {
       "id": 5,
@@ -100,7 +105,9 @@
       "isochrony_ratio": 0.908,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 3,
+      "note": "Simple question form; mild sadness present but could be stronger with 'क्या तुम्हें चोट लगी?' or softer register"
     },
     {
       "id": 7,
@@ -112,7 +119,8 @@
       "fit": 3,
       "fidelity": 3,
       "fluency": 3,
-      "note": "Hindi translation is incomplete and awkward; 'आप' (you formal) doesn't fit the casual context and the sentence structure is fragmented compared to the English"
+      "note": "Incomplete sentence; truncated at 'आप' loses subject clarity and surprise register",
+      "emotion_register": 2
     },
     {
       "id": 8,
@@ -134,7 +142,9 @@
       "isochrony_ratio": 0.94,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 4,
+      "note": "Imperative tone and 'सुरक्षित नहीं है' conveys concern well; sadness partially present"
     },
     {
       "id": 10,
@@ -155,8 +165,8 @@
       "tts_duration_s": 2.88,
       "isochrony_ratio": 0.676,
       "fit": 3,
-      "fidelity": 4,
-      "fluency": 4,
+      "fidelity": 5,
+      "fluency": 5,
       "note": "Literal translation 'देखते जाओ' is slightly awkward; 'तुम देखोगे, तुम देखोगे' would be more natural for this context"
     },
     {
@@ -168,7 +178,9 @@
       "isochrony_ratio": 1.172,
       "fit": 4,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 2,
+      "note": "Neutral directive; disgust not communicated through word choice or phrasing"
     },
     {
       "id": 13,
@@ -190,7 +202,9 @@
       "isochrony_ratio": 7.45,
       "fit": 1,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 1,
+      "note": "Single-word label with no emotional marking; disgust unachievable in this context"
     }
   ],
   "back_translation": {
