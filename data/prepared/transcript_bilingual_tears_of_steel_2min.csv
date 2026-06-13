@@ -1,21 +1,21 @@
-id,start,end,duration,en_text,hi_text,speaker
-0,4.16,6.28,2.12,We have main engine start.,मुख्य इंजन स्टार्ट हो गया।,SPEAKER_00
-1,6.64,9.56,2.92,"Four, three, two, one.","चार, तीन, दो, एक।",SPEAKER_00
-2,22.74,24.28,1.54,"You're a jerk, Tom.","तुम बेकार हो, टॉम।",SPEAKER_03
-3,24.5,26.86,2.36,"Look, Celia, we have to follow our passions.","देखो, सेलिया, हमें अपना जुनून जीना है।",SPEAKER_03
-4,26.86,29.96,3.1,You have your robotics and I just want to be awesome in space.,"तुम्हारे पास रोबोटिक्स है, मैं बस अंतरिक्ष में कमाल करना चाहता हूँ।",SPEAKER_03
-5,30.38,34.3,3.92,Why don't you just admit that you're freaked out by my robot hand?,मान लो ना कि मेरे रोबोट हाथ से तुम डरे हुए हो।,SPEAKER_01
-6,34.54,35.84,1.3,I'm not freaked out by it.,मैं बिलकुल नहीं डरा।,SPEAKER_01
-7,36.56,37.04,0.48,It's...,वो...,SPEAKER_02
-8,37.04,38.26,1.22,"All right, fine.",ठीक है।,SPEAKER_02
-9,38.56,39.4,0.84,I'm freaked out.,मैं डरा हुआ हूँ।,SPEAKER_02
-10,39.52,42.42,2.9,I'm having nightmares that I'm being chased by this giant robotic claw.,सपने में वो विशाल रोबोटिक पंजा मेरा पीछा करता है।,SPEAKER_02
-11,42.44,43.32,0.88,"Oh, whatever, Tom.","हाँ, जो भी, टॉम।",SPEAKER_02
-12,44.1,44.84,0.74,We're done.,हो गया।,SPEAKER_02
-13,50.14,53.0,2.86,Robot's memory synced and...,रोबोट की मेमोरी सिंक हुई और...,SPEAKER_00
-14,53.0,53.76,0.76,...locked.,...लॉक।,SPEAKER_00
-15,60.3,62.16,1.86,This is pretty freaky.,यह तो बड़ा अजीब है।,SPEAKER_01
-16,62.16,62.26,0.1,This is pretty freaky.,अजीब है।,SPEAKER_01
-17,91.82,92.18,0.36,I have no use for ivory linen.,बेकार है।,SPEAKER_02
-18,92.18,92.24,0.06,This is pretty freaky.,अजीब।,SPEAKER_02
-20,117.56,118.54,0.98,Shouldn't you be down there?,तुम नीचे नहीं होने चाहिए?,SPEAKER_02
+id,start,end,duration,en_text,hi_text
+0,4.16,6.28,2.12,We have main engine start.,मुख्य इंजन स्टार्ट हो गया।
+1,6.64,9.56,2.92,"Four, three, two, one.","चार, तीन, दो, एक।"
+2,22.74,24.28,1.54,"You're a jerk, Tom.","तुम बेकार हो, टॉम।"
+3,24.5,26.86,2.36,"Look, Celia, we have to follow our passions.","देखो सेलिया, हमें अपना जुनून जीना होगा।"
+4,26.86,29.96,3.1,You have your robotics and I just want to be awesome in space.,"तुम्हारे पास रोबोटिक्स है, मैं बस अंतरिक्ष में कमाल करना चाहता हूँ।"
+5,30.38,34.3,3.92,Why don't you just admit that you're freaked out by my robot hand?,मान क्यों नहीं लेते कि मेरे रोबोट हाथ से डर गए हो?
+6,34.54,35.84,1.3,I'm not freaked out by it.,मुझे कोई डर नहीं है।
+7,36.56,37.04,0.48,It's...,वो...
+8,37.04,38.26,1.22,"All right, fine.","अच्छा, ठीक है।"
+9,38.56,39.4,0.84,I'm freaked out.,डर गया हूँ।
+10,39.52,42.42,2.9,I'm having nightmares that I'm being chased by this giant robotic claw.,बुरे सपने आते हैं कि एक बड़ा रोबोटिक पंजा मेरा पीछा कर रहा है।
+11,42.44,43.32,0.88,"Oh, whatever, Tom.","जो भी हो, टॉम।"
+12,44.1,44.84,0.74,We're done.,हो गया खत्म।
+13,50.14,53.0,2.86,Robot's memory synced and...,रोबोट की मेमोरी सिंक हुई और...
+14,53.0,53.76,0.76,...locked.,...लॉक।
+15,60.3,62.16,1.86,This is pretty freaky.,यह तो बड़ा अजीब है।
+16,62.16,62.26,0.1,This is pretty freaky.,अजीब।
+17,62.26,62.3,0.04,Okay.,ठीक।
+18,90.84,92.24,1.4,We are never hiding.,हम कभी नहीं छुपते।
+23,117.56,118.54,0.98,Shouldn't you be down there?,तुम नीचे नहीं होने चाहिए?

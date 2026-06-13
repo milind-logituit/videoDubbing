@@ -169,7 +169,8 @@ def compute_segment_isochrony(segments: list[dict], seg_dir: Path) -> list[dict]
     for seg in segments:
         sid = int(seg["id"])
         en_dur = round(float(seg["end"]) - float(seg["start"]), 2)
-        candidates = list(seg_dir.glob(f"seg_{sid:03d}_*.mp3"))
+        effective = list(seg_dir.glob(f"seg_{sid:03d}_*_effective.mp3"))
+        candidates = effective or list(seg_dir.glob(f"seg_{sid:03d}_*.mp3"))
         if candidates:
             tts_dur = round(len(AudioSegment.from_mp3(str(candidates[0]))) / 1000.0, 2)
             ratio = round(tts_dur / en_dur, 3) if en_dur > 0 else None

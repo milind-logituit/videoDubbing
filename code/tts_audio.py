@@ -1,6 +1,9 @@
 """Stage 6 — Hindi TTS synthesis and audio ducking/mixing."""
 import asyncio
 import math
+import os
+import subprocess
+import tempfile
 from pathlib import Path
 
 from gtts import gTTS
@@ -21,9 +24,45 @@ TTS_VOICE_EN        = TTS_VOICE_FEMALE_EN
 _TTS_DEFAULT_VOICE  = {"hi": TTS_VOICE_FEMALE_HI, "en": TTS_VOICE_FEMALE_EN}
 _MALE_VOICES        = {TTS_VOICE_MALE_HI, TTS_VOICE_MALE_EN}
 TTS_BASE_RATE_PCT   = -10
-MAX_RATE_PCT        = 40   # cap edge-tts speed-up; 40% keeps speech intelligible
+MAX_RATE_PCT        = 40    # cap edge-tts speed-up; 40% keeps speech intelligible
+MAX_ATEMPO_FACTOR   = 4.0   # ffmpeg atempo cap; beyond this we hard-trim
+MIN_DUB_DURATION_S  = 0.25  # skip micro-segments shorter than this when ratio > 4
 BG_AUDIO_VOL        = 0.20       # original audio vol during silence gaps
 BG_AUDIO_VOL_SPEECH = 0.04       # original audio vol during TTS
+
+
+def _atempo_compress(audio: AudioSegment, target_s: float) -> AudioSegment:
+    """Compress audio to target_s via ffmpeg atempo (≤4x); hard-trim beyond that."""
+    actual_s = len(audio) / 1000.0
+    if actual_s <= target_s * 1.05:
+        return audio
+
+    factor = min(actual_s / target_s, MAX_ATEMPO_FACTOR)
+    filters: list[str] = []
+    rem = factor
+    while rem > 2.0 + 1e-6:
+        filters.append("atempo=2.0")
+        rem /= 2.0
+    if rem > 1.001:
+        filters.append(f"atempo={rem:.5f}")
+
+    tmp_in = tempfile.NamedTemporaryFile(suffix=".mp3", delete=False)
+    tmp_out = tmp_in.name.replace(".mp3", "_out.mp3")
+    try:
+        audio.export(tmp_in.name, format="mp3")
+        tmp_in.close()
+        subprocess.run(
+            ["ffmpeg", "-y", "-i", tmp_in.name, "-filter:a", ",".join(filters), tmp_out],
+            check=True, capture_output=True,
+        )
+        result = AudioSegment.from_mp3(tmp_out)
+    finally:
+        os.unlink(tmp_in.name)
+        if os.path.exists(tmp_out):
+            os.unlink(tmp_out)
+
+    target_ms = int(target_s * 1000)
+    return result[:target_ms] if len(result) > target_ms else result
 
 
 def _emotion_tag(emotion: str | None) -> str:
@@ -76,8 +115,9 @@ def _voice_tag(voice: str) -> str:
 
 
 def _synth_pass1(valid: list[dict], seg_dir: Path, voices: dict[str, str],
-                 default_voice: str = TTS_VOICE_FEMALE_HI) -> float:
-    """Synthesize all segments at normal rate; return total TTS duration in s."""
+                 default_voice: str = TTS_VOICE_FEMALE_HI) -> dict[int, float]:
+    """Synthesize all segments at base rate; return {seg_id: tts_duration_s}."""
+    durations: dict[int, float] = {}
     for seg in valid:
         v   = _seg_voice(seg, voices, default_voice)
         emo = seg.get("emotion")
@@ -85,36 +125,52 @@ def _synth_pass1(valid: list[dict], seg_dir: Path, voices: dict[str, str],
         if not p.exists():
             _synth_segment(seg["hi_text"], p, rate=f"{TTS_BASE_RATE_PCT:+d}%",
                            voice=v, emotion=emo)
-    return sum(
-        len(AudioSegment.from_mp3(str(
-            seg_dir / f"seg_{s['id']:03d}_{_voice_tag(_seg_voice(s, voices, default_voice))}"
-                      f"{_emotion_tag(s.get('emotion'))}.mp3"
-        ))) / 1000
-        for s in valid
-    )
+        durations[seg["id"]] = len(AudioSegment.from_mp3(str(p))) / 1000.0
+    return durations
 
 
 def _synth_pass2(valid: list[dict], seg_dir: Path, voices: dict[str, str],
-                 global_rate: int, total_ms: int,
+                 seg_durations: dict[int, float], total_ms: int,
                  default_voice: str = TTS_VOICE_FEMALE_HI) -> AudioSegment:
-    """Re-synthesize at global_rate and overlay each segment at its timestamp."""
+    """Re-synthesize each segment at its own rate; atempo-compress if still overflowing."""
     combined = AudioSegment.silent(duration=total_ms)
     for seg in valid:
-        v   = _seg_voice(seg, voices, default_voice)
-        tag = _voice_tag(v)
-        emo = seg.get("emotion")
-        etag = _emotion_tag(emo)
-        effective_rate = TTS_BASE_RATE_PCT + global_rate
-        if effective_rate != 0:
-            p_fast = seg_dir / f"seg_{seg['id']:03d}_{tag}_r{effective_rate}{etag}.mp3"
+        v        = _seg_voice(seg, voices, default_voice)
+        tag      = _voice_tag(v)
+        emo      = seg.get("emotion")
+        etag     = _emotion_tag(emo)
+        tts_s    = seg_durations[seg["id"]]
+        target_s = seg["end"] - seg["start"]
+
+        if target_s < MIN_DUB_DURATION_S and tts_s / target_s > 4.0:
+            # micro-segment: write silence so metrics reads effective duration correctly
+            effective_path = seg_dir / f"seg_{seg['id']:03d}_{tag}_effective.mp3"
+            AudioSegment.silent(duration=int(target_s * 1000) or 20).export(
+                str(effective_path), format="mp3"
+            )
+            continue
+
+        needed_pct = int((tts_s / target_s - 1) * 100) + TTS_BASE_RATE_PCT
+        edge_rate  = max(TTS_BASE_RATE_PCT, min(needed_pct, MAX_RATE_PCT))
+
+        if edge_rate != TTS_BASE_RATE_PCT:
+            p_fast = seg_dir / f"seg_{seg['id']:03d}_{tag}_r{edge_rate}{etag}.mp3"
             if not p_fast.exists():
                 _synth_segment(seg["hi_text"], p_fast,
-                               rate=f"{effective_rate:+d}%", voice=v, emotion=emo)
+                               rate=f"{edge_rate:+d}%", voice=v, emotion=emo)
             seg_audio = AudioSegment.from_mp3(str(p_fast))
         else:
             seg_audio = AudioSegment.from_mp3(
                 str(seg_dir / f"seg_{seg['id']:03d}_{tag}{etag}.mp3")
             )
+
+        if len(seg_audio) / 1000.0 > target_s * 1.05:
+            seg_audio = _atempo_compress(seg_audio, target_s)
+
+        # persist the effective (post-atempo) audio so metrics read the right duration
+        effective_path = seg_dir / f"seg_{seg['id']:03d}_{tag}_effective.mp3"
+        seg_audio.export(str(effective_path), format="mp3")
+
         combined = combined.overlay(seg_audio, position=int(seg["start"] * 1000))
     return combined
 
@@ -154,14 +210,13 @@ def synthesize_hindi_audio(segments: list[dict], stem: str = "sample",
     print(f"  Synthesising {target_lang.upper()} audio ({len(combined_tgt)} chars, "
           f"base={total_ms / 1000:.1f}s) …")
 
-    total_tts_s = _synth_pass1(valid, seg_dir, voices, default_voice)
+    seg_durations  = _synth_pass1(valid, seg_dir, voices, default_voice)
+    total_tts_s    = sum(seg_durations.values())
     total_speech_s = sum(s["duration"] for s in valid)
-    raw_rate = int((total_tts_s / total_speech_s - 1) * 100)
-    global_rate = max(0, min(raw_rate, MAX_RATE_PCT))
     print(f"  TTS {total_tts_s:.1f}s over {total_speech_s:.1f}s speech "
-          f"→ uniform rate: +{global_rate}%")
+          f"→ per-segment rate control + atempo")
 
-    combined = _synth_pass2(valid, seg_dir, voices, global_rate, total_ms, default_voice)
+    combined = _synth_pass2(valid, seg_dir, voices, seg_durations, total_ms, default_voice)
     combined.export(str(dubbed_path), format="mp3")
     print(f"  {target_lang.upper()} dubbed audio: {dubbed_path.name}  "
           f"({len(combined) / 1000:.1f}s)")
