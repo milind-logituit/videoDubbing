@@ -1,31 +1,26 @@
-"""Stage 2.5 — Per-segment emotion classification using wav2vec2 SER."""
+"""Stage 2.5 — Per-segment emotion classification using text-based DistilRoBERTa.
+
+Text-based SER avoids the vocal-projection false-positive that audio models produce
+on broadcast speech (energetic delivery ≠ angry). Runs on the ASR transcript.
+"""
 from pathlib import Path
 
-import numpy as np
-from pydub import AudioSegment
+_MODEL_ID = "j-hartmann/emotion-english-distilroberta-base"
 
-_MODEL_ID    = "ehcalabres/wav2vec2-lg-xlsr-en-speech-emotion-recognition"
-_SAMPLE_RATE = 16000
-_MIN_DUR_S   = 0.5
-
-# Model outputs full English labels — pass through as-is, normalise to lowercase
+# Model outputs: anger, disgust, fear, joy, neutral, sadness, surprise
 _LABEL_MAP: dict[str, str] = {
-    "angry":     "angry",
-    "calm":      "calm",
-    "disgust":   "disgust",
-    "fearful":   "fearful",
-    "happy":     "happy",
-    "neutral":   "neutral",
-    "sad":       "sad",
-    "surprised": "surprised",
-    # 4-class fallbacks (old model, kept for safety)
-    "neu": "neutral", "hap": "happy", "ang": "angry",
+    "anger":    "angry",
+    "disgust":  "disgust",
+    "fear":     "fearful",
+    "joy":      "happy",
+    "neutral":  "neutral",
+    "sadness":  "sad",
+    "surprise": "surprised",
 }
 
 # SSML prosody per emotion — pitch and volume only; rate handled by isochrony
 SSML_PROSODY: dict[str, dict[str, str]] = {
     "neutral":   {"pitch": "+0%",  "volume": "medium"},
-    "calm":      {"pitch": "-5%",  "volume": "soft"},
     "happy":     {"pitch": "+15%", "volume": "loud"},
     "angry":     {"pitch": "+5%",  "volume": "x-loud"},
     "sad":       {"pitch": "-12%", "volume": "soft"},
@@ -41,42 +36,25 @@ def _get_pipeline():
     global _pipeline
     if _pipeline is None:
         from transformers import pipeline
-        _pipeline = pipeline("audio-classification", model=_MODEL_ID, device="cpu")
+        _pipeline = pipeline("text-classification", model=_MODEL_ID, device="cpu")
     return _pipeline
-
-
-def _load_mono_f32(audio_path: Path) -> np.ndarray:
-    audio = (
-        AudioSegment.from_file(str(audio_path))
-        .set_frame_rate(_SAMPLE_RATE)
-        .set_channels(1)
-    )
-    return np.array(audio.get_array_of_samples()).astype(np.float32) / 32768.0
 
 
 def classify_segment_emotions(audio_path: Path,
                                segments: list[dict]) -> list[dict]:
-    """Add 'emotion' and 'emotion_score' fields to each segment dict."""
-    print(f"  Loading SER model ({_MODEL_ID}) …")
-    pipe    = _get_pipeline()
-    samples = _load_mono_f32(audio_path)
-    out     = []
+    """Add 'emotion' and 'emotion_score' to each segment using ASR text."""
+    print(f"  Loading emotion model ({_MODEL_ID}) …")
+    pipe = _get_pipeline()
+    out  = []
     for seg in segments:
-        dur = float(seg["end"]) - float(seg["start"])
-        if dur < _MIN_DUR_S:
-            out.append({**seg, "emotion": "neutral", "emotion_score": 1.0})
-            continue
-        start_i = int(float(seg["start"]) * _SAMPLE_RATE)
-        end_i   = int(float(seg["end"])   * _SAMPLE_RATE)
-        chunk   = samples[start_i:end_i]
-        if len(chunk) < int(_SAMPLE_RATE * _MIN_DUR_S):
+        text = seg.get("en_text", "").strip()
+        if not text:
             out.append({**seg, "emotion": "neutral", "emotion_score": 1.0})
             continue
         try:
-            preds   = pipe({"array": chunk, "sampling_rate": _SAMPLE_RATE})
-            top     = preds[0]
-            emotion = _LABEL_MAP.get(top["label"].lower(), top["label"].lower())
-            score   = round(float(top["score"]), 3)
+            pred    = pipe(text, truncation=True, max_length=512)[0]
+            emotion = _LABEL_MAP.get(pred["label"], "neutral")
+            score   = round(float(pred["score"]), 3)
         except Exception:
             emotion, score = "neutral", 1.0
         out.append({**seg, "emotion": emotion, "emotion_score": score})
@@ -86,32 +64,31 @@ def classify_segment_emotions(audio_path: Path,
 def score_emotion_consistency(original_audio: Path,
                                dubbed_audio: Path,
                                segments: list[dict]) -> dict:
-    """Compare SER labels on original vs dubbed audio per segment."""
-    pipe     = _get_pipeline()
-    orig_s   = _load_mono_f32(original_audio)
-    dubbed_s = _load_mono_f32(dubbed_audio)
+    """Compare source emotion (from en_text) vs dubbed emotion (from hi_text).
 
+    Uses the same text-based model on source and target text so consistency
+    reflects whether the translation preserved emotional register.
+    dubbed_audio and original_audio args are accepted for API compatibility
+    but not used (text-based approach).
+    """
+    pipe = _get_pipeline()
     records, matches = [], 0
-    for seg in segments:
-        if not seg.get("emotion"):
-            continue
-        start_i   = int(float(seg["start"]) * _SAMPLE_RATE)
-        end_i     = int(float(seg["end"])   * _SAMPLE_RATE)
-        src_chunk = orig_s[start_i:end_i]
-        dub_chunk = dubbed_s[start_i:end_i]
 
-        def _classify(chunk):
-            if len(chunk) < int(_SAMPLE_RATE * _MIN_DUR_S):
-                return "neutral", 1.0
+    for seg in segments:
+        src_text = str(seg.get("en_text") or "").strip()
+        tgt_text = str(seg.get("hi_text") or "").strip()
+        if not src_text or not tgt_text:
+            continue
+
+        def _classify(text: str) -> tuple[str, float]:
             try:
-                preds = pipe({"array": chunk, "sampling_rate": _SAMPLE_RATE})
-                top   = preds[0]
-                return _LABEL_MAP.get(top["label"].lower(), top["label"].lower()), round(float(top["score"]), 3)
+                pred = pipe(text, truncation=True, max_length=512)[0]
+                return _LABEL_MAP.get(pred["label"], "neutral"), round(float(pred["score"]), 3)
             except Exception:
                 return "neutral", 1.0
 
-        src_emo, src_score = _classify(src_chunk)
-        dub_emo, dub_score = _classify(dub_chunk)
+        src_emo, src_score = _classify(src_text)
+        dub_emo, dub_score = _classify(tgt_text)
         match = src_emo == dub_emo
         if match:
             matches += 1
