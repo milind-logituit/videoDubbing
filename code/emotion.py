@@ -38,15 +38,17 @@ _VALENCE_AROUSAL: dict[str, tuple[float, float]] = {
     "calm":      ( 0.30, -0.40),
 }
 
-# SSML prosody per emotion — pitch and volume only; rate handled by isochrony
+# SSML prosody per emotion — pitch, volume, and rate
+# Rate is an independent per-segment modifier on top of global isochrony rate.
+# Angry/fearful/surprised → faster (urgency). Sad → slower (weight). Disgust → slightly slow.
 SSML_PROSODY: dict[str, dict[str, str]] = {
-    "neutral":   {"pitch": "+0%",  "volume": "medium"},
-    "happy":     {"pitch": "+15%", "volume": "loud"},
-    "angry":     {"pitch": "+5%",  "volume": "x-loud"},
-    "sad":       {"pitch": "-12%", "volume": "soft"},
-    "fearful":   {"pitch": "+10%", "volume": "soft"},
-    "disgust":   {"pitch": "-5%",  "volume": "medium"},
-    "surprised": {"pitch": "+20%", "volume": "loud"},
+    "neutral":   {"pitch": "+0%",  "volume": "medium", "rate": "+0%"},
+    "happy":     {"pitch": "+15%", "volume": "loud",   "rate": "+8%"},
+    "angry":     {"pitch": "+8%",  "volume": "x-loud", "rate": "+12%"},
+    "sad":       {"pitch": "-15%", "volume": "soft",   "rate": "-12%"},
+    "fearful":   {"pitch": "+12%", "volume": "soft",   "rate": "+10%"},
+    "disgust":   {"pitch": "-5%",  "volume": "medium", "rate": "-5%"},
+    "surprised": {"pitch": "+22%", "volume": "loud",   "rate": "+10%"},
 }
 
 _text_pipeline  = None
@@ -104,13 +106,30 @@ def classify_segment_emotions(audio_path: Path,
     return out
 
 
+def _back_translate(text: str, source_lang: str, target_lang: str = "en") -> str:
+    """Translate text back to English for emotion classification.
+
+    j-hartmann is English-only — running it directly on Hindi gives unreliable
+    results. Back-translating first gives the model text it was trained on.
+    """
+    if source_lang == target_lang:
+        return text
+    try:
+        from deep_translator import GoogleTranslator
+        return GoogleTranslator(source=source_lang, target=target_lang).translate(text) or text
+    except Exception:
+        return text  # on failure return original; classifier degrades gracefully
+
+
 def score_emotion_consistency(original_audio: Path,
                                dubbed_audio: Path,
-                               segments: list[dict]) -> dict:
-    """Compare source emotion (from en_text) vs dubbed emotion (from hi_text).
+                               segments: list[dict],
+                               target_lang: str = "hi") -> dict:
+    """Compare source emotion (en_text) vs dubbed emotion (hi_text back-translated to EN).
 
-    Returns binary match_pct AND avg_soft_score (valence/arousal similarity).
-    dubbed_audio and original_audio args accepted for API compatibility but unused.
+    Back-translates hi_text → English before classifying so j-hartmann operates on
+    the language it was trained on. Returns binary match_pct AND avg_soft_score.
+    original_audio / dubbed_audio accepted for API compatibility but unused.
     """
     pipe = _get_text_pipeline()
     records, matches, soft_total = [], 0, 0.0
@@ -128,8 +147,10 @@ def score_emotion_consistency(original_audio: Path,
         if not src_text or not tgt_text:
             continue
 
+        tgt_en = _back_translate(tgt_text, source_lang=target_lang, target_lang="en")
+
         src_emo, src_score = _classify(src_text)
-        dub_emo, dub_score = _classify(tgt_text)
+        dub_emo, dub_score = _classify(tgt_en)
         match      = src_emo == dub_emo
         similarity = _va_similarity(src_emo, dub_emo)
         if match:
@@ -141,6 +162,7 @@ def score_emotion_consistency(original_audio: Path,
             "source_score":   src_score,
             "dubbed_emotion": dub_emo,
             "dubbed_score":   dub_score,
+            "dubbed_back_en": tgt_en,
             "match":          match,
             "va_similarity":  similarity,
         })

@@ -27,21 +27,27 @@ BG_AUDIO_VOL_SPEECH = 0.04       # original audio vol during TTS
 
 
 def _emotion_tag(emotion: str | None) -> str:
-    """Short suffix for cache filename so neutral and angry files don't collide."""
+    """Short suffix for cache filename so neutral/angry/sad files don't collide.
+
+    v2 adds rate modulation to prosody — suffix includes 'r' to invalidate
+    any cached files built without rate.
+    """
     if not emotion or emotion == "neutral":
         return ""
-    return f"_{emotion[:3]}"  # _hap / _ang / _sad
+    return f"_r{emotion[:3]}"  # _rhap / _rang / _rsad  (r = rate-aware prosody)
 
 
 def _synth_segment(text: str, path: Path, rate: str = "+0%",
                    voice: str = TTS_VOICE_FEMALE_HI,
                    emotion: str | None = None) -> None:
-    """Synthesize one segment; wraps in SSML prosody for non-neutral emotion."""
+    """Synthesize one segment with SSML prosody (pitch + volume + rate) for emotion."""
     from emotion import SSML_PROSODY
     prosody = SSML_PROSODY.get(emotion or "neutral", SSML_PROSODY["neutral"])
     if emotion and emotion != "neutral":
         content = (
-            f'<prosody pitch="{prosody["pitch"]}" volume="{prosody["volume"]}">'
+            f'<prosody pitch="{prosody["pitch"]}" '
+            f'volume="{prosody["volume"]}" '
+            f'rate="{prosody["rate"]}">'
             f"{text}"
             f"</prosody>"
         )

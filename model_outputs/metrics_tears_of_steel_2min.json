@@ -210,33 +210,36 @@
   },
   "emotion": {
     "match_pct": 42.9,
-    "avg_soft_score": 75.6,
+    "avg_soft_score": 77.8,
     "n_segments": 14,
     "segments": [
       {
         "id": 0,
         "source_emotion": "neutral",
         "source_score": 0.894,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.629,
-        "match": true,
-        "va_similarity": 1.0
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.43,
+        "dubbed_back_en": "The main engine started.",
+        "match": false,
+        "va_similarity": 0.57
       },
       {
         "id": 1,
         "source_emotion": "neutral",
         "source_score": 0.406,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.546,
-        "match": true,
-        "va_similarity": 1.0
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.577,
+        "dubbed_back_en": "4, 3, 2, 1, let's go!",
+        "match": false,
+        "va_similarity": 0.5
       },
       {
         "id": 2,
         "source_emotion": "neutral",
         "source_score": 0.824,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.714,
+        "dubbed_score": 0.662,
+        "dubbed_back_en": "Look, Celia, we have to live our passion.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -245,7 +248,8 @@
         "source_emotion": "neutral",
         "source_score": 0.917,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.716,
+        "dubbed_score": 0.948,
+        "dubbed_back_en": "You have robotics, I just need to go to space.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -253,53 +257,59 @@
         "id": 4,
         "source_emotion": "angry",
         "source_score": 0.479,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.624,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.966,
+        "dubbed_back_en": "Suppose you are scared of my robot hand.",
         "match": false,
-        "va_similarity": 0.5
+        "va_similarity": 0.929
       },
       {
         "id": 5,
         "source_emotion": "fearful",
         "source_score": 0.82,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.639,
-        "match": false,
-        "va_similarity": 0.57
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.941,
+        "dubbed_back_en": "I wasn't scared, but this...",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 6,
         "source_emotion": "neutral",
         "source_score": 0.464,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.671,
-        "match": true,
-        "va_similarity": 1.0
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.988,
+        "dubbed_back_en": "Ok. I am scared.",
+        "match": false,
+        "va_similarity": 0.57
       },
       {
         "id": 7,
         "source_emotion": "fearful",
         "source_score": 0.99,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.639,
+        "dubbed_emotion": "disgust",
+        "dubbed_score": 0.416,
+        "dubbed_back_en": "A giant robotic claw filled with blood chases me in the dream.",
         "match": false,
-        "va_similarity": 0.57
+        "va_similarity": 0.745
       },
       {
         "id": 8,
         "source_emotion": "angry",
         "source_score": 0.68,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.58,
+        "dubbed_emotion": "sad",
+        "dubbed_score": 0.515,
+        "dubbed_back_en": "I don't want to! It's over!",
         "match": false,
-        "va_similarity": 0.5
+        "va_similarity": 0.348
       },
       {
         "id": 9,
         "source_emotion": "neutral",
         "source_score": 0.794,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.759,
+        "dubbed_score": 0.776,
+        "dubbed_back_en": "The robot's memory, synced, and...",
         "match": true,
         "va_similarity": 1.0
       },
@@ -307,37 +317,41 @@
         "id": 10,
         "source_emotion": "surprised",
         "source_score": 0.922,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.592,
-        "match": false,
-        "va_similarity": 0.597
+        "dubbed_emotion": "surprised",
+        "dubbed_score": 0.922,
+        "dubbed_back_en": "What?",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 11,
         "source_emotion": "disgust",
         "source_score": 0.507,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.765,
+        "dubbed_emotion": "surprised",
+        "dubbed_score": 0.549,
+        "dubbed_back_en": "This is very strange.",
         "match": false,
-        "va_similarity": 0.684
+        "va_similarity": 0.539
       },
       {
         "id": 12,
         "source_emotion": "surprised",
         "source_score": 0.922,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.592,
-        "match": false,
-        "va_similarity": 0.597
+        "dubbed_emotion": "surprised",
+        "dubbed_score": 0.922,
+        "dubbed_back_en": "What?",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 13,
         "source_emotion": "fearful",
         "source_score": 0.62,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.837,
+        "dubbed_emotion": "surprised",
+        "dubbed_score": 0.273,
+        "dubbed_back_en": "Go down?",
         "match": false,
-        "va_similarity": 0.57
+        "va_similarity": 0.696
       }
     ],
     "tts_fidelity": {

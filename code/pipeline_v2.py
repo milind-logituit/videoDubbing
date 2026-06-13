@@ -662,7 +662,8 @@ if __name__ == "__main__":
 
     print("\nStage 8e — Emotion consistency score …")
     try:
-        emo = score_emotion_consistency(audio_path, hindi_audio, segments)
+        emo = score_emotion_consistency(audio_path, hindi_audio, segments,
+                                        target_lang=target_lang)
         ep  = emo
         print(f"  Text match: {ep['match_pct']}%  soft: {ep['avg_soft_score']}%  "
               f"over {ep['n_segments']} segments")

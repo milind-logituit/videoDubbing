@@ -350,8 +350,8 @@
     "note": "Face detected in only 0.0% of frames — not enough for scoring"
   },
   "emotion": {
-    "match_pct": 76.5,
-    "avg_soft_score": 89.2,
+    "match_pct": 91.2,
+    "avg_soft_score": 96.6,
     "n_segments": 34,
     "segments": [
       {
@@ -359,7 +359,8 @@
         "source_emotion": "neutral",
         "source_score": 0.598,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.744,
+        "dubbed_score": 0.611,
+        "dubbed_back_en": "Hello everyone, welcome to Tinipoyaa Actual Speaking.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -368,7 +369,8 @@
         "source_emotion": "neutral",
         "source_score": 0.859,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.636,
+        "dubbed_score": 0.859,
+        "dubbed_back_en": "I'm Jennifer Clyde.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -376,17 +378,19 @@
         "id": 2,
         "source_emotion": "happy",
         "source_score": 0.885,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.724,
-        "match": false,
-        "va_similarity": 0.5
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.789,
+        "dubbed_back_en": "Thank you very much for coming along today.",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 3,
         "source_emotion": "neutral",
         "source_score": 0.943,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.752,
+        "dubbed_score": 0.957,
+        "dubbed_back_en": "Today's lesson is Lesson 11, and we'll talk about health.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -395,7 +399,8 @@
         "source_emotion": "neutral",
         "source_score": 0.731,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.639,
+        "dubbed_score": 0.731,
+        "dubbed_back_en": "So how do you take care of your health?",
         "match": true,
         "va_similarity": 1.0
       },
@@ -404,7 +409,8 @@
         "source_emotion": "neutral",
         "source_score": 0.516,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.612,
+        "dubbed_score": 0.389,
+        "dubbed_back_en": "How to stay healthy?",
         "match": true,
         "va_similarity": 1.0
       },
@@ -413,7 +419,8 @@
         "source_emotion": "neutral",
         "source_score": 0.436,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.63,
+        "dubbed_score": 0.484,
+        "dubbed_back_en": "How to stay fit?",
         "match": true,
         "va_similarity": 1.0
       },
@@ -422,7 +429,8 @@
         "source_emotion": "neutral",
         "source_score": 0.96,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.573,
+        "dubbed_score": 0.92,
+        "dubbed_back_en": "Most doctors give one advice,",
         "match": true,
         "va_similarity": 1.0
       },
@@ -430,26 +438,29 @@
         "id": 8,
         "source_emotion": "sad",
         "source_score": 0.523,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.716,
-        "match": false,
-        "va_similarity": 0.57
+        "dubbed_emotion": "sad",
+        "dubbed_score": 0.539,
+        "dubbed_back_en": "Those who do not take time out for exercise will have to take it out due to illness.",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 9,
         "source_emotion": "surprised",
         "source_score": 0.423,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.82,
-        "match": false,
-        "va_similarity": 0.597
+        "dubbed_emotion": "surprised",
+        "dubbed_score": 0.546,
+        "dubbed_back_en": "Yes, did you understand?",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 10,
         "source_emotion": "neutral",
         "source_score": 0.893,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.613,
+        "dubbed_score": 0.868,
+        "dubbed_back_en": "That means it is very important to exercise.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -458,7 +469,8 @@
         "source_emotion": "neutral",
         "source_score": 0.942,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.756,
+        "dubbed_score": 0.929,
+        "dubbed_back_en": "There is another old saying,",
         "match": true,
         "va_similarity": 1.0
       },
@@ -467,7 +479,8 @@
         "source_emotion": "neutral",
         "source_score": 0.956,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.685,
+        "dubbed_score": 0.889,
+        "dubbed_back_en": "Take some rest after lunch, and take a walk after dinner.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -475,17 +488,19 @@
         "id": 13,
         "source_emotion": "happy",
         "source_score": 0.778,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.595,
-        "match": false,
-        "va_similarity": 0.5
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.821,
+        "dubbed_back_en": "Walking is also a great exercise.",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 14,
         "source_emotion": "neutral",
         "source_score": 0.949,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.731,
+        "dubbed_score": 0.94,
+        "dubbed_back_en": "There are many things we can do to improve our health,",
         "match": true,
         "va_similarity": 1.0
       },
@@ -494,7 +509,8 @@
         "source_emotion": "neutral",
         "source_score": 0.862,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.63,
+        "dubbed_score": 0.558,
+        "dubbed_back_en": "By taking small steps towards better health.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -503,7 +519,8 @@
         "source_emotion": "neutral",
         "source_score": 0.836,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.733,
+        "dubbed_score": 0.847,
+        "dubbed_back_en": "Sleep more, eat healthy food, exercise,",
         "match": true,
         "va_similarity": 1.0
       },
@@ -511,17 +528,19 @@
         "id": 17,
         "source_emotion": "happy",
         "source_score": 0.888,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.764,
-        "match": false,
-        "va_similarity": 0.5
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.812,
+        "dubbed_back_en": "Reduce salt, and be happy.",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 18,
         "source_emotion": "neutral",
         "source_score": 0.562,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.672,
+        "dubbed_score": 0.562,
+        "dubbed_back_en": "What else?",
         "match": true,
         "va_similarity": 1.0
       },
@@ -530,7 +549,8 @@
         "source_emotion": "neutral",
         "source_score": 0.942,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.769,
+        "dubbed_score": 0.954,
+        "dubbed_back_en": "Check the feet.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -539,7 +559,8 @@
         "source_emotion": "neutral",
         "source_score": 0.822,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.684,
+        "dubbed_score": 0.918,
+        "dubbed_back_en": "It is very important to check the feet.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -548,7 +569,8 @@
         "source_emotion": "neutral",
         "source_score": 0.97,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.534,
+        "dubbed_score": 0.957,
+        "dubbed_back_en": "Check how your feet are once or twice a week.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -557,7 +579,8 @@
         "source_emotion": "neutral",
         "source_score": 0.56,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.787,
+        "dubbed_score": 0.694,
+        "dubbed_back_en": "Floss daily and drink less coffee.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -566,7 +589,8 @@
         "source_emotion": "neutral",
         "source_score": 0.939,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.705,
+        "dubbed_score": 0.902,
+        "dubbed_back_en": "And most importantly – have breakfast.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -574,26 +598,29 @@
         "id": 24,
         "source_emotion": "surprised",
         "source_score": 0.748,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.795,
-        "match": false,
-        "va_similarity": 0.597
+        "dubbed_emotion": "surprised",
+        "dubbed_score": 0.553,
+        "dubbed_back_en": "A very interesting thing – a 2004 study found,",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 25,
         "source_emotion": "neutral",
         "source_score": 0.48,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.779,
-        "match": true,
-        "va_similarity": 1.0
+        "dubbed_emotion": "disgust",
+        "dubbed_score": 0.43,
+        "dubbed_back_en": "Which was published in a magazine called 'Heart', it was said -",
+        "match": false,
+        "va_similarity": 0.684
       },
       {
         "id": 26,
         "source_emotion": "neutral",
         "source_score": 0.954,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.815,
+        "dubbed_score": 0.942,
+        "dubbed_back_en": "Build a network.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -601,17 +628,19 @@
         "id": 27,
         "source_emotion": "neutral",
         "source_score": 0.782,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.764,
-        "match": true,
-        "va_similarity": 1.0
+        "dubbed_emotion": "surprised",
+        "dubbed_score": 0.803,
+        "dubbed_back_en": "You might be wondering, what does network have to do with health?",
+        "match": false,
+        "va_similarity": 0.597
       },
       {
         "id": 28,
         "source_emotion": "neutral",
         "source_score": 0.655,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.767,
+        "dubbed_score": 0.585,
+        "dubbed_back_en": "But he said, if you survive a heart attack,",
         "match": true,
         "va_similarity": 1.0
       },
@@ -620,7 +649,8 @@
         "source_emotion": "fearful",
         "source_score": 0.485,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.692,
+        "dubbed_score": 0.562,
+        "dubbed_back_en": "So the chances of having another attack are halved.",
         "match": false,
         "va_similarity": 0.57
       },
@@ -628,17 +658,19 @@
         "id": 30,
         "source_emotion": "happy",
         "source_score": 0.947,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.701,
-        "match": false,
-        "va_similarity": 0.5
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.639,
+        "dubbed_back_en": "If you have close friends and family.",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 31,
         "source_emotion": "neutral",
         "source_score": 0.521,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.614,
+        "dubbed_score": 0.636,
+        "dubbed_back_en": "That means friends and family are very important.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -647,7 +679,8 @@
         "source_emotion": "neutral",
         "source_score": 0.929,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.75,
+        "dubbed_score": 0.906,
+        "dubbed_back_en": "Well, today we are talking about health,",
         "match": true,
         "va_similarity": 1.0
       },
@@ -656,7 +689,8 @@
         "source_emotion": "neutral",
         "source_score": 0.775,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.711,
+        "dubbed_score": 0.45,
+        "dubbed_back_en": "So let's start...",
         "match": true,
         "va_similarity": 1.0
       }
