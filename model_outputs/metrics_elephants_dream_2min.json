@@ -1,6 +1,6 @@
 {
   "asr": {
-    "model": "base",
+    "model": "large-v3-turbo",
     "wer": null,
     "wer_pct": null,
     "note": "N/A — no reference text for this clip"
@@ -8,7 +8,7 @@
   "translation": {
     "model": "Google Translate (en→hi)",
     "bleu": null,
-    "n_segments": 15,
+    "n_segments": 14,
     "note": "N/A — no reference text for this clip"
   },
   "tts": {
@@ -24,268 +24,243 @@
     "dubbed_duration_s": 120.0,
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.3,
-    "hi_chars_per_sec": 1.5
+    "hi_chars_per_sec": 2.3
   },
   "segment_quality": [
     {
       "id": 0,
-      "start": 14.22,
-      "end": 14.98,
-      "en_duration_s": 0.76,
+      "start": 15.26,
+      "end": 20.04,
+      "en_duration_s": 4.78,
       "tts_duration_s": null,
       "isochrony_ratio": null,
       "fit": 3,
-      "fidelity": 1,
-      "fluency": 1,
-      "note": "Incomplete translation; 'nan' is nonsensical for 'The'"
+      "fidelity": 2,
+      "fluency": 3,
+      "note": "English source is garbled ('Ad Ranted W' unclear), but Hindi translation misses the reference entirely. Translates to generic 'dangerous place' rather than attempting to preserve the proper noun or context."
     },
     {
       "id": 1,
-      "start": 14.98,
-      "end": 16.46,
-      "en_duration_s": 1.48,
+      "start": 20.62,
+      "end": 21.84,
+      "en_duration_s": 1.22,
       "tts_duration_s": 2.28,
-      "isochrony_ratio": 1.541,
+      "isochrony_ratio": 1.869,
       "fit": 2,
-      "fidelity": 4,
-      "fluency": 4
+      "fidelity": 1,
+      "fluency": 3,
+      "note": "Severe fidelity loss. English discusses time to escape and asking questions; Hindi only conveys 'wait, I have questions.' Missing the temporal/procedural aspect entirely."
     },
     {
       "id": 2,
-      "start": 16.46,
-      "end": 20.98,
-      "en_duration_s": 4.52,
+      "start": 22.02,
+      "end": 22.08,
+      "en_duration_s": 0.06,
       "tts_duration_s": 3.74,
-      "isochrony_ratio": 0.827,
-      "fit": 5,
+      "isochrony_ratio": 62.333,
+      "fit": 1,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 3,
-      "start": 20.98,
-      "end": 24.0,
-      "en_duration_s": 3.02,
+      "start": 22.08,
+      "end": 25.02,
+      "en_duration_s": 2.94,
       "tts_duration_s": 4.15,
-      "isochrony_ratio": 1.374,
+      "isochrony_ratio": 1.412,
+      "fit": 3,
+      "fidelity": 4,
+      "fluency": 5
+    },
+    {
+      "id": 4,
+      "start": 25.02,
+      "end": 28.4,
+      "en_duration_s": 3.38,
+      "tts_duration_s": 1.49,
+      "isochrony_ratio": 0.441,
       "fit": 3,
       "fidelity": 5,
       "fluency": 5
     },
     {
-      "id": 4,
-      "start": 24.66,
-      "end": 25.5,
-      "en_duration_s": 0.84,
-      "tts_duration_s": 1.49,
-      "isochrony_ratio": 1.774,
-      "fit": 2,
-      "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 2,
-      "note": "Transliteration alone ('ईमो') doesn't convey disgust; needs intonational or word-choice markers"
-    },
-    {
       "id": 5,
-      "start": 42.84,
-      "end": 44.24,
-      "en_duration_s": 1.4,
+      "start": 28.4,
+      "end": 29.9,
+      "en_duration_s": 1.5,
       "tts_duration_s": 1.39,
-      "isochrony_ratio": 0.993,
+      "isochrony_ratio": 0.927,
       "fit": 5,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 6,
-      "start": 46.0,
-      "end": 48.38,
-      "en_duration_s": 2.38,
+      "start": 46.2,
+      "end": 47.48,
+      "en_duration_s": 1.28,
       "tts_duration_s": 2.16,
-      "isochrony_ratio": 0.908,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 3,
-      "note": "Simple question form; mild sadness present but could be stronger with 'क्या तुम्हें चोट लगी?' or softer register"
-    },
-    {
-      "id": 7,
-      "start": 48.38,
-      "end": 53.82,
-      "en_duration_s": 5.44,
-      "tts_duration_s": 2.86,
-      "isochrony_ratio": 0.526,
-      "fit": 3,
-      "fidelity": 3,
-      "fluency": 3,
-      "note": "Incomplete sentence; truncated at 'आप' loses subject clarity and surprise register",
-      "emotion_register": 2
-    },
-    {
-      "id": 8,
-      "start": 54.82,
-      "end": 56.3,
-      "en_duration_s": 1.48,
-      "tts_duration_s": 2.26,
-      "isochrony_ratio": 1.527,
+      "isochrony_ratio": 1.688,
       "fit": 2,
       "fidelity": 5,
       "fluency": 5
     },
     {
-      "id": 9,
-      "start": 56.82,
-      "end": 60.98,
-      "en_duration_s": 4.16,
-      "tts_duration_s": 3.91,
-      "isochrony_ratio": 0.94,
-      "fit": 5,
+      "id": 7,
+      "start": 51.46,
+      "end": 53.8,
+      "en_duration_s": 2.34,
+      "tts_duration_s": 2.86,
+      "isochrony_ratio": 1.222,
+      "fit": 4,
       "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 4,
-      "note": "Imperative tone and 'सुरक्षित नहीं है' conveys concern well; sadness partially present"
+      "fluency": 5
+    },
+    {
+      "id": 8,
+      "start": 55.22,
+      "end": 56.26,
+      "en_duration_s": 1.04,
+      "tts_duration_s": 2.26,
+      "isochrony_ratio": 2.173,
+      "fit": 1,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 9,
+      "start": 56.26,
+      "end": 68.42,
+      "en_duration_s": 12.16,
+      "tts_duration_s": 3.91,
+      "isochrony_ratio": 0.322,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
     },
     {
       "id": 10,
-      "start": 61.82,
-      "end": 64.54,
-      "en_duration_s": 2.72,
+      "start": 75.34,
+      "end": 77.66,
+      "en_duration_s": 2.32,
       "tts_duration_s": 2.86,
-      "isochrony_ratio": 1.051,
-      "fit": 5,
+      "isochrony_ratio": 1.233,
+      "fit": 4,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 11,
-      "start": 64.56,
-      "end": 68.82,
-      "en_duration_s": 4.26,
+      "start": 86.26,
+      "end": 92.8,
+      "en_duration_s": 6.54,
       "tts_duration_s": 2.88,
-      "isochrony_ratio": 0.676,
+      "isochrony_ratio": 0.44,
       "fit": 3,
-      "fidelity": 5,
-      "fluency": 5,
-      "note": "Literal translation 'देखते जाओ' is slightly awkward; 'तुम देखोगे, तुम देखोगे' would be more natural for this context"
+      "fidelity": 4,
+      "fluency": 5
     },
     {
       "id": 12,
-      "start": 75.82,
-      "end": 77.68,
-      "en_duration_s": 1.86,
+      "start": 94.08,
+      "end": 95.2,
+      "en_duration_s": 1.12,
       "tts_duration_s": 2.18,
-      "isochrony_ratio": 1.172,
-      "fit": 4,
-      "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 2,
-      "note": "Neutral directive; disgust not communicated through word choice or phrasing"
-    },
-    {
-      "id": 13,
-      "start": 93.44,
-      "end": 95.68,
-      "en_duration_s": 2.24,
-      "tts_duration_s": 2.18,
-      "isochrony_ratio": 0.973,
-      "fit": 5,
+      "isochrony_ratio": 1.946,
+      "fit": 2,
       "fidelity": 5,
       "fluency": 5
     },
     {
-      "id": 14,
-      "start": 115.62,
-      "end": 115.82,
-      "en_duration_s": 0.2,
-      "tts_duration_s": 1.49,
-      "isochrony_ratio": 7.45,
-      "fit": 1,
+      "id": 13,
+      "start": 95.2,
+      "end": 99.08,
+      "en_duration_s": 3.88,
+      "tts_duration_s": 2.18,
+      "isochrony_ratio": 0.562,
+      "fit": 3,
       "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 1,
-      "note": "Single-word label with no emotional marking; disgust unachievable in this context"
+      "fluency": 5
     }
   ],
   "back_translation": {
-    "hi_transcript_chars": 279,
-    "back_translated_en": "To the left and right we can see a cannon. Everything is absolutely safe with Dolas Hour. Amo… Avar… No, this is Joth Dhaan, it was not me, you. No it is not. Dwar is not everything. So no no it isn't? You will give, you will jump. You will wake up and get extinguished. Pyaav. Inferior itch after itch after itch. Inferior scratches.",
-    "bleu": 4.41
+    "tgt_transcript_chars": 308,
+    "back_translated": "The maid and see, the midwife and we see the caps, the rollers and everything is absolutely safe imo oh did it hurt? I don't think, you I'm fine Get up imo, it's not safe here Come on, what's next? You'll see, you'll see yourself emo, come here follow me emo emo emo emo emo emo emo emo emo emo jaden aage piejas bant emo mij emo emo emo ılskah now emo",
+    "bleu": 7.16,
+    "hi_transcript_chars": 308,
+    "back_translated_en": "The maid and see, the midwife and we see the caps, the rollers and everything is absolutely safe imo oh did it hurt? I don't think, you I'm fine Get up imo, it's not safe here Come on, what's next? You'll see, you'll see yourself emo, come here follow me emo emo emo emo emo emo emo emo emo emo jaden aage piejas bant emo mij emo emo emo ılskah now emo"
   },
   "lipsync": {
-    "sync_score": 0.514,
-    "pearson_r": 0.0279,
+    "sync_score": 0.516,
+    "pearson_r": 0.0314,
     "best_lag_ms": 0.0,
     "faces_pct": 21.3,
-    "note": null
-  },
-  "lipsync_wav2lip": {
-    "sync_score": null,
-    "faces_pct": 4.4,
-    "note": "Face detected in only 4.4% of frames — not enough for scoring"
+    "note": null,
+    "wav2lip_applied": false
   },
   "emotion": {
-    "match_pct": 73.3,
-    "avg_soft_score": 90.3,
-    "n_segments": 15,
+    "match_pct": 85.7,
+    "avg_soft_score": 97.2,
+    "n_segments": 14,
     "segments": [
       {
         "id": 0,
-        "source_emotion": "neutral",
-        "source_score": 0.661,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.597,
-        "dubbed_back_en": "nan",
+        "source_emotion": "fearful",
+        "source_score": 0.591,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.675,
+        "dubbed_back_en": "How can we go back to that dangerous place?",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 1,
         "source_emotion": "neutral",
-        "source_score": 0.743,
+        "source_score": 0.949,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.78,
-        "dubbed_back_en": "look left",
+        "dubbed_score": 0.894,
+        "dubbed_back_en": "Wait a minute, I have something to ask.",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 2,
         "source_emotion": "neutral",
-        "source_score": 0.895,
+        "source_score": 0.666,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.877,
-        "dubbed_back_en": "Hats are visible on the right",
+        "dubbed_score": 0.734,
+        "dubbed_back_en": "Thanks.",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 3,
         "source_emotion": "neutral",
-        "source_score": 0.895,
+        "source_score": 0.963,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.918,
-        "dubbed_back_en": "Rollers and everything is absolutely safe",
+        "dubbed_score": 0.881,
+        "dubbed_back_en": "This solves all other matters also.",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 4,
-        "source_emotion": "disgust",
-        "source_score": 0.846,
+        "source_emotion": "neutral",
+        "source_score": 0.907,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.851,
-        "dubbed_back_en": "emo",
-        "match": false,
-        "va_similarity": 0.684
+        "dubbed_score": 0.6,
+        "dubbed_back_en": "This is a special thing in itself.",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 5,
         "source_emotion": "neutral",
-        "source_score": 0.561,
+        "source_score": 0.883,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.561,
-        "dubbed_back_en": "Oh",
+        "dubbed_score": 0.966,
+        "dubbed_back_en": "This is ours.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -294,110 +269,94 @@
         "source_emotion": "sad",
         "source_score": 0.387,
         "dubbed_emotion": "sad",
-        "dubbed_score": 0.379,
-        "dubbed_back_en": "Did it hurt?",
+        "dubbed_score": 0.387,
+        "dubbed_back_en": "Are you hurt?",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 7,
         "source_emotion": "surprised",
-        "source_score": 0.618,
+        "source_score": 0.811,
         "dubbed_emotion": "surprised",
-        "dubbed_score": 0.618,
-        "dubbed_back_en": "I don't think so, you",
+        "dubbed_score": 0.715,
+        "dubbed_back_en": "Don't think so. you?",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 8,
         "source_emotion": "neutral",
-        "source_score": 0.544,
+        "source_score": 0.552,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.408,
-        "dubbed_back_en": "I'm fine",
+        "dubbed_score": 0.413,
+        "dubbed_back_en": "I'm fine.",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 9,
-        "source_emotion": "sad",
-        "source_score": 0.621,
-        "dubbed_emotion": "sad",
-        "dubbed_score": 0.622,
-        "dubbed_back_en": "Wake up emo, it's not safe here",
-        "match": true,
-        "va_similarity": 1.0
+        "source_emotion": "angry",
+        "source_score": 0.295,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.8,
+        "dubbed_back_en": "Get up. Imo, there is danger here. Let us go. What's next? Keep watching. Keep watching.",
+        "match": false,
+        "va_similarity": 0.929
       },
       {
         "id": 10,
-        "source_emotion": "neutral",
-        "source_score": 0.686,
-        "dubbed_emotion": "angry",
-        "dubbed_score": 0.555,
-        "dubbed_back_en": "Come on, what's next?",
+        "source_emotion": "disgust",
+        "source_score": 0.671,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.698,
+        "dubbed_back_en": "Imo, come here.",
         "match": false,
-        "va_similarity": 0.5
+        "va_similarity": 0.684
       },
       {
         "id": 11,
         "source_emotion": "neutral",
-        "source_score": 0.764,
+        "source_score": 0.876,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.9,
-        "dubbed_back_en": "keep watching, keep watching",
+        "dubbed_score": 0.411,
+        "dubbed_back_en": "Come on, let's leave.",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 12,
-        "source_emotion": "disgust",
-        "source_score": 0.568,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.889,
-        "dubbed_back_en": "emo, come here",
-        "match": false,
-        "va_similarity": 0.684
-      },
-      {
-        "id": 13,
         "source_emotion": "neutral",
-        "source_score": 0.958,
+        "source_score": 0.935,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.898,
-        "dubbed_back_en": "follow me",
+        "dubbed_score": 0.935,
+        "dubbed_back_en": "Follow me.",
         "match": true,
         "va_similarity": 1.0
       },
       {
-        "id": 14,
-        "source_emotion": "disgust",
-        "source_score": 0.846,
+        "id": 13,
+        "source_emotion": "neutral",
+        "source_score": 0.887,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.851,
-        "dubbed_back_en": "emo",
-        "match": false,
-        "va_similarity": 0.684
+        "dubbed_score": 0.735,
+        "dubbed_back_en": "Come on, let's get there.",
+        "match": true,
+        "va_similarity": 1.0
       }
     ],
     "tts_fidelity": {
-      "avg_soft_score": 71.2,
-      "n_segments": 15,
+      "avg_soft_score": 84.6,
+      "n_segments": 13,
       "segments": [
         {
           "id": 0,
           "intended": "neutral",
-          "perceived": "angry",
+          "perceived": "happy",
           "va_similarity": 0.5
         },
         {
           "id": 1,
-          "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
-        },
-        {
-          "id": 2,
           "intended": "neutral",
           "perceived": "neutral",
           "va_similarity": 1.0
@@ -410,9 +369,9 @@
         },
         {
           "id": 4,
-          "intended": "disgust",
-          "perceived": "happy",
-          "va_similarity": 0.272
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
         },
         {
           "id": 5,
@@ -422,33 +381,33 @@
         },
         {
           "id": 6,
-          "intended": "sad",
+          "intended": "neutral",
           "perceived": "angry",
-          "va_similarity": 0.348
+          "va_similarity": 0.5
         },
         {
           "id": 7,
-          "intended": "surprised",
-          "perceived": "neutral",
-          "va_similarity": 0.597
-        },
-        {
-          "id": 8,
           "intended": "neutral",
           "perceived": "neutral",
           "va_similarity": 1.0
         },
         {
+          "id": 8,
+          "intended": "neutral",
+          "perceived": "angry",
+          "va_similarity": 0.5
+        },
+        {
           "id": 9,
-          "intended": "sad",
+          "intended": "neutral",
           "perceived": "neutral",
-          "va_similarity": 0.57
+          "va_similarity": 1.0
         },
         {
           "id": 10,
           "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
+          "perceived": "neutral",
+          "va_similarity": 1.0
         },
         {
           "id": 11,
@@ -458,21 +417,15 @@
         },
         {
           "id": 12,
-          "intended": "disgust",
-          "perceived": "angry",
-          "va_similarity": 0.7
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
         },
         {
           "id": 13,
           "intended": "neutral",
           "perceived": "neutral",
           "va_similarity": 1.0
-        },
-        {
-          "id": 14,
-          "intended": "disgust",
-          "perceived": "angry",
-          "va_similarity": 0.7
         }
       ]
     }

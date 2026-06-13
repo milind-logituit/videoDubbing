@@ -230,7 +230,7 @@ def translate_segments(whisper_result: dict,
         en = seg["text"].strip()
         if not en:
             continue
-        hi = translator.translate(en)
+        hi = translator.translate(en) or en
         if en.lower().rstrip(".!?,") in filler_map:
             hi = filler_map[en.lower().rstrip(".!?,")]
         entry: dict = {
