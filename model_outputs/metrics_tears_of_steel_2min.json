@@ -209,87 +209,87 @@
     "note": null
   },
   "emotion": {
-    "match_pct": 50.0,
+    "match_pct": 35.7,
     "n_segments": 14,
     "segments": [
       {
         "id": 0,
-        "source_emotion": "neutral",
-        "source_score": 0.869,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.978,
+        "source_emotion": "fearful",
+        "source_score": 0.138,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.139,
         "match": true
       },
       {
         "id": 1,
-        "source_emotion": "neutral",
-        "source_score": 0.849,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.993,
-        "match": true
+        "source_emotion": "disgust",
+        "source_score": 0.135,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.138,
+        "match": false
       },
       {
         "id": 2,
-        "source_emotion": "angry",
-        "source_score": 0.759,
-        "dubbed_emotion": "angry",
-        "dubbed_score": 0.773,
-        "match": true
+        "source_emotion": "happy",
+        "source_score": 0.133,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.144,
+        "match": false
       },
       {
         "id": 3,
-        "source_emotion": "angry",
-        "source_score": 0.989,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.643,
+        "source_emotion": "happy",
+        "source_score": 0.131,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.144,
         "match": false
       },
       {
         "id": 4,
-        "source_emotion": "angry",
-        "source_score": 0.634,
-        "dubbed_emotion": "angry",
-        "dubbed_score": 0.956,
+        "source_emotion": "fearful",
+        "source_score": 0.143,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.142,
         "match": true
       },
       {
         "id": 5,
-        "source_emotion": "angry",
-        "source_score": 0.975,
-        "dubbed_emotion": "angry",
-        "dubbed_score": 0.988,
+        "source_emotion": "fearful",
+        "source_score": 0.137,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.135,
         "match": true
       },
       {
         "id": 6,
-        "source_emotion": "angry",
-        "source_score": 0.996,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.655,
+        "source_emotion": "happy",
+        "source_score": 0.133,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.141,
         "match": false
       },
       {
         "id": 7,
-        "source_emotion": "angry",
-        "source_score": 0.529,
-        "dubbed_emotion": "happy",
-        "dubbed_score": 0.616,
+        "source_emotion": "fearful",
+        "source_score": 0.131,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.137,
         "match": false
       },
       {
         "id": 8,
-        "source_emotion": "happy",
-        "source_score": 0.995,
-        "dubbed_emotion": "angry",
-        "dubbed_score": 0.737,
-        "match": false
+        "source_emotion": "fearful",
+        "source_score": 0.144,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.139,
+        "match": true
       },
       {
         "id": 9,
         "source_emotion": "happy",
-        "source_score": 0.909,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.844,
+        "source_score": 0.135,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.136,
         "match": false
       },
       {
@@ -302,27 +302,27 @@
       },
       {
         "id": 11,
-        "source_emotion": "sad",
-        "source_score": 1.0,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.647,
+        "source_emotion": "disgust",
+        "source_score": 0.136,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.142,
         "match": false
       },
       {
         "id": 12,
-        "source_emotion": "neutral",
-        "source_score": 0.999,
-        "dubbed_emotion": "angry",
-        "dubbed_score": 0.924,
+        "source_emotion": "sad",
+        "source_score": 0.134,
+        "dubbed_emotion": "surprised",
+        "dubbed_score": 0.134,
         "match": false
       },
       {
         "id": 13,
-        "source_emotion": "neutral",
-        "source_score": 0.944,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.44,
-        "match": true
+        "source_emotion": "surprised",
+        "source_score": 0.135,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.136,
+        "match": false
       }
     ]
   }
