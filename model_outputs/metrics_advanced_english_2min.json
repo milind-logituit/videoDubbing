@@ -1,6 +1,6 @@
 {
   "asr": {
-    "model": "base",
+    "model": "large-v3-turbo",
     "wer": null,
     "wer_pct": null,
     "note": "N/A — no reference text for this clip"
@@ -8,7 +8,7 @@
   "translation": {
     "model": "Google Translate (en→hi)",
     "bleu": null,
-    "n_segments": 34,
+    "n_segments": 17,
     "note": "N/A — no reference text for this clip"
   },
   "tts": {
@@ -22,761 +22,392 @@
     "dubbed_duration_s": 120.0,
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.3,
-    "hi_chars_per_sec": 8.4
+    "hi_chars_per_sec": 8.6
   },
   "segment_quality": [
     {
       "id": 0,
-      "start": 11.54,
-      "end": 15.22,
-      "en_duration_s": 3.68,
+      "start": 11.62,
+      "end": 17.08,
+      "en_duration_s": 5.46,
       "tts_duration_s": 4.66,
-      "isochrony_ratio": 1.266,
-      "fit": 4,
+      "isochrony_ratio": 0.853,
+      "fit": 5,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 1,
-      "start": 15.56,
-      "end": 17.1,
-      "en_duration_s": 1.54,
+      "start": 17.24,
+      "end": 23.04,
+      "en_duration_s": 5.8,
       "tts_duration_s": 2.04,
-      "isochrony_ratio": 1.325,
+      "isochrony_ratio": 0.352,
       "fit": 3,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 2,
-      "start": 17.4,
-      "end": 19.24,
-      "en_duration_s": 1.84,
+      "start": 23.04,
+      "end": 30.22,
+      "en_duration_s": 7.18,
       "tts_duration_s": 2.83,
-      "isochrony_ratio": 1.538,
-      "fit": 2,
+      "isochrony_ratio": 0.394,
+      "fit": 3,
       "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 4
+      "fluency": 5
     },
     {
       "id": 3,
-      "start": 19.78,
-      "end": 25.28,
-      "en_duration_s": 5.5,
+      "start": 30.42,
+      "end": 37.64,
+      "en_duration_s": 7.22,
       "tts_duration_s": 4.1,
-      "isochrony_ratio": 0.745,
+      "isochrony_ratio": 0.568,
       "fit": 3,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 4,
-      "start": 25.76,
-      "end": 28.48,
-      "en_duration_s": 2.72,
+      "start": 37.64,
+      "end": 44.62,
+      "en_duration_s": 6.98,
       "tts_duration_s": 3.98,
-      "isochrony_ratio": 1.463,
+      "isochrony_ratio": 0.57,
       "fit": 3,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 5,
-      "start": 28.48,
-      "end": 30.2,
-      "en_duration_s": 1.72,
+      "start": 44.62,
+      "end": 51.62,
+      "en_duration_s": 7.0,
       "tts_duration_s": 2.02,
-      "isochrony_ratio": 1.174,
-      "fit": 4,
+      "isochrony_ratio": 0.289,
+      "fit": 3,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 6,
-      "start": 30.6,
-      "end": 31.58,
-      "en_duration_s": 0.98,
+      "start": 51.62,
+      "end": 58.98,
+      "en_duration_s": 7.36,
       "tts_duration_s": 1.75,
-      "isochrony_ratio": 1.786,
-      "fit": 2,
+      "isochrony_ratio": 0.238,
+      "fit": 3,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 7,
-      "start": 31.98,
-      "end": 35.32,
-      "en_duration_s": 3.34,
+      "start": 58.98,
+      "end": 66.08,
+      "en_duration_s": 7.1,
       "tts_duration_s": 2.52,
-      "isochrony_ratio": 0.754,
+      "isochrony_ratio": 0.355,
       "fit": 3,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 8,
-      "start": 35.66,
-      "end": 41.44,
-      "en_duration_s": 5.78,
+      "start": 66.08,
+      "end": 74.6,
+      "en_duration_s": 8.52,
       "tts_duration_s": 6.7,
-      "isochrony_ratio": 1.159,
-      "fit": 4,
+      "isochrony_ratio": 0.786,
+      "fit": 3,
       "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 5
+      "fluency": 5
     },
     {
       "id": 9,
-      "start": 41.9,
-      "end": 42.8,
-      "en_duration_s": 0.9,
+      "start": 74.6,
+      "end": 79.9,
+      "en_duration_s": 5.3,
       "tts_duration_s": 2.5,
-      "isochrony_ratio": 2.778,
-      "fit": 1,
-      "fidelity": 4,
-      "fluency": 5,
-      "emotion_register": 3,
-      "note": "Hindi lacks the surprise/realization register of English 'Hmm, got it, right?' The phrasing 'हाँ, समझे ना?' is more confirmatory than surprised."
+      "isochrony_ratio": 0.472,
+      "fit": 3,
+      "fidelity": 5,
+      "fluency": 5
     },
     {
       "id": 10,
-      "start": 43.22,
-      "end": 46.74,
-      "en_duration_s": 3.52,
+      "start": 79.9,
+      "end": 87.04,
+      "en_duration_s": 7.14,
       "tts_duration_s": 3.53,
-      "isochrony_ratio": 1.003,
-      "fit": 5,
+      "isochrony_ratio": 0.494,
+      "fit": 3,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 11,
-      "start": 47.16,
-      "end": 49.26,
-      "en_duration_s": 2.1,
+      "start": 87.04,
+      "end": 93.6,
+      "en_duration_s": 6.56,
       "tts_duration_s": 2.81,
-      "isochrony_ratio": 1.338,
+      "isochrony_ratio": 0.428,
       "fit": 3,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 12,
-      "start": 49.76,
-      "end": 54.8,
-      "en_duration_s": 5.04,
+      "start": 93.6,
+      "end": 100.82,
+      "en_duration_s": 7.22,
       "tts_duration_s": 6.7,
-      "isochrony_ratio": 1.329,
-      "fit": 3,
-      "fidelity": 4,
-      "fluency": 4,
-      "note": "Minor: 'दोपहर के खाने के बाद' specifically means afternoon meal; English 'dinner' can be ambiguous. 'थोड़ा आराम करो' and 'थोड़ा टहलो' use imperative form which is natural but slightly different register than English."
+      "isochrony_ratio": 0.928,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
     },
     {
       "id": 13,
-      "start": 55.58,
-      "end": 57.54,
-      "en_duration_s": 1.96,
+      "start": 100.82,
+      "end": 106.1,
+      "en_duration_s": 5.28,
       "tts_duration_s": 2.42,
-      "isochrony_ratio": 1.235,
-      "fit": 4,
+      "isochrony_ratio": 0.458,
+      "fit": 3,
       "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 5
+      "fluency": 5
     },
     {
       "id": 14,
-      "start": 58.1,
-      "end": 61.36,
-      "en_duration_s": 3.26,
+      "start": 106.1,
+      "end": 111.72,
+      "en_duration_s": 5.62,
       "tts_duration_s": 4.58,
-      "isochrony_ratio": 1.405,
-      "fit": 3,
+      "isochrony_ratio": 0.815,
+      "fit": 5,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 15,
-      "start": 61.42,
-      "end": 65.34,
-      "en_duration_s": 3.92,
+      "start": 111.72,
+      "end": 118.22,
+      "en_duration_s": 6.5,
       "tts_duration_s": 3.7,
-      "isochrony_ratio": 0.944,
-      "fit": 5,
+      "isochrony_ratio": 0.569,
+      "fit": 3,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 16,
-      "start": 65.62,
-      "end": 70.22,
-      "en_duration_s": 4.6,
+      "start": 118.22,
+      "end": 119.94,
+      "en_duration_s": 1.72,
       "tts_duration_s": 5.14,
-      "isochrony_ratio": 1.117,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 17,
-      "start": 70.92,
-      "end": 73.38,
-      "en_duration_s": 2.46,
-      "tts_duration_s": 3.29,
-      "isochrony_ratio": 1.337,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 5
-    },
-    {
-      "id": 18,
-      "start": 73.64,
-      "end": 74.02,
-      "en_duration_s": 0.38,
-      "tts_duration_s": 1.1,
-      "isochrony_ratio": 2.895,
+      "isochrony_ratio": 2.988,
       "fit": 1,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 19,
-      "start": 74.32,
-      "end": 75.8,
-      "en_duration_s": 1.48,
-      "tts_duration_s": 1.94,
-      "isochrony_ratio": 1.311,
-      "fit": 3,
       "fidelity": 4,
       "fluency": 4,
-      "note": "Hindi drops 'people say' entirely, weakening the attribution and conversational tone of the original."
-    },
-    {
-      "id": 20,
-      "start": 76.24,
-      "end": 78.24,
-      "en_duration_s": 2.0,
-      "tts_duration_s": 2.5,
-      "isochrony_ratio": 1.25,
-      "fit": 4,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 21,
-      "start": 78.56,
-      "end": 82.56,
-      "en_duration_s": 4.0,
-      "tts_duration_s": 3.19,
-      "isochrony_ratio": 0.797,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 22,
-      "start": 83.0,
-      "end": 86.16,
-      "en_duration_s": 3.16,
-      "tts_duration_s": 2.81,
-      "isochrony_ratio": 0.889,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 23,
-      "start": 86.16,
-      "end": 88.94,
-      "en_duration_s": 2.78,
-      "tts_duration_s": 2.93,
-      "isochrony_ratio": 1.054,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 24,
-      "start": 89.58,
-      "end": 93.4,
-      "en_duration_s": 3.82,
-      "tts_duration_s": 3.98,
-      "isochrony_ratio": 1.042,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 4
-    },
-    {
-      "id": 25,
-      "start": 93.4,
-      "end": 97.36,
-      "en_duration_s": 3.96,
-      "tts_duration_s": 5.45,
-      "isochrony_ratio": 1.376,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 26,
-      "start": 98.16,
-      "end": 99.06,
-      "en_duration_s": 0.9,
-      "tts_duration_s": 1.61,
-      "isochrony_ratio": 1.789,
-      "fit": 2,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 27,
-      "start": 99.6,
-      "end": 102.94,
-      "en_duration_s": 3.34,
-      "tts_duration_s": 3.43,
-      "isochrony_ratio": 1.027,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 28,
-      "start": 103.12,
-      "end": 106.0,
-      "en_duration_s": 2.88,
-      "tts_duration_s": 4.94,
-      "isochrony_ratio": 1.715,
-      "fit": 2,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 29,
-      "start": 106.54,
-      "end": 109.78,
-      "en_duration_s": 3.24,
-      "tts_duration_s": 4.68,
-      "isochrony_ratio": 1.444,
-      "fit": 3,
-      "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 4
-    },
-    {
-      "id": 30,
-      "start": 109.78,
-      "end": 112.14,
-      "en_duration_s": 2.36,
-      "tts_duration_s": 3.84,
-      "isochrony_ratio": 1.627,
-      "fit": 2,
-      "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 4
-    },
-    {
-      "id": 31,
-      "start": 112.14,
-      "end": 115.88,
-      "en_duration_s": 3.74,
-      "tts_duration_s": 3.86,
-      "isochrony_ratio": 1.032,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 32,
-      "start": 116.46,
-      "end": 118.5,
-      "en_duration_s": 2.04,
-      "tts_duration_s": 4.08,
-      "isochrony_ratio": 2.0,
-      "fit": 2,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 33,
-      "start": 118.72,
-      "end": 119.98,
-      "en_duration_s": 1.26,
-      "tts_duration_s": 2.59,
-      "isochrony_ratio": 2.056,
-      "fit": 1,
-      "fidelity": 5,
-      "fluency": 5
+      "note": "Sentence fragment in English ('let's begin with our.') is incomplete; Hindi translation ends abruptly without clear object."
     }
   ],
   "back_translation": {
-    "hi_transcript_chars": 1134,
-    "back_translated_en": "hundred hundred hundred hundred Jasmine Nama SAW tens焼 tens焼 tens焼 tens焼 tens焼ens tens tens tens tens tens tens tens tens tens tens tens فٹھ کیسے رہتے ہیں, زیادہ تر دکٹر ایک بات کہتے ہیں جو ویایام کے لئے وقت نہیں نکالتے, اُنے بھی ماری کے لئے وقت نکالنا پڑے گا حاں, سمجھنا یانی ویایام کرنا بے ہت ضروری ہے ایک اور پرانی کہاہت ہے دو پہر کے کھانے کے بعد تھوڑا آرام کرو اور رات کے کھانے کے بعد تھوڑا ٹھلا پیدل چلنا بھی بڑیا The reality is that we can do a lot of things to improve our hands, just take small steps, ask for better sleep, take measures to eat less, reduce salt, be happy and check the feet, it is very important to check the feet, check twice to see how the feet are, floss every day and drink coffee, and the most important thing is to have breakfast. Now here's a heartwarming message which I received in the year 2004, published in a magazine called Hath. And in this it was said that create a network, you will think what network has to do with beauty but they said that if you miss the heart's journey, then the chances of taking another journey are reduced. If you have any friends and loved ones, that is, friends and love are not necessary, where today we are talking about Swaz, so let's start.",
-    "bleu": 3.49
+    "tgt_transcript_chars": 1238,
+    "back_translated": "Hello everyone, Chinipoyya, welcome back to Actual Speaking, I'm Jennifer Clyde, thanks for joining today, today's lesson is lesson eleven and we're going to talk about health, so how do you take care of your health? How do you stay healthy? How to stay fit? Most of the doctors say one thing that those who do not take time out for exercise, they will have to take out time for the disease. Yes, don't you understand, that is, it is very important to exercise. Another old saying is, take some rest after lunch and take a walk after dinner. Walking is also a good exercise. We can do a lot to improve our health. We just have to take small steps to get better health. Sleep more, eat nutritious food, exercise, reduce salt, be happy. And check your feet. It is very important to check your feet. Check how your feet are once or twice a week. Floss daily, drink less coffee, and most importantly, have breakfast. Now, an interesting thing that I found in a study in 2004 was published in a magazine called Haat and it said, create a network. You will wonder what network has to do with health, but they said that if you suffer from a heart attack, the chances of having another heart attack are halved if you have close friends. And family i.e. friends and family is very important. Well, today we are talking about health, so let's start.",
+    "bleu": 22.23,
+    "hi_transcript_chars": 1238,
+    "back_translated_en": "Hello everyone, Chinipoyya, welcome back to Actual Speaking, I'm Jennifer Clyde, thanks for joining today, today's lesson is lesson eleven and we're going to talk about health, so how do you take care of your health? How do you stay healthy? How to stay fit? Most of the doctors say one thing that those who do not take time out for exercise, they will have to take out time for the disease. Yes, don't you understand, that is, it is very important to exercise. Another old saying is, take some rest after lunch and take a walk after dinner. Walking is also a good exercise. We can do a lot to improve our health. We just have to take small steps to get better health. Sleep more, eat nutritious food, exercise, reduce salt, be happy. And check your feet. It is very important to check your feet. Check how your feet are once or twice a week. Floss daily, drink less coffee, and most importantly, have breakfast. Now, an interesting thing that I found in a study in 2004 was published in a magazine called Haat and it said, create a network. You will wonder what network has to do with health, but they said that if you suffer from a heart attack, the chances of having another heart attack are halved if you have close friends. And family i.e. friends and family is very important. Well, today we are talking about health, so let's start."
   },
   "lipsync": {
-    "sync_score": 0.534,
-    "pearson_r": 0.068,
+    "sync_score": 0.533,
+    "pearson_r": 0.0663,
     "best_lag_ms": 33.4,
     "faces_pct": 99.4,
-    "note": null
-  },
-  "lipsync_wav2lip": {
-    "sync_score": null,
-    "faces_pct": 0.0,
-    "note": "Face detected in only 0.0% of frames — not enough for scoring"
+    "note": null,
+    "wav2lip_applied": false
   },
   "emotion": {
-    "match_pct": 91.2,
-    "avg_soft_score": 96.6,
-    "n_segments": 34,
+    "match_pct": 82.4,
+    "avg_soft_score": 92.2,
+    "n_segments": 17,
     "segments": [
       {
         "id": 0,
         "source_emotion": "neutral",
-        "source_score": 0.598,
+        "source_score": 0.656,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.611,
-        "dubbed_back_en": "Hello everyone, welcome to Tinipoyaa Actual Speaking.",
+        "dubbed_score": 0.592,
+        "dubbed_back_en": "Hello everyone, welcome back to Tiny Poet Actually Speaking. I'm Jennifer Clyde.",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 1,
-        "source_emotion": "neutral",
-        "source_score": 0.859,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.859,
-        "dubbed_back_en": "I'm Jennifer Clyde.",
+        "source_emotion": "happy",
+        "source_score": 0.791,
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.863,
+        "dubbed_back_en": "Thank you very much for coming along today. Today's lesson is lesson eleven and we",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 2,
-        "source_emotion": "happy",
-        "source_score": 0.885,
-        "dubbed_emotion": "happy",
-        "dubbed_score": 0.789,
-        "dubbed_back_en": "Thank you very much for coming along today.",
+        "source_emotion": "neutral",
+        "source_score": 0.632,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.705,
+        "dubbed_back_en": "Will talk about health. So how do you take care of your health? How to stay healthy?",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 3,
         "source_emotion": "neutral",
-        "source_score": 0.943,
+        "source_score": 0.869,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.957,
-        "dubbed_back_en": "Today's lesson is Lesson 11, and we'll talk about health.",
+        "dubbed_score": 0.849,
+        "dubbed_back_en": "How to stay fit? Most doctors give this advice to those who do not get time.",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 4,
         "source_emotion": "neutral",
-        "source_score": 0.731,
+        "source_score": 0.875,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.731,
-        "dubbed_back_en": "So how do you take care of your health?",
+        "dubbed_score": 0.663,
+        "dubbed_back_en": "To exercise, they have to take time off from illness. Got it? so the thing is",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 5,
         "source_emotion": "neutral",
-        "source_score": 0.516,
+        "source_score": 0.895,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.389,
-        "dubbed_back_en": "How to stay healthy?",
+        "dubbed_score": 0.864,
+        "dubbed_back_en": "It is very important to exercise. There is another old saying. She says take some rest after eating",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 6,
-        "source_emotion": "neutral",
-        "source_score": 0.436,
+        "source_emotion": "happy",
+        "source_score": 0.534,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.484,
-        "dubbed_back_en": "How to stay fit?",
-        "match": true,
-        "va_similarity": 1.0
+        "dubbed_score": 0.527,
+        "dubbed_back_en": "And take a short walk after dinner. Walking is also a great way to exercise. we are",
+        "match": false,
+        "va_similarity": 0.5
       },
       {
         "id": 7,
         "source_emotion": "neutral",
-        "source_score": 0.96,
+        "source_score": 0.938,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.92,
-        "dubbed_back_en": "Most doctors give one advice,",
+        "dubbed_score": 0.914,
+        "dubbed_back_en": "You can do a lot to improve your health by taking small steps. You",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 8,
-        "source_emotion": "sad",
-        "source_score": 0.523,
-        "dubbed_emotion": "sad",
-        "dubbed_score": 0.539,
-        "dubbed_back_en": "Those who do not take time out for exercise will have to take it out due to illness.",
+        "source_emotion": "neutral",
+        "source_score": 0.66,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.879,
+        "dubbed_back_en": "Sleep more, eat healthy, exercise, reduce salt, be happy. What else? You",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 9,
-        "source_emotion": "surprised",
-        "source_score": 0.423,
-        "dubbed_emotion": "surprised",
-        "dubbed_score": 0.546,
-        "dubbed_back_en": "Yes, did you understand?",
+        "source_emotion": "neutral",
+        "source_score": 0.961,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.954,
+        "dubbed_back_en": "Check the feet, people say. It is very important to watch the feet. once a week or",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 10,
         "source_emotion": "neutral",
-        "source_score": 0.893,
+        "source_score": 0.837,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.868,
-        "dubbed_back_en": "That means it is very important to exercise.",
+        "dubbed_score": 0.852,
+        "dubbed_back_en": "Look twice at how the feet are. Floss daily, drink less coffee and",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 11,
         "source_emotion": "neutral",
-        "source_score": 0.942,
+        "source_score": 0.71,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.929,
-        "dubbed_back_en": "There is another old saying,",
+        "dubbed_score": 0.928,
+        "dubbed_back_en": "Important thing – make sure to have breakfast. There is something very interesting that I found in a 2004 study",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 12,
         "source_emotion": "neutral",
-        "source_score": 0.956,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.889,
-        "dubbed_back_en": "Take some rest after lunch, and take a walk after dinner.",
-        "match": true,
-        "va_similarity": 1.0
+        "source_score": 0.757,
+        "dubbed_emotion": "surprised",
+        "dubbed_score": 0.494,
+        "dubbed_back_en": "Which was published in a magazine named Heart, it said – create a network. now you will think",
+        "match": false,
+        "va_similarity": 0.597
       },
       {
         "id": 13,
-        "source_emotion": "happy",
-        "source_score": 0.778,
-        "dubbed_emotion": "happy",
-        "dubbed_score": 0.821,
-        "dubbed_back_en": "Walking is also a great exercise.",
+        "source_emotion": "neutral",
+        "source_score": 0.456,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.474,
+        "dubbed_back_en": "network? What does this have to do with health? But he said that if you survive a heart attack,",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 14,
-        "source_emotion": "neutral",
-        "source_score": 0.949,
+        "source_emotion": "fearful",
+        "source_score": 0.667,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.94,
-        "dubbed_back_en": "There are many things we can do to improve our health,",
-        "match": true,
-        "va_similarity": 1.0
+        "dubbed_score": 0.396,
+        "dubbed_back_en": "If you have close friends and family, your chances of having a second heart attack are halved.",
+        "match": false,
+        "va_similarity": 0.57
       },
       {
         "id": 15,
         "source_emotion": "neutral",
-        "source_score": 0.862,
+        "source_score": 0.845,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.558,
-        "dubbed_back_en": "By taking small steps towards better health.",
+        "dubbed_score": 0.919,
+        "dubbed_back_en": "That means friends and family are very important. Well, we are talking about health",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 16,
         "source_emotion": "neutral",
-        "source_score": 0.836,
+        "source_score": 0.825,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.847,
-        "dubbed_back_en": "Sleep more, eat healthy food, exercise,",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 17,
-        "source_emotion": "happy",
-        "source_score": 0.888,
-        "dubbed_emotion": "happy",
-        "dubbed_score": 0.812,
-        "dubbed_back_en": "Reduce salt, and be happy.",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 18,
-        "source_emotion": "neutral",
-        "source_score": 0.562,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.562,
-        "dubbed_back_en": "What else?",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 19,
-        "source_emotion": "neutral",
-        "source_score": 0.942,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.954,
-        "dubbed_back_en": "Check the feet.",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 20,
-        "source_emotion": "neutral",
-        "source_score": 0.822,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.918,
-        "dubbed_back_en": "It is very important to check the feet.",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 21,
-        "source_emotion": "neutral",
-        "source_score": 0.97,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.957,
-        "dubbed_back_en": "Check how your feet are once or twice a week.",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 22,
-        "source_emotion": "neutral",
-        "source_score": 0.56,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.694,
-        "dubbed_back_en": "Floss daily and drink less coffee.",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 23,
-        "source_emotion": "neutral",
-        "source_score": 0.939,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.902,
-        "dubbed_back_en": "And most importantly – have breakfast.",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 24,
-        "source_emotion": "surprised",
-        "source_score": 0.748,
-        "dubbed_emotion": "surprised",
-        "dubbed_score": 0.553,
-        "dubbed_back_en": "A very interesting thing – a 2004 study found,",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 25,
-        "source_emotion": "neutral",
-        "source_score": 0.48,
-        "dubbed_emotion": "disgust",
-        "dubbed_score": 0.43,
-        "dubbed_back_en": "Which was published in a magazine called 'Heart', it was said -",
-        "match": false,
-        "va_similarity": 0.684
-      },
-      {
-        "id": 26,
-        "source_emotion": "neutral",
-        "source_score": 0.954,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.942,
-        "dubbed_back_en": "Build a network.",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 27,
-        "source_emotion": "neutral",
-        "source_score": 0.782,
-        "dubbed_emotion": "surprised",
-        "dubbed_score": 0.803,
-        "dubbed_back_en": "You might be wondering, what does network have to do with health?",
-        "match": false,
-        "va_similarity": 0.597
-      },
-      {
-        "id": 28,
-        "source_emotion": "neutral",
-        "source_score": 0.655,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.585,
-        "dubbed_back_en": "But he said, if you survive a heart attack,",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 29,
-        "source_emotion": "fearful",
-        "source_score": 0.485,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.562,
-        "dubbed_back_en": "So the chances of having another attack are halved.",
-        "match": false,
-        "va_similarity": 0.57
-      },
-      {
-        "id": 30,
-        "source_emotion": "happy",
-        "source_score": 0.947,
-        "dubbed_emotion": "happy",
-        "dubbed_score": 0.639,
-        "dubbed_back_en": "If you have close friends and family.",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 31,
-        "source_emotion": "neutral",
-        "source_score": 0.521,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.636,
-        "dubbed_back_en": "That means friends and family are very important.",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 32,
-        "source_emotion": "neutral",
-        "source_score": 0.929,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.906,
-        "dubbed_back_en": "Well, today we are talking about health,",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 33,
-        "source_emotion": "neutral",
-        "source_score": 0.775,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.45,
-        "dubbed_back_en": "So let's start...",
+        "dubbed_score": 0.836,
+        "dubbed_back_en": "Today, let's get started.",
         "match": true,
         "va_similarity": 1.0
       }
     ],
     "tts_fidelity": {
-      "avg_soft_score": 59.2,
-      "n_segments": 34,
+      "avg_soft_score": 61.8,
+      "n_segments": 17,
       "segments": [
         {
           "id": 0,
@@ -792,33 +423,33 @@
         },
         {
           "id": 2,
-          "intended": "happy",
-          "perceived": "happy",
+          "intended": "neutral",
+          "perceived": "neutral",
           "va_similarity": 1.0
         },
         {
           "id": 3,
           "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
-        },
-        {
-          "id": 4,
-          "intended": "neutral",
           "perceived": "happy",
           "va_similarity": 0.5
         },
         {
+          "id": 4,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
           "id": 5,
           "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
+          "perceived": "neutral",
+          "va_similarity": 1.0
         },
         {
           "id": 6,
           "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
+          "perceived": "angry",
+          "va_similarity": 0.5
         },
         {
           "id": 7,
@@ -828,27 +459,27 @@
         },
         {
           "id": 8,
-          "intended": "sad",
-          "perceived": "happy",
-          "va_similarity": 0.07
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
         },
         {
           "id": 9,
-          "intended": "surprised",
-          "perceived": "neutral",
-          "va_similarity": 0.597
-        },
-        {
-          "id": 10,
           "intended": "neutral",
           "perceived": "angry",
           "va_similarity": 0.5
         },
         {
+          "id": 10,
+          "intended": "neutral",
+          "perceived": "happy",
+          "va_similarity": 0.5
+        },
+        {
           "id": 11,
           "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
+          "perceived": "angry",
+          "va_similarity": 0.5
         },
         {
           "id": 12,
@@ -858,9 +489,9 @@
         },
         {
           "id": 13,
-          "intended": "happy",
+          "intended": "neutral",
           "perceived": "angry",
-          "va_similarity": 0.293
+          "va_similarity": 0.5
         },
         {
           "id": 14,
@@ -877,109 +508,7 @@
         {
           "id": 16,
           "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
-        },
-        {
-          "id": 17,
-          "intended": "happy",
-          "perceived": "angry",
-          "va_similarity": 0.293
-        },
-        {
-          "id": 18,
-          "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
-        },
-        {
-          "id": 19,
-          "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
-        },
-        {
-          "id": 20,
-          "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
-        },
-        {
-          "id": 21,
-          "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
-        },
-        {
-          "id": 22,
-          "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
-        },
-        {
-          "id": 23,
-          "intended": "neutral",
           "perceived": "happy",
-          "va_similarity": 0.5
-        },
-        {
-          "id": 24,
-          "intended": "surprised",
-          "perceived": "angry",
-          "va_similarity": 0.65
-        },
-        {
-          "id": 25,
-          "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
-        },
-        {
-          "id": 26,
-          "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
-        },
-        {
-          "id": 27,
-          "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
-        },
-        {
-          "id": 28,
-          "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
-        },
-        {
-          "id": 29,
-          "intended": "fearful",
-          "perceived": "angry",
-          "va_similarity": 0.929
-        },
-        {
-          "id": 30,
-          "intended": "happy",
-          "perceived": "angry",
-          "va_similarity": 0.293
-        },
-        {
-          "id": 31,
-          "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
-        },
-        {
-          "id": 32,
-          "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
-        },
-        {
-          "id": 33,
-          "intended": "neutral",
-          "perceived": "angry",
           "va_similarity": 0.5
         }
       ]
