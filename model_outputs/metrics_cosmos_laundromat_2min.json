@@ -13,26 +13,23 @@
   },
   "tts": {
     "voice": "hi-IN-SwaraNeural",
-    "voice_map": {
-      "SPEAKER_01": "hi-IN-SwaraNeural",
-      "SPEAKER_00": "hi-IN-MadhurNeural"
-    }
+    "voice_map": {}
   },
   "alignment": {
     "source_duration_s": 120.0,
     "dubbed_duration_s": 120.0,
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.3,
-    "hi_chars_per_sec": 0.6
+    "hi_chars_per_sec": 0.4
   },
   "segment_quality": [
     {
       "id": 0,
-      "start": 28.58,
-      "end": 29.98,
+      "start": 9.88,
+      "end": 11.28,
       "en_duration_s": 1.4,
-      "tts_duration_s": 1.49,
-      "isochrony_ratio": 1.064,
+      "tts_duration_s": 1.39,
+      "isochrony_ratio": 0.993,
       "fit": 5,
       "fidelity": 5,
       "fluency": 5
@@ -51,32 +48,32 @@
     {
       "id": 2,
       "start": 70.82,
-      "end": 89.86,
-      "en_duration_s": 19.04,
-      "tts_duration_s": 3.74,
-      "isochrony_ratio": 0.196,
-      "fit": 3,
+      "end": 74.6,
+      "en_duration_s": 3.78,
+      "tts_duration_s": 3.76,
+      "isochrony_ratio": 0.995,
+      "fit": 5,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 3,
-      "start": 95.62,
-      "end": 119.74,
-      "en_duration_s": 24.12,
-      "tts_duration_s": 3.74,
-      "isochrony_ratio": 0.155,
-      "fit": 3,
+      "start": 95.38,
+      "end": 97.0,
+      "en_duration_s": 1.62,
+      "tts_duration_s": 1.61,
+      "isochrony_ratio": 0.994,
+      "fit": 5,
       "fidelity": 5,
       "fluency": 5
     }
   ],
   "back_translation": {
-    "tgt_transcript_chars": 93,
-    "back_translated": "You no, no, no, no, no, no no no no no no no no no no",
-    "bleu": 39.27,
-    "hi_transcript_chars": 93,
-    "back_translated_en": "You no, no, no, no, no, no no no no no no no no no no"
+    "tgt_transcript_chars": 297,
+    "back_translated": "You don't, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no",
+    "bleu": 0.0,
+    "hi_transcript_chars": 297,
+    "back_translated_en": "You don't, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no"
   },
   "lipsync": {
     "sync_score": 0.495,
@@ -94,53 +91,53 @@
       {
         "id": 0,
         "source_emotion": "neutral",
-        "source_score": 0.934,
+        "source_score": 0.561,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.934,
-        "dubbed_back_en": "You",
+        "dubbed_score": 0.561,
+        "dubbed_back_en": "Oh",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 1,
-        "source_emotion": "fearful",
-        "source_score": 0.425,
-        "dubbed_emotion": "fearful",
-        "dubbed_score": 0.426,
-        "dubbed_back_en": "no, no, no, no, no",
+        "source_emotion": "angry",
+        "source_score": 0.44,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.44,
+        "dubbed_back_en": "No! No! No! No! No!",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 2,
-        "source_emotion": "fearful",
-        "source_score": 0.425,
-        "dubbed_emotion": "fearful",
-        "dubbed_score": 0.426,
-        "dubbed_back_en": "no, no, no, no, no",
+        "source_emotion": "angry",
+        "source_score": 0.464,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.464,
+        "dubbed_back_en": "No! No! No!",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 3,
-        "source_emotion": "fearful",
-        "source_score": 0.425,
-        "dubbed_emotion": "fearful",
-        "dubbed_score": 0.426,
-        "dubbed_back_en": "no, no, no, no, no",
+        "source_emotion": "angry",
+        "source_score": 0.519,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.519,
+        "dubbed_back_en": "No! No!",
         "match": true,
         "va_similarity": 1.0
       }
     ],
     "tts_fidelity": {
-      "avg_soft_score": 87.5,
+      "avg_soft_score": 75.0,
       "n_segments": 4,
       "segments": [
         {
           "id": 0,
           "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
+          "perceived": "happy",
+          "va_similarity": 0.5
         },
         {
           "id": 1,
