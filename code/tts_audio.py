@@ -281,3 +281,61 @@ def _duck_original_audio(audio_path: Path, segments: list[dict]) -> Path:
     out = audio_path.with_suffix(".ducked.wav")
     ducked.export(str(out), format="wav")
     return out
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stem separation (demucs) — separates dialogue from music/SFX
+# ─────────────────────────────────────────────────────────────────────────────
+
+def separate_stems(audio_path: Path) -> tuple[Path, Path]:
+    """Run demucs --two-stems=vocals and return (vocals_path, no_vocals_path).
+
+    Results are cached in PREPARED/<stem>_demucs/; skip if already present.
+    Falls back to (audio_path, audio_path) if demucs is unavailable.
+    """
+    import subprocess as _sp
+    stem = audio_path.stem
+    out_dir = PREPARED / f"{stem}_demucs"
+    vocals_out    = out_dir / "htdemucs" / stem / "vocals.wav"
+    no_vocals_out = out_dir / "htdemucs" / stem / "no_vocals.wav"
+
+    if vocals_out.exists() and no_vocals_out.exists():
+        print(f"  Stems cached: {vocals_out.parent.name}/")
+        return vocals_out, no_vocals_out
+
+    try:
+        import demucs  # noqa: F401
+    except ModuleNotFoundError:
+        print("  [warn] demucs not installed — skipping stem separation")
+        return audio_path, audio_path
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    print(f"  Running demucs two-stems on {audio_path.name} …")
+    _sp.run(
+        [
+            "python", "-m", "demucs",
+            "--two-stems", "vocals",
+            "--out", str(out_dir),
+            str(audio_path),
+        ],
+        check=True,
+        capture_output=True,
+    )
+    return vocals_out, no_vocals_out
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Post-TTS effective duration reader — used for subtitle re-alignment
+# ─────────────────────────────────────────────────────────────────────────────
+
+def get_effective_seg_durations(
+    segments: list[dict], stem: str, target_lang: str
+) -> dict[int, float]:
+    """Return {segment_id: actual_dubbed_duration_s} by reading effective mp3 files."""
+    seg_dir = PREPARED / f"{target_lang}_segments_{stem}"
+    durations: dict[int, float] = {}
+    for seg in segments:
+        files = list(seg_dir.glob(f"seg_{seg['id']:03d}_*_effective.mp3"))
+        if files:
+            durations[seg["id"]] = len(AudioSegment.from_mp3(str(files[0]))) / 1000.0
+    return durations

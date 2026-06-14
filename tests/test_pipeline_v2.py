@@ -17,6 +17,9 @@ _assign_voice_pool = _mod._assign_voice_pool
 _seg_voice = _mod._seg_voice
 _voice_tag = _mod._voice_tag
 _ctx_snippet = _mod._ctx_snippet
+extract_glossary = _mod.extract_glossary
+generate_vtt = _mod.generate_vtt
+generate_srt = _mod.generate_srt
 _GENDER_LABEL_MAP = _mod._GENDER_LABEL_MAP
 TTS_VOICE_FEMALE_HI = _mod.TTS_VOICE_FEMALE_HI
 TTS_VOICE_MALE_HI = _mod.TTS_VOICE_MALE_HI
@@ -275,3 +278,93 @@ def test_ctx_window_middle_batch_has_both():
     ctx_after  = segments[end:end + _CTX_WINDOW]
     assert len(ctx_before) == _CTX_WINDOW
     assert len(ctx_after) == _CTX_WINDOW
+
+
+# ── extract_glossary ──────────────────────────────────────────────────────────
+
+def _make_segs(*texts: str) -> list[dict]:
+    return [{"id": i, "en_text": t, "hi_text": ""} for i, t in enumerate(texts)]
+
+
+def test_extract_glossary_returns_cached_when_file_exists(tmp_path: Path):
+    cache = tmp_path / "glossary.json"
+    cache.write_text('{"Tom": "टॉम"}', encoding="utf-8")
+    result = extract_glossary(_make_segs("Hello Tom"), cache_path=cache)
+    assert result == {"Tom": "टॉम"}
+
+
+def test_extract_glossary_returns_empty_when_no_candidates():
+    # All single-occurrence lower-case words → no candidates
+    segs = _make_segs("we have main engine start", "four three two one")
+    result = extract_glossary(segs, cache_path=None)
+    assert result == {}
+
+
+def test_extract_glossary_calls_claude_and_caches(tmp_path: Path):
+    import json as _json
+    from unittest.mock import MagicMock, patch
+
+    cache = tmp_path / "glossary.json"
+    segs = _make_segs("Tom said hello", "Tom left quickly")
+
+    fake_response = MagicMock()
+    fake_response.content = [MagicMock(text='{"Tom": "टॉम"}')]
+
+    with patch("pipeline_v2.anthropic.Anthropic") as MockClient:
+        MockClient.return_value.messages.create.return_value = fake_response
+        result = extract_glossary(segs, target_lang="hi", cache_path=cache)
+
+    assert result == {"Tom": "टॉम"}
+    assert cache.exists()
+    assert _json.loads(cache.read_text()) == {"Tom": "टॉम"}
+
+
+# ── subtitle timing re-alignment ──────────────────────────────────────────────
+
+def _timed_seg(seg_id: int, start: float, end: float, hi: str = "text") -> dict:
+    return {"id": seg_id, "start": start, "end": end,
+            "en_text": "src", "hi_text": hi}
+
+
+def test_subtitle_end_clamped_to_original_window():
+    seg = _timed_seg(0, 5.0, 8.0)
+    eff_durs = {0: 10.0}  # TTS longer than window → clamp to window
+    MIN_SUB_S = 0.5
+    actual = eff_durs[seg["id"]]
+    original_window = seg["end"] - seg["start"]
+    seg["end"] = seg["start"] + max(MIN_SUB_S, min(actual, original_window))
+    assert seg["end"] == 8.0  # clamped to original window
+
+
+def test_subtitle_end_uses_actual_when_shorter():
+    seg = _timed_seg(0, 5.0, 8.0)
+    eff_durs = {0: 1.5}  # TTS shorter than window
+    MIN_SUB_S = 0.5
+    actual = eff_durs[seg["id"]]
+    original_window = seg["end"] - seg["start"]
+    seg["end"] = seg["start"] + max(MIN_SUB_S, min(actual, original_window))
+    assert seg["end"] == 6.5  # 5.0 + 1.5
+
+
+def test_subtitle_end_respects_minimum_floor():
+    seg = _timed_seg(0, 5.0, 8.0)
+    eff_durs = {0: 0.1}  # extremely short TTS
+    MIN_SUB_S = 0.5
+    actual = eff_durs[seg["id"]]
+    original_window = seg["end"] - seg["start"]
+    seg["end"] = seg["start"] + max(MIN_SUB_S, min(actual, original_window))
+    assert seg["end"] == 5.5  # 5.0 + 0.5 floor
+
+
+def test_subtitle_vtt_uses_updated_end_times():
+    seg = _timed_seg(0, 1.0, 2.0)
+    seg["end"] = 1.8  # simulated re-alignment
+    vtt = generate_vtt([seg])
+    assert "00:00:01.800" in vtt
+
+
+def test_subtitle_srt_uses_updated_end_times():
+    seg = _timed_seg(0, 1.0, 2.0)
+    seg["end"] = 1.6
+    srt = generate_srt([seg])
+    assert "00:00:01,600" in srt

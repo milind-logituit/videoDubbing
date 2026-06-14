@@ -48,6 +48,7 @@ from tts_audio import (                                       # noqa: E402
     TTS_VOICE_FEMALE_EN, TTS_VOICE_MALE_EN,                    # noqa: F401
     TTS_VOICE_HI, TTS_BASE_RATE_PCT,                         # noqa: F401
     BG_AUDIO_VOL, BG_AUDIO_VOL_SPEECH,
+    separate_stems, get_effective_seg_durations,
 )
 from metrics import (                                         # noqa: E402
     compute_metrics, compute_text_bleu, compute_back_translation_bleu,
@@ -319,7 +320,11 @@ _DEFAULT_EMOTION_GUIDANCE = (
 )
 
 
-def _make_refine_system(source_lang: str = "en", target_lang: str = "hi") -> str:
+def _make_refine_system(
+    source_lang: str = "en",
+    target_lang: str = "hi",
+    glossary: dict[str, str] | None = None,
+) -> str:
     src_name      = _LANG_NAMES.get(source_lang, source_lang.upper())
     tgt_name      = _LANG_NAMES.get(target_lang, target_lang.upper())
     pacing        = _REFINE_TARGET_GUIDANCE.get(
@@ -327,6 +332,13 @@ def _make_refine_system(source_lang: str = "en", target_lang: str = "hi") -> str
         f"     • Use natural, idiomatic {tgt_name} suitable for OTT dubbing.\n",
     )
     emotion_rules = _EMOTION_GUIDANCE.get(target_lang, _DEFAULT_EMOTION_GUIDANCE)
+    glossary_rule = ""
+    if glossary:
+        terms = "; ".join(f"{k}→{v}" for k, v in glossary.items())
+        glossary_rule = (
+            f"  0. GLOSSARY (hard constraint): These proper nouns MUST appear "
+            f"exactly as given in every segment: {terms}.\n"
+        )
     return (
         f"You are a professional {tgt_name} dubbing editor for OTT streaming content "
         f"(Eros Now / SunNxt).\n"
@@ -340,7 +352,8 @@ def _make_refine_system(source_lang: str = "en", target_lang: str = "hi") -> str
         "with neighbouring segments in their already-refined form. Use these ONLY for "
         "contextual consistency: match character names, terminology, and emotional arc "
         "with adjacent lines. Do NOT output context segments — only the main segments.\n"
-        "For each segment:\n"
+        + glossary_rule
+        + "For each segment:\n"
         "  1. Fix ASR transcription errors in en_text "
         "(e.g. 'half is likely' → 'half as likely').\n"
         f"  2. Rewrite hi_text as natural spoken {tgt_name} for dubbing that fits "
@@ -407,14 +420,20 @@ def _refine_batch(
 _CTX_WINDOW = 3   # segments of surrounding context passed to Claude per batch
 
 
-def refine_segments(segments: list[dict], *, skip: bool = False,
-                    source_lang: str = "en", target_lang: str = "hi") -> list[dict]:
+def refine_segments(
+    segments: list[dict],
+    *,
+    skip: bool = False,
+    source_lang: str = "en",
+    target_lang: str = "hi",
+    glossary: dict[str, str] | None = None,
+) -> list[dict]:
     """Fix ASR errors and rewrite target language as natural dubbing speech via Claude."""
     if skip:
         print("  Stage 4b skipped (--no-llm).")
         return segments
 
-    refine_system = _make_refine_system(source_lang, target_lang)
+    refine_system = _make_refine_system(source_lang, target_lang, glossary)
     client = anthropic.Anthropic()
     n = len(segments)
     n_batches = (n + _LLM_BATCH - 1) // _LLM_BATCH
@@ -449,6 +468,71 @@ def refine_segments(segments: list[dict], *, skip: bool = False,
     )
     print(f"  LLM refined {changed}/{len(out)} segments.")
     return out
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 4b.5 — Glossary extraction (proper nouns / character names)
+# ─────────────────────────────────────────────────────────────────────────────
+
+def extract_glossary(
+    segments: list[dict],
+    target_lang: str = "hi",
+    cache_path: Path | None = None,
+) -> dict[str, str]:
+    """Return {en_term: target_transliteration} for proper nouns found in segments.
+
+    Uses Claude Haiku (cheap) to identify character names, place names, and
+    technical terms, then returns their canonical target-language forms.
+    Results are cached to cache_path if provided so subsequent runs are free.
+    """
+    import re
+
+    if cache_path and cache_path.exists():
+        import json as _json
+        glossary = _json.loads(cache_path.read_text())
+        print(f"  Glossary cached ({len(glossary)} terms): {list(glossary.items())[:5]}")
+        return glossary
+
+    # Heuristic: capitalized tokens that appear 2+ times are likely proper nouns
+    all_text = " ".join(s.get("en_text", "") for s in segments)
+    tokens = re.findall(r"\b([A-Z][a-z]{1,20})\b", all_text)
+    from collections import Counter
+    candidates = [t for t, c in Counter(tokens).items() if c >= 2]
+
+    if not candidates:
+        return {}
+
+    tgt_name = _LANG_NAMES.get(target_lang, target_lang.upper())
+    client = anthropic.Anthropic()
+    prompt = (
+        f"From this list of words extracted from a video transcript, identify only "
+        f"proper nouns (character names, place names, brand names, technical terms). "
+        f"For each proper noun, provide its standard {tgt_name} transliteration.\n\n"
+        f"Words: {', '.join(candidates)}\n\n"
+        f'Return ONLY valid JSON: {{"Tom": "टॉम", "Celia": "सेलिया", ...}}. '
+        f"Omit common English words. If no proper nouns, return {{}}."
+    )
+    response = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=512,
+        messages=[{"role": "user", "content": prompt}],
+    )
+    raw = response.content[0].text.strip()
+    if raw.startswith("```"):
+        raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+
+    import json as _json
+    try:
+        glossary = _json.loads(raw)
+    except Exception:
+        glossary = {}
+
+    if cache_path:
+        cache_path.parent.mkdir(parents=True, exist_ok=True)
+        cache_path.write_text(_json.dumps(glossary, ensure_ascii=False, indent=2))
+
+    print(f"  Glossary extracted ({len(glossary)} terms): {list(glossary.items())[:5]}")
+    return glossary
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -620,6 +704,7 @@ def create_dubbed_video(
     segments: list[dict] | None = None,
     force: bool = False,
     target_lang: str = "hi",
+    no_vocals_path: Path | None = None,
 ) -> Path:
     dubbed_video = RAW / f"{video_path.stem}_dubbed_{target_lang}.mp4"
     if dubbed_video.exists() and not force:
@@ -627,7 +712,21 @@ def create_dubbed_video(
         return dubbed_video
 
     orig_audio = PREPARED / f"{video_path.stem}_audio.wav"
-    if segments and orig_audio.exists():
+
+    if no_vocals_path and no_vocals_path.exists():
+        # Stem separation available: mix dubbed TTS over music/SFX track at full volume
+        print("  Mixing dubbed TTS with instrumental/SFX stem (full volume) …")
+        cmd = [
+            "ffmpeg", "-y",
+            "-i", str(video_path),
+            "-i", str(hindi_audio_path),
+            "-i", str(no_vocals_path),
+            "-filter_complex",
+            "[1:a][2:a]amix=inputs=2:duration=first:normalize=0[aout]",
+            "-map", "0:v:0", "-map", "[aout]",
+            "-c:v", "copy", str(dubbed_video),
+        ]
+    elif segments and orig_audio.exists():
         print(f"  Ducking original audio "
               f"(speech={BG_AUDIO_VOL_SPEECH:.0%}, gaps={BG_AUDIO_VOL:.0%}) …")
         bg_path = _duck_original_audio(orig_audio, segments)
@@ -689,6 +788,9 @@ if __name__ == "__main__":
                         help="Skip Stage 4b Claude post-correction.")
     parser.add_argument("--no-diarize", action="store_true",
                         help="Skip Stage 3.5 speaker diarization.")
+    parser.add_argument("--no-stems", action="store_true",
+                        help="Skip Stage 2.1 demucs stem separation; "
+                             "fall back to audio ducking.")
     parser.add_argument("--hf-token", type=str, default=None,
                         help="HuggingFace token for pyannote models. "
                              "Reads HF_TOKEN env var if not provided.")
@@ -719,6 +821,15 @@ if __name__ == "__main__":
     print("\nStage 2 — Extracting audio …")
     audio_path = extract_audio(video_path)
 
+    print("\nStage 2.1 — Stem separation (demucs) …")
+    no_vocals_path: Path | None = None
+    if args.no_stems:
+        print("  Skipped (--no-stems).")
+    else:
+        _vocals, no_vocals_path = separate_stems(audio_path)
+        if no_vocals_path == audio_path:
+            no_vocals_path = None  # fallback triggered — use ducking path
+
     print("\nStage 3 — ASR (Whisper) …")
     whisper_result = transcribe(audio_path, source_lang=source_lang)
 
@@ -748,9 +859,17 @@ if __name__ == "__main__":
     segments = translate_segments(whisper_result,
                                   source_lang=source_lang, target_lang=target_lang)
 
+    print("\nStage 4a — Glossary extraction …")
+    glossary: dict[str, str] = {}
+    if not args.no_llm:
+        glossary_cache = PREPARED / f"glossary_{video_path.stem}_{target_lang}.json"
+        glossary = extract_glossary(segments, target_lang=target_lang,
+                                    cache_path=glossary_cache)
+
     print("\nStage 4b — LLM post-correction (Claude) …")
     segments = refine_segments(segments, skip=args.no_llm,
-                               source_lang=source_lang, target_lang=target_lang)
+                               source_lang=source_lang, target_lang=target_lang,
+                               glossary=glossary or None)
 
     print("\nStage 2.5 — Emotion analysis (SER) …")
     segments = classify_segment_emotions(audio_path, segments)
@@ -763,11 +882,6 @@ if __name__ == "__main__":
     segments = repair_emotion_register(segments, skip=args.no_llm,
                                        source_lang=source_lang, target_lang=target_lang)
 
-    print("\nStage 5 — Generating subtitle files …")
-    vtt = generate_vtt(segments)
-    srt = generate_srt(segments)
-    print(f"  VTT: {len(vtt)} chars  |  SRT: {len(srt)} chars")
-
     tgt_name = _LANG_NAMES.get(target_lang, target_lang.upper())
     print(f"\nStage 6 — {tgt_name} TTS …")
     hindi_audio = synthesize_hindi_audio(
@@ -775,9 +889,23 @@ if __name__ == "__main__":
         speaker_voices=speaker_voices, target_lang=target_lang,
     )
 
+    print("\nStage 5 — Generating subtitle files (aligned to dubbed audio) …")
+    eff_durs = get_effective_seg_durations(segments, video_path.stem, target_lang)
+    if eff_durs:
+        MIN_SUB_S = 0.5
+        for seg in segments:
+            if seg["id"] in eff_durs:
+                actual = eff_durs[seg["id"]]
+                original_window = seg["end"] - seg["start"]
+                seg["end"] = seg["start"] + max(MIN_SUB_S, min(actual, original_window))
+    vtt = generate_vtt(segments)
+    srt = generate_srt(segments)
+    print(f"  VTT: {len(vtt)} chars  |  SRT: {len(srt)} chars")
+
     print("\nStage 7 — Creating dubbed video …")
     dubbed_video = create_dubbed_video(video_path, hindi_audio, segments=segments,
-                                       target_lang=target_lang)
+                                       target_lang=target_lang,
+                                       no_vocals_path=no_vocals_path)
 
     if args.lipsync:
         print("\nStage 7b — Wav2Lip lip-sync …")

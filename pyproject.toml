@@ -29,6 +29,7 @@ dependencies = [
     "scipy>=1.17.1",
     "mediapipe>=0.10.35",
     "gdown>=6.1.0",
+    "demucs>=4.0.1",
 ]
 
 [dependency-groups]
