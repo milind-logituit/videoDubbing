@@ -43,7 +43,8 @@ from diarize import (                                         # noqa: E402
 from tts_audio import (                                       # noqa: E402
     synthesize_hindi_audio, _duck_original_audio,
     _seg_voice, _voice_tag, MAX_RATE_PCT,                    # noqa: F401
-    TTS_VOICE_FEMALE_HI, TTS_VOICE_MALE_HI,
+    VOICE_POOL,
+    TTS_VOICE_FEMALE_HI, TTS_VOICE_MALE_HI,                    # noqa: F401
     TTS_VOICE_FEMALE_EN, TTS_VOICE_MALE_EN,                    # noqa: F401
     TTS_VOICE_HI, TTS_BASE_RATE_PCT,                         # noqa: F401
     BG_AUDIO_VOL, BG_AUDIO_VOL_SPEECH,
@@ -335,6 +336,10 @@ def _make_refine_system(source_lang: str = "en", target_lang: str = "hi") -> str
         "When present, 'emotion' is the dominant label and 'emotion_blend' is the full "
         "probability distribution (e.g. {fearful: 0.65, disgust: 0.20, neutral: 0.15}). "
         "Use the blend to capture emotional undertones, not just the top label.\n"
+        "The input may include optional 'context_before' and 'context_after' arrays "
+        "with neighbouring segments in their already-refined form. Use these ONLY for "
+        "contextual consistency: match character names, terminology, and emotional arc "
+        "with adjacent lines. Do NOT output context segments — only the main segments.\n"
         "For each segment:\n"
         "  1. Fix ASR transcription errors in en_text "
         "(e.g. 'half is likely' → 'half as likely').\n"
@@ -350,31 +355,56 @@ def _make_refine_system(source_lang: str = "en", target_lang: str = "hi") -> str
     )
 
 
-def _refine_batch(client: anthropic.Anthropic, batch: list[dict],
-                  refine_system: str) -> dict[int, dict]:
-    payload = [
-        {
-            "id": s["id"],
-            "en_text": s["en_text"],
-            "hi_text": s["hi_text"],
-            "duration_s": round(s["duration"], 2),
-            **({"emotion": s["emotion"],
-                "emotion_blend": s["emotion_dist"]}
-               if s.get("emotion_dist") and s.get("emotion") != "neutral"
-               else {"emotion": s["emotion"]} if s.get("emotion") else {}),
-        }
-        for s in batch
-    ]
+def _ctx_snippet(segs: list[dict]) -> list[dict]:
+    return [{"id": s["id"], "en_text": s["en_text"], "hi_text": s["hi_text"]}
+            for s in segs]
+
+
+def _refine_batch(
+    client: anthropic.Anthropic,
+    batch: list[dict],
+    refine_system: str,
+    ctx_before: list[dict] | None = None,
+    ctx_after: list[dict] | None = None,
+) -> dict[int, dict]:
+    payload: dict = {
+        "segments": [
+            {
+                "id": s["id"],
+                "en_text": s["en_text"],
+                "hi_text": s["hi_text"],
+                "duration_s": round(s["duration"], 2),
+                **({"emotion": s["emotion"],
+                    "emotion_blend": s["emotion_dist"]}
+                   if s.get("emotion_dist") and s.get("emotion") != "neutral"
+                   else {"emotion": s["emotion"]} if s.get("emotion") else {}),
+            }
+            for s in batch
+        ]
+    }
+    if ctx_before:
+        payload["context_before"] = _ctx_snippet(ctx_before)
+    if ctx_after:
+        payload["context_after"] = _ctx_snippet(ctx_after)
+
+    content = json.dumps(payload, ensure_ascii=False)
     response = client.messages.create(
         model="claude-sonnet-4-6",
         max_tokens=8192,
         system=refine_system,
-        messages=[{"role": "user", "content": json.dumps(payload, ensure_ascii=False)}],
+        messages=[{"role": "user", "content": content}],
     )
     raw = "".join(b.text for b in response.content if b.type == "text").strip()
     if raw.startswith("```"):
         raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
-    return {r["id"]: r for r in json.loads(raw)}
+    parsed = json.loads(raw)
+    # Claude returns either the segments array directly or {"segments": [...]}
+    if isinstance(parsed, dict):
+        parsed = parsed.get("segments", [])
+    return {r["id"]: r for r in parsed}
+
+
+_CTX_WINDOW = 3   # segments of surrounding context passed to Claude per batch
 
 
 def refine_segments(segments: list[dict], *, skip: bool = False,
@@ -396,10 +426,15 @@ def refine_segments(segments: list[dict], *, skip: bool = False,
 
     refined: dict[int, dict] = {}
     for i in range(n_batches):
-        batch = segments[i * _LLM_BATCH : (i + 1) * _LLM_BATCH]
+        start = i * _LLM_BATCH
+        end   = min(start + _LLM_BATCH, n)
+        batch = segments[start:end]
+        ctx_before = segments[max(0, start - _CTX_WINDOW):start]
+        ctx_after  = segments[end:end + _CTX_WINDOW]
         if n_batches > 1:
             print(f"    Batch {i + 1}/{n_batches} ({len(batch)} segments) …")
-        refined.update(_refine_batch(client, batch, refine_system))
+        refined.update(_refine_batch(client, batch, refine_system,
+                                     ctx_before or None, ctx_after or None))
 
     out = []
     for seg in segments:
@@ -505,6 +540,41 @@ def repair_emotion_register(segments: list[dict], *,
         out.append(seg)
     print(f"  Repaired {len(repaired)} segment(s).")
     return out
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 3.5 helpers — voice pool assignment
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _assign_voice_pool(
+    genders: dict[str, str],
+    segments: list[dict],
+    target_lang: str,
+) -> dict[str, str]:
+    """Assign a distinct voice from VOICE_POOL to each speaker.
+
+    Speakers are sorted by first utterance so assignment is stable across runs.
+    When the pool has only one voice (e.g. Hindi male), all same-gender speakers
+    share it — but the mechanism is ready for expansion.
+    """
+    pool = VOICE_POOL.get(target_lang, VOICE_POOL["hi"])
+
+    def _first_start(sp: str) -> float:
+        for s in segments:
+            if s.get("speaker") == sp:
+                return float(s.get("start", 0))
+        return 0.0
+
+    counters: dict[str, int] = {"male": 0, "female": 0}
+    result: dict[str, str] = {}
+    for sp in sorted(genders, key=_first_start):
+        gender = genders[sp]
+        voice_list = pool.get(gender, pool.get("male", []))
+        if not voice_list:
+            continue
+        result[sp] = voice_list[counters[gender] % len(voice_list)]
+        counters[gender] += 1
+    return result
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -652,15 +722,6 @@ if __name__ == "__main__":
     print("\nStage 3 — ASR (Whisper) …")
     whisper_result = transcribe(audio_path, source_lang=source_lang)
 
-    print("\nStage 2.5 — Emotion analysis (SER) …")
-    whisper_result["segments"] = classify_segment_emotions(
-        audio_path, whisper_result["segments"]
-    )
-    emo_counts: dict[str, int] = {}
-    for s in whisper_result["segments"]:
-        emo_counts[s.get("emotion", "neutral")] = emo_counts.get(s.get("emotion", "neutral"), 0) + 1
-    print(f"  Emotion distribution: {emo_counts}")
-
     print("\nStage 3.5 — Speaker diarization …")
     speaker_voices: dict[str, str] = {}
     if args.no_diarize:
@@ -678,12 +739,9 @@ if __name__ == "__main__":
             )
             genders = detect_speaker_genders(audio_path,
                                              whisper_result["segments"])
-            _male_v   = TTS_VOICE_MALE_EN   if target_lang == "en" else TTS_VOICE_MALE_HI
-            _female_v = TTS_VOICE_FEMALE_EN if target_lang == "en" else TTS_VOICE_FEMALE_HI
-            speaker_voices = {
-                sp: (_male_v if g == "male" else _female_v)
-                for sp, g in genders.items()
-            }
+            speaker_voices = _assign_voice_pool(
+                genders, whisper_result["segments"], target_lang
+            )
             print(f"  Voice map: {speaker_voices}")
 
     print("\nStage 4 — Translation (Google Translate) …")
@@ -693,6 +751,13 @@ if __name__ == "__main__":
     print("\nStage 4b — LLM post-correction (Claude) …")
     segments = refine_segments(segments, skip=args.no_llm,
                                source_lang=source_lang, target_lang=target_lang)
+
+    print("\nStage 2.5 — Emotion analysis (SER) …")
+    segments = classify_segment_emotions(audio_path, segments)
+    emo_counts: dict[str, int] = {}
+    for s in segments:
+        emo_counts[s.get("emotion", "neutral")] = emo_counts.get(s.get("emotion", "neutral"), 0) + 1
+    print(f"  Emotion distribution: {emo_counts}")
 
     print("\nStage 4c — Emotion register repair …")
     segments = repair_emotion_register(segments, skip=args.no_llm,

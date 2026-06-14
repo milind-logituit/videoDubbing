@@ -13,13 +13,17 @@ _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
 
 assign_speakers = _mod.assign_speakers
 _assign_genders = _mod._assign_genders
+_assign_voice_pool = _mod._assign_voice_pool
 _seg_voice = _mod._seg_voice
 _voice_tag = _mod._voice_tag
+_ctx_snippet = _mod._ctx_snippet
 _GENDER_LABEL_MAP = _mod._GENDER_LABEL_MAP
 TTS_VOICE_FEMALE_HI = _mod.TTS_VOICE_FEMALE_HI
 TTS_VOICE_MALE_HI = _mod.TTS_VOICE_MALE_HI
+VOICE_POOL = _mod.VOICE_POOL
 MAX_RATE_PCT = _mod.MAX_RATE_PCT
 _LLM_BATCH = _mod._LLM_BATCH
+_CTX_WINDOW = _mod._CTX_WINDOW
 
 
 # ── assign_speakers ───────────────────────────────────────────────────────────
@@ -180,3 +184,94 @@ def test_llm_batch_splits_correctly():
     assert sum(len(b) for b in batches) == n
     assert len(batches[0]) == _LLM_BATCH
     assert len(batches[-1]) == n % _LLM_BATCH or len(batches[-1]) == _LLM_BATCH
+
+
+# ── _assign_voice_pool ────────────────────────────────────────────────────────
+
+def _seg_timed(seg_id: int, start: float, speaker: str) -> dict:
+    return {"id": seg_id, "start": start, "end": start + 1.0, "speaker": speaker}
+
+
+def test_assign_voice_pool_single_male_speaker():
+    genders = {"SPEAKER_00": "male"}
+    segs = [_seg_timed(0, 0.0, "SPEAKER_00")]
+    result = _assign_voice_pool(genders, segs, "hi")
+    assert result["SPEAKER_00"] == VOICE_POOL["hi"]["male"][0]
+
+
+def test_assign_voice_pool_male_female_distinct():
+    genders = {"SPEAKER_00": "male", "SPEAKER_01": "female"}
+    segs = [_seg_timed(0, 0.0, "SPEAKER_00"), _seg_timed(1, 1.0, "SPEAKER_01")]
+    result = _assign_voice_pool(genders, segs, "hi")
+    assert result["SPEAKER_00"] != result["SPEAKER_01"]
+
+
+def test_assign_voice_pool_english_multi_male_distinct():
+    # English pool has 4 male voices — first two speakers get different voices
+    genders = {"SPEAKER_00": "male", "SPEAKER_01": "male"}
+    segs = [_seg_timed(0, 0.0, "SPEAKER_00"), _seg_timed(1, 1.0, "SPEAKER_01")]
+    result = _assign_voice_pool(genders, segs, "en")
+    assert result["SPEAKER_00"] != result["SPEAKER_01"]
+    assert result["SPEAKER_00"] == VOICE_POOL["en"]["male"][0]
+    assert result["SPEAKER_01"] == VOICE_POOL["en"]["male"][1]
+
+
+def test_assign_voice_pool_stable_order_by_first_utterance():
+    # SPEAKER_01 appears first in timeline despite sorting by name last
+    genders = {"SPEAKER_00": "male", "SPEAKER_01": "male"}
+    segs = [_seg_timed(0, 5.0, "SPEAKER_00"), _seg_timed(1, 0.0, "SPEAKER_01")]
+    result = _assign_voice_pool(genders, segs, "en")
+    # SPEAKER_01 starts at 0.0 → gets pool index 0
+    assert result["SPEAKER_01"] == VOICE_POOL["en"]["male"][0]
+    assert result["SPEAKER_00"] == VOICE_POOL["en"]["male"][1]
+
+
+def test_assign_voice_pool_cycles_when_pool_exhausted():
+    # Hindi has only 1 male voice — third male speaker wraps back to index 0
+    genders = {f"SPEAKER_0{i}": "male" for i in range(3)}
+    segs = [_seg_timed(i, float(i), f"SPEAKER_0{i}") for i in range(3)]
+    result = _assign_voice_pool(genders, segs, "hi")
+    male_pool = VOICE_POOL["hi"]["male"]
+    assert result["SPEAKER_00"] == male_pool[0 % len(male_pool)]
+    assert result["SPEAKER_01"] == male_pool[1 % len(male_pool)]
+    assert result["SPEAKER_02"] == male_pool[2 % len(male_pool)]
+
+
+# ── _ctx_snippet ──────────────────────────────────────────────────────────────
+
+def test_ctx_snippet_extracts_id_en_hi():
+    segs = [{"id": 1, "en_text": "Hello", "hi_text": "नमस्ते", "duration": 1.5}]
+    result = _ctx_snippet(segs)
+    assert result == [{"id": 1, "en_text": "Hello", "hi_text": "नमस्ते"}]
+
+
+def test_ctx_snippet_empty_returns_empty():
+    assert _ctx_snippet([]) == []
+
+
+# ── context window slicing ────────────────────────────────────────────────────
+
+def test_ctx_window_first_batch_has_no_before():
+    n = 5
+    start = 0
+    ctx_before = list(range(n))[max(0, start - _CTX_WINDOW):start]
+    assert ctx_before == []
+
+
+def test_ctx_window_last_batch_has_no_after():
+    segments = list(range(10))
+    end = len(segments)
+    ctx_after = segments[end:end + _CTX_WINDOW]
+    assert ctx_after == []
+
+
+def test_ctx_window_middle_batch_has_both():
+    segments = list(range(20))
+    batch_size = 5
+    i = 1  # second batch
+    start = i * batch_size
+    end = start + batch_size
+    ctx_before = segments[max(0, start - _CTX_WINDOW):start]
+    ctx_after  = segments[end:end + _CTX_WINDOW]
+    assert len(ctx_before) == _CTX_WINDOW
+    assert len(ctx_after) == _CTX_WINDOW

@@ -1,25 +1,28 @@
-id,start,end,duration,en_text,hi_text
-0,0.0,6.38,6.38,"I have seen, can you tell me love from pride?","मैंने देखा है, क्या तुम प्यार और घमंड में फ़र्क बता सकते हो?"
-1,9.0,14.6,5.6,I have been waiting all this time,मैं इतने वक़्त से इंतज़ार करता रहा
-2,16.0,21.96,5.96,"For one to wake me, one to call mine","किसी के लिए जो मुझे जगाए, जिसे मैं अपना कह सकूँ"
-3,21.96,27.8,5.84,"So when you're near, all that you hold dear","जब तुम पास होते हो, जो कुछ भी तुम्हें प्यारा है"
-4,27.8,33.36,5.56,Do you fear what you will find?,क्या तुम्हें डर है कि क्या मिलेगा?
-5,34.7,39.76,5.06,As the dawn breaks through the night,जैसे रात में सवेरा होता है
-6,41.8,49.9,8.1,I will fall forever longing for the home,मैं हमेशा उस घर की तड़प में डूबता रहूँगा
-7,50.8,54.32,3.52,I found in your eyes,जो मुझे तेरी आँखों में मिला
-8,61.88,68.12,6.24,I will be listening for the drum,मैं उस ढोल की आवाज़ सुनता रहूँगा
-9,68.8,75.22,6.42,"To call me over, far away from","जो मुझे बुलाए, उससे बहुत दूर"
-10,75.22,80.96,5.74,My tender youth and the very truth,मेरी नाज़ुक जवानी और उस सच से
-11,82.22,85.84,3.62,Showing me what I've become,जो दिखाता है मैं क्या बन गया
-12,85.84,92.18,6.34,As the dawn breaks through the night,जैसे रात में सवेरा होता है
-13,92.18,92.84,0.66,As the dawn breaks through the night,सवेरा
-14,93.58,102.4,8.82,I will fall forever longing for the home,मैं हमेशा उस घर की तड़प में डूबता रहूँगा
-15,102.4,106.4,4.0,I found in your eyes,जो मुझे तेरी आँखों में मिला
-16,106.92,112.48,5.56,Your voice saw me through the night,तेरी आवाज़ ने मुझे रात भर थाम लिया
-17,113.58,114.66,1.08,The night,रात
-18,114.66,115.32,0.66,The night,रात
-19,115.32,121.48,6.16,The night,रात
-20,121.48,122.58,1.1,And do you want to,और क्या तुम चाहते हो
-21,122.58,122.62,0.04,The night,रात
-22,122.62,122.7,0.08,The night,रात
-24,122.7,122.78,0.08,The night,रात
+id,start,end,duration,en_text,hi_text,emotion,emotion_score,emotion_dist
+0,0.0,6.38,6.38,"I have seen, can you tell me love from pride?","मैंने देखा है, क्या तुम प्यार और घमंड में फर्क बता सकते हो?",neutral,0.656,"{'neutral': 0.656, 'surprised': 0.122, 'happy': 0.107, 'disgust': 0.062}"
+1,9.0,14.6,5.6,I have been waiting all this time,मैं इतने वक्त से इंतज़ार कर रहा था,neutral,0.853,"{'neutral': 0.853, 'surprised': 0.089}"
+2,16.0,21.96,5.96,"For one to wake me, one to call mine","कोई मुझे जगाए, कोई मेरा अपना हो",neutral,0.535,"{'neutral': 0.535, 'fearful': 0.27, 'angry': 0.067, 'disgust': 0.052}"
+3,21.96,27.8,5.84,"So when you're near, all that you hold dear","जब तुम पास होते हो, और जो तुम्हें प्यारा है",neutral,0.937,{'neutral': 0.937}
+4,27.8,33.36,5.56,Do you fear what you will find?,"क्या तुम्हें डर है, जो मिलेगा उससे?",fearful,0.954,{'fearful': 0.954}
+5,34.7,39.76,5.06,As the dawn breaks through the night,जैसे रात को चीरकर सुबह आती है,fearful,0.579,"{'fearful': 0.579, 'neutral': 0.224, 'sad': 0.103}"
+6,41.8,49.9,8.1,I will fall forever longing for the home,मैं हमेशा उस घर की तलाश में भटकता रहूँगा,sad,0.984,{'sad': 0.984}
+7,50.8,54.32,3.52,I found in your eyes,जो मुझे तेरी आँखों में मिला,surprised,0.689,"{'surprised': 0.689, 'neutral': 0.131, 'disgust': 0.126}"
+8,61.88,68.12,6.24,I will be listening for the drum,मैं उस ढोल की आवाज़ सुनता रहूँगा,neutral,0.785,"{'neutral': 0.785, 'happy': 0.154}"
+9,68.8,75.22,6.42,"To call me over, far away from","जो मुझे बुलाए, दूर कहीं से",neutral,0.411,"{'neutral': 0.411, 'fearful': 0.295, 'sad': 0.212}"
+10,75.22,80.96,5.74,My tender youth and the very truth,मेरी खिलती जवानी और शानदार सच्चाई,happy,0.8,"{'happy': 0.8, 'neutral': 0.147}"
+11,82.22,85.84,3.62,Showing me what I've become,मुझे दिखा रही है मैं क्या बन गया,neutral,0.315,"{'neutral': 0.315, 'surprised': 0.268, 'happy': 0.246, 'fearful': 0.099}"
+12,85.84,92.18,6.34,As the dawn breaks through the night,जैसे रात को चीरकर सुबह आती है,fearful,0.579,"{'fearful': 0.579, 'neutral': 0.224, 'sad': 0.103}"
+13,92.18,92.84,0.66,As the dawn breaks through the night,जैसे रात के अंधेरे को चीरती हुई सुबह आती है,fearful,0.579,"{'fearful': 0.579, 'neutral': 0.224, 'sad': 0.103}"
+14,93.58,102.4,8.82,I will fall forever longing for the home,मैं हमेशा उस घर की तलाश में भटकता रहूँगा,sad,0.984,{'sad': 0.984}
+15,102.4,106.4,4.0,I found in your eyes,जो मुझे तेरी आँखों में मिला,surprised,0.689,"{'surprised': 0.689, 'neutral': 0.131, 'disgust': 0.126}"
+16,106.92,112.48,5.56,Your voice saw me through the night,तेरी आवाज़ ने मुझे रात भर संभाला,fearful,0.472,"{'fearful': 0.472, 'neutral': 0.412}"
+17,113.58,114.66,1.08,The night,रात,fearful,0.718,"{'fearful': 0.718, 'sad': 0.156, 'neutral': 0.071}"
+18,114.66,115.32,0.66,The night,रात,fearful,0.718,"{'fearful': 0.718, 'sad': 0.156, 'neutral': 0.071}"
+19,115.32,117.48,2.16,The night,वो रात,fearful,0.718,"{'fearful': 0.718, 'sad': 0.156, 'neutral': 0.071}"
+20,117.76,118.04,0.28,The night,रात,fearful,0.718,"{'fearful': 0.718, 'sad': 0.156, 'neutral': 0.071}"
+21,118.04,118.06,0.02,The night,वो खौफनाक रात,fearful,0.718,"{'fearful': 0.718, 'sad': 0.156, 'neutral': 0.071}"
+22,118.06,119.2,1.14,11 year old,११ साल का,neutral,0.563,"{'neutral': 0.563, 'sad': 0.166, 'surprised': 0.136, 'fearful': 0.084}"
+23,119.2,119.26,0.06,I find you,तुम मिले,surprised,0.7,"{'surprised': 0.7, 'neutral': 0.238}"
+24,119.26,119.56,0.3,In the day,दिन में,neutral,0.579,"{'neutral': 0.579, 'fearful': 0.118, 'surprised': 0.089, 'angry': 0.073, 'disgust': 0.072, 'sad': 0.056}"
+25,120.42,120.7,0.28,The night,रात,fearful,0.718,"{'fearful': 0.718, 'sad': 0.156, 'neutral': 0.071}"
+27,120.7,122.56,1.86,Thank you.,शुक्रिया।,neutral,0.666,"{'neutral': 0.666, 'happy': 0.211, 'surprised': 0.08}"

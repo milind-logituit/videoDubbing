@@ -20,7 +20,7 @@
     "dubbed_duration_s": 120.0,
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.3,
-    "hi_chars_per_sec": 8.9
+    "hi_chars_per_sec": 8.6
   },
   "segment_quality": [
     {
@@ -32,18 +32,19 @@
       "isochrony_ratio": 0.998,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 4
     },
     {
       "id": 1,
       "start": 17.24,
       "end": 23.04,
       "en_duration_s": 5.8,
-      "tts_duration_s": 2.86,
-      "isochrony_ratio": 0.493,
-      "fit": 3,
+      "tts_duration_s": 5.79,
+      "isochrony_ratio": 0.998,
+      "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 4
     },
     {
       "id": 2,
@@ -86,20 +87,20 @@
       "tts_duration_s": 2.81,
       "isochrony_ratio": 0.401,
       "fit": 3,
-      "fidelity": 4,
-      "fluency": 4,
-      "note": "Minor semantic shift: 'after supper' becomes 'रात के हल्के खाने' (light evening meal), which adds context not in original"
+      "fidelity": 5,
+      "fluency": 5
     },
     {
       "id": 6,
       "start": 51.62,
       "end": 58.98,
       "en_duration_s": 7.36,
-      "tts_duration_s": 2.42,
-      "isochrony_ratio": 0.329,
-      "fit": 3,
+      "tts_duration_s": 7.35,
+      "isochrony_ratio": 0.999,
+      "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 4
     },
     {
       "id": 7,
@@ -183,11 +184,13 @@
       "start": 106.1,
       "end": 111.72,
       "en_duration_s": 5.62,
-      "tts_duration_s": 4.58,
-      "isochrony_ratio": 0.815,
+      "tts_duration_s": 5.61,
+      "isochrony_ratio": 0.998,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 3,
+      "note": "Emotion (fearful) partially preserved—the Hindi maintains informative tone but lacks the underlying concern/gravity expected for this health warning context."
     },
     {
       "id": 15,
@@ -209,25 +212,25 @@
       "isochrony_ratio": 0.983,
       "fit": 5,
       "fidelity": 4,
-      "fluency": 5,
-      "note": "Minor: 'our' is incomplete in English source; Hindi ends cleanly with 'शुरू करते हैं'"
+      "fluency": 4,
+      "note": "Truncated segment; 'our' is incomplete in English source, Hindi conclusion feels abrupt."
     }
   ],
   "text_bleu": {
-    "bleu": 41.47,
-    "back_translated": "Hello everyone, welcome back to Tiny Poet Actually Speaking. I'm Jennifer Clyde. Thanks so much for joining me today. Today's lesson is lesson number eleven and we will talk about health. So how do you take care of your health? How to stay healthy? How to stay fit? Most doctors advise that those who do not take time out for exercise, they will have to take out time for illness. Got it? Meaning they are saying that exercising is very important. There is another old saying. It says that you should take some rest after dinner and take a walk after having a light dinner. Walking is also a great way to exercise. We can do a lot to improve our health by taking small steps. You sleep more, eat healthy food, exercise, reduce salt, be happy. What else? Check your feet, people say. Checking your feet is very important. Check how your feet are once or twice a week. Floss daily, cut down on coffee, and most importantly — eat breakfast. Now one very interesting thing that I found in a 2004 study which was published in the journal named 'Heart', it said - create a network. Now you will think, create a network? What does this have to do with health? But he said that if you survive a heart attack, your risk of having another heart attack is halved if you have close friends and family. That means friends and family are very, very important. Well, today we are talking about health so let's start.",
+    "bleu": 39.67,
+    "back_translated": "Hello everyone, welcome back to Tiny Poet Actual Speaking. I'm Jennifer Clyde. Thank you so much for joining me today. Today's lesson is Lesson 11 and we will talk about health. So how do you take care of your health? How to stay healthy? How to stay fit? Most doctors recommend that people who do not take time out for exercise will have to do so due to illness. Got it? That is, they are saying that exercising is very important. There is another old saying – take some rest after dinner and take a walk after dinner. Walking is also a great way to exercise. We can do a lot to improve our health, start with small steps. You sleep more, eat healthy food, exercise, reduce salt, be happy. What else? Check your feet, people say. It is very important to watch the feet. Check how your feet are once or twice a week. Floss daily, cut down on coffee, and most importantly — eat breakfast. Now there is a very interesting thing that I found in a 2004 study which was published in a magazine named Heart. It said – create a network. Now you will think network? What does this have to do with health? But he said — if you survive a heart attack, your risk of having another heart attack within a year is halved, if you have good friends and family. That means friends and family are very, very important. Well, we are talking about health today, so let's start.",
     "n_segments": 17
   },
   "back_translation": {
-    "tgt_transcript_chars": 724,
-    "back_translated": "Hello everyone welcome back to Chini Poet English Speaking I'm Jennifer Clyde thank you for joining today Today's lesson is lesson eleven and we're going to talk about health so how do you take care of your health? How do you stay healthy? How to stay fit? Most of the doctors say one thing that those who do not take time for exercise will have to take time for their illness. Yes, do you understand? That is, it is very important to exercise. Another old saying is, take some rest after lunch and take a walk after dinner. Walking is also a good exercise. We can do a lot to improve our health. We just have to take small steps.",
-    "bleu": 6.56,
-    "hi_transcript_chars": 724,
-    "back_translated_en": "Hello everyone welcome back to Chini Poet English Speaking I'm Jennifer Clyde thank you for joining today Today's lesson is lesson eleven and we're going to talk about health so how do you take care of your health? How do you stay healthy? How to stay fit? Most of the doctors say one thing that those who do not take time for exercise will have to take time for their illness. Yes, do you understand? That is, it is very important to exercise. Another old saying is, take some rest after lunch and take a walk after dinner. Walking is also a good exercise. We can do a lot to improve our health. We just have to take small steps."
+    "tgt_transcript_chars": 687,
+    "back_translated": "Thank you for joining today, today's lesson is lesson eleven and we will talk about health. So how do you take care of your health? How do you stay healthy? Prosody pitch reduced by 15 percent, volume loudness rate reduced by 8 percent and hello after dinner. Paddle walking is also a good way to exercise. We prosody, most doctors say one thing. Those who do not take time out for exercise will have to take out time for illness. Yes, did you understand? That means it is very important to exercise. There is another old saying. Take some rest after lunch and take a walk after dinner. Paddle walking is also a great exercise. If your good friends and prosody. Just have to take small steps for better health. Sleep more, eat healthy food, go to sleep.",
+    "bleu": 9.24,
+    "hi_transcript_chars": 687,
+    "back_translated_en": "Thank you for joining today, today's lesson is lesson eleven and we will talk about health. So how do you take care of your health? How do you stay healthy? Prosody pitch reduced by 15 percent, volume loudness rate reduced by 8 percent and hello after dinner. Paddle walking is also a good way to exercise. We prosody, most doctors say one thing. Those who do not take time out for exercise will have to take out time for illness. Yes, did you understand? That means it is very important to exercise. There is another old saying. Take some rest after lunch and take a walk after dinner. Paddle walking is also a great exercise. If your good friends and prosody. Just have to take small steps for better health. Sleep more, eat healthy food, go to sleep."
   },
   "lipsync": {
-    "sync_score": 0.533,
-    "pearson_r": 0.0662,
+    "sync_score": 0.532,
+    "pearson_r": 0.0642,
     "best_lag_ms": 33.4,
     "faces_pct": 99.4,
     "note": null,
@@ -243,8 +246,8 @@
         "source_emotion": "neutral",
         "source_score": 0.656,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.592,
-        "dubbed_back_en": "Hello everyone, welcome back to Tiny Poet Actually Speaking. I'm Jennifer Clyde.",
+        "dubbed_score": 0.686,
+        "dubbed_back_en": "Hello everyone, welcome back to Tiny Poet Actual Speaking. I'm Jennifer Clyde.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -253,8 +256,8 @@
         "source_emotion": "happy",
         "source_score": 0.791,
         "dubbed_emotion": "happy",
-        "dubbed_score": 0.91,
-        "dubbed_back_en": "Thanks so much for joining me today. Today's lesson is lesson number eleven and we",
+        "dubbed_score": 0.922,
+        "dubbed_back_en": "Thank you so much for joining me today. Today's lesson is Lesson 11 and we",
         "match": true,
         "va_similarity": 1.0
       },
@@ -273,8 +276,8 @@
         "source_emotion": "neutral",
         "source_score": 0.869,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.899,
-        "dubbed_back_en": "How to stay fit? Most doctors recommend that people who do not take time",
+        "dubbed_score": 0.877,
+        "dubbed_back_en": "How to stay fit? Most doctors recommend that people who do not take time off",
         "match": true,
         "va_similarity": 1.0
       },
@@ -283,8 +286,8 @@
         "source_emotion": "neutral",
         "source_score": 0.875,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.843,
-        "dubbed_back_en": "To exercise, they have to take time off from illness. Got it? That means they are saying that",
+        "dubbed_score": 0.657,
+        "dubbed_back_en": "In order to exercise, they would have to be taken out for illness. Got it? That means they are saying that",
         "match": true,
         "va_similarity": 1.0
       },
@@ -293,8 +296,8 @@
         "source_emotion": "neutral",
         "source_score": 0.895,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.889,
-        "dubbed_back_en": "It is very important to exercise. There is another old saying. It says take some rest after dinner",
+        "dubbed_score": 0.845,
+        "dubbed_back_en": "It is very important to exercise. There is another old saying – take some rest after eating.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -303,8 +306,8 @@
         "source_emotion": "happy",
         "source_score": 0.534,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.517,
-        "dubbed_back_en": "And after a light dinner, take a walk. Walking is also a great way to exercise. we are",
+        "dubbed_score": 0.469,
+        "dubbed_back_en": "And take a walk after dinner. Walking is also a great way to exercise. we are",
         "match": false,
         "va_similarity": 0.5
       },
@@ -313,8 +316,8 @@
         "source_emotion": "neutral",
         "source_score": 0.938,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.914,
-        "dubbed_back_en": "You can do a lot to improve your health by taking small steps. You",
+        "dubbed_score": 0.922,
+        "dubbed_back_en": "You can do a lot to improve your health, start with small steps. You",
         "match": true,
         "va_similarity": 1.0
       },
@@ -333,8 +336,8 @@
         "source_emotion": "neutral",
         "source_score": 0.961,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.943,
-        "dubbed_back_en": "Check the feet, people say. Checking your feet is very important. once a week or",
+        "dubbed_score": 0.954,
+        "dubbed_back_en": "Check the feet, people say. It is very important to watch the feet. once a week or",
         "match": true,
         "va_similarity": 1.0
       },
@@ -343,8 +346,8 @@
         "source_emotion": "neutral",
         "source_score": 0.837,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.838,
-        "dubbed_back_en": "Look twice at how the feet are. Floss daily, cut down on coffee, and",
+        "dubbed_score": 0.842,
+        "dubbed_back_en": "Look twice at how the feet are. Floss daily, cut down on coffee and",
         "match": true,
         "va_similarity": 1.0
       },
@@ -353,8 +356,8 @@
         "source_emotion": "neutral",
         "source_score": 0.71,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.774,
-        "dubbed_back_en": "Important – have breakfast. Now a very interesting thing that I found in a 2004 study",
+        "dubbed_score": 0.836,
+        "dubbed_back_en": "Important: Have breakfast. Now there is something very interesting that I found in a 2004 study",
         "match": true,
         "va_similarity": 1.0
       },
@@ -363,8 +366,8 @@
         "source_emotion": "neutral",
         "source_score": 0.757,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.694,
-        "dubbed_back_en": "Which was published in the journal named 'Heart', in which it was said - create a network. Now you will think, network",
+        "dubbed_score": 0.482,
+        "dubbed_back_en": "Which was published in a magazine named Heart. It said – create a network. now you will think",
         "match": true,
         "va_similarity": 1.0
       },
@@ -373,8 +376,8 @@
         "source_emotion": "neutral",
         "source_score": 0.456,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.493,
-        "dubbed_back_en": "make? What does this have to do with health? But they said if you survive a heart attack",
+        "dubbed_score": 0.427,
+        "dubbed_back_en": "network? What does this have to do with health? But he said – if you survive a heart attack,",
         "match": true,
         "va_similarity": 1.0
       },
@@ -383,8 +386,8 @@
         "source_emotion": "fearful",
         "source_score": 0.473,
         "dubbed_emotion": "fearful",
-        "dubbed_score": 0.875,
-        "dubbed_back_en": "So the risk of having a second heart attack is halved, if your close friends and",
+        "dubbed_score": 0.588,
+        "dubbed_back_en": "So the risk of having a second attack in a year is halved if you have good friends and",
         "match": true,
         "va_similarity": 1.0
       },
@@ -393,8 +396,8 @@
         "source_emotion": "neutral",
         "source_score": 0.845,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.822,
-        "dubbed_back_en": "Have a family. That means friends and family are very, very important. Well, today we are talking about health",
+        "dubbed_score": 0.813,
+        "dubbed_back_en": "Have a family. That means friends and family are very, very important. Well, we are talking about health",
         "match": true,
         "va_similarity": 1.0
       },
@@ -403,14 +406,14 @@
         "source_emotion": "neutral",
         "source_score": 0.825,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.824,
-        "dubbed_back_en": "So let's get started.",
+        "dubbed_score": 0.836,
+        "dubbed_back_en": "Today, let's get started.",
         "match": true,
         "va_similarity": 1.0
       }
     ],
     "tts_fidelity": {
-      "avg_soft_score": 91.2,
+      "avg_soft_score": 82.4,
       "n_segments": 17,
       "segments": [
         {
@@ -421,9 +424,9 @@
         },
         {
           "id": 1,
-          "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
+          "intended": "happy",
+          "perceived": "angry",
+          "va_similarity": 0.293
         },
         {
           "id": 2,
@@ -451,9 +454,9 @@
         },
         {
           "id": 6,
-          "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
+          "intended": "happy",
+          "perceived": "angry",
+          "va_similarity": 0.293
         },
         {
           "id": 7,
@@ -499,9 +502,9 @@
         },
         {
           "id": 14,
-          "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
+          "intended": "fearful",
+          "perceived": "angry",
+          "va_similarity": 0.929
         },
         {
           "id": 15,

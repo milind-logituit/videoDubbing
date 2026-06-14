@@ -8,19 +8,24 @@
   "translation": {
     "model": "Google Translate (en→hi)",
     "bleu": null,
-    "n_segments": 24,
+    "n_segments": 30,
     "note": "N/A — no reference text for this clip"
   },
   "tts": {
     "voice": "hi-IN-SwaraNeural",
-    "voice_map": {}
+    "voice_map": {
+      "SPEAKER_02": "hi-IN-MadhurNeural",
+      "SPEAKER_01": "hi-IN-MadhurNeural",
+      "SPEAKER_03": "hi-IN-MadhurNeural",
+      "SPEAKER_00": "hi-IN-MadhurNeural"
+    }
   },
   "alignment": {
     "source_duration_s": 120.0,
     "dubbed_duration_s": 120.0,
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.3,
-    "hi_chars_per_sec": 3.7
+    "hi_chars_per_sec": 4.1
   },
   "segment_quality": [
     {
@@ -50,12 +55,12 @@
       "start": 22.74,
       "end": 24.28,
       "en_duration_s": 1.54,
-      "tts_duration_s": 1.53,
-      "isochrony_ratio": 0.994,
+      "tts_duration_s": 1.52,
+      "isochrony_ratio": 0.987,
       "fit": 5,
-      "fidelity": 2,
-      "fluency": 3,
-      "note": "बेकार (worthless/useless) doesn't match 'jerk' (insulting but different connotation). Should be 'तुम बहुत गंदे हो' or similar for personality insult."
+      "fidelity": 3,
+      "fluency": 4,
+      "note": "बेकार is weak for 'jerk'; better: गधा, बदमाश"
     },
     {
       "id": 3,
@@ -65,8 +70,8 @@
       "tts_duration_s": 2.34,
       "isochrony_ratio": 0.992,
       "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
+      "fidelity": 4,
+      "fluency": 4
     },
     {
       "id": 4,
@@ -87,7 +92,7 @@
       "tts_duration_s": 3.86,
       "isochrony_ratio": 0.985,
       "fit": 5,
-      "fidelity": 5,
+      "fidelity": 4,
       "fluency": 4
     },
     {
@@ -99,8 +104,7 @@
       "isochrony_ratio": 0.992,
       "fit": 5,
       "fidelity": 4,
-      "fluency": 4,
-      "note": "Slightly less natural—'मुझे इससे कोई डर नहीं है' would be more precise than 'कोई डर नहीं है'."
+      "fluency": 5
     },
     {
       "id": 7,
@@ -110,9 +114,8 @@
       "tts_duration_s": 0.45,
       "isochrony_ratio": 0.938,
       "fit": 5,
-      "fidelity": 3,
-      "fluency": 3,
-      "note": "बस (just/only) is imprecise for the hesitant ellipsis 'It's...' Better: 'यह...' or 'वह...'"
+      "fidelity": 5,
+      "fluency": 5
     },
     {
       "id": 8,
@@ -134,7 +137,7 @@
       "isochrony_ratio": 0.988,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 4
     },
     {
       "id": 10,
@@ -144,8 +147,9 @@
       "tts_duration_s": 2.89,
       "isochrony_ratio": 0.997,
       "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
+      "fidelity": 4,
+      "fluency": 4,
+      "note": "Missing 'nightmares' emphasis; बुरे सपने better than सपने"
     },
     {
       "id": 11,
@@ -163,12 +167,11 @@
       "start": 44.1,
       "end": 44.84,
       "en_duration_s": 0.74,
-      "tts_duration_s": 0.72,
-      "isochrony_ratio": 0.973,
+      "tts_duration_s": 0.71,
+      "isochrony_ratio": 0.959,
       "fit": 5,
-      "fidelity": 4,
-      "fluency": 3,
-      "note": "'हम खत्म हैं' is slightly awkward; 'हम हो गए' or 'बस यही है' would sound more natural for relationship closure."
+      "fidelity": 5,
+      "fluency": 4
     },
     {
       "id": 13,
@@ -186,20 +189,20 @@
       "start": 53.0,
       "end": 53.76,
       "en_duration_s": 0.76,
-      "tts_duration_s": 0.75,
-      "isochrony_ratio": 0.987,
+      "tts_duration_s": 0.74,
+      "isochrony_ratio": 0.974,
       "fit": 5,
-      "fidelity": 5,
-      "fluency": 4,
-      "note": "Standalone 'लॉक' lacks article/verb; 'लॉक हो गया' would be more complete."
+      "fidelity": 3,
+      "fluency": 2,
+      "note": "लॉक alone too abrupt; needs लॉक हुआ"
     },
     {
       "id": 15,
       "start": 60.3,
       "end": 62.16,
       "en_duration_s": 1.86,
-      "tts_duration_s": 1.87,
-      "isochrony_ratio": 1.005,
+      "tts_duration_s": 1.84,
+      "isochrony_ratio": 0.989,
       "fit": 5,
       "fidelity": 5,
       "fluency": 5
@@ -212,116 +215,186 @@
       "tts_duration_s": 0.1,
       "isochrony_ratio": 1.0,
       "fit": 5,
-      "fidelity": 3,
+      "fidelity": 4,
       "fluency": 3,
-      "note": "Too truncated (0.1s duration). 'अजीब है' is incomplete; needs 'यह तो बहुत अजीब है' for match with source."
+      "note": "Overly abbreviated; missing 'pretty' intensity"
     },
     {
       "id": 17,
-      "start": 64.04,
-      "end": 65.12,
-      "en_duration_s": 1.08,
+      "start": 62.26,
+      "end": 67.26,
+      "en_duration_s": 5.0,
       "tts_duration_s": 1.06,
-      "isochrony_ratio": 0.981,
-      "fit": 5,
+      "isochrony_ratio": 0.212,
+      "fit": 3,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 18,
-      "start": 65.48,
-      "end": 65.58,
-      "en_duration_s": 0.1,
+      "start": 71.16,
+      "end": 71.66,
+      "en_duration_s": 0.5,
       "tts_duration_s": 0.1,
-      "isochrony_ratio": 1.0,
-      "fit": 5,
-      "fidelity": 3,
-      "fluency": 3,
-      "note": "Same as #16—too truncated and incomplete for the full phrase."
+      "isochrony_ratio": 0.2,
+      "fit": 3,
+      "fidelity": 4,
+      "fluency": 5
     },
     {
       "id": 19,
-      "start": 66.3,
-      "end": 67.6,
-      "en_duration_s": 1.3,
+      "start": 73.58,
+      "end": 74.94,
+      "en_duration_s": 1.36,
       "tts_duration_s": 1.3,
+      "isochrony_ratio": 0.956,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 4
+    },
+    {
+      "id": 20,
+      "start": 77.38,
+      "end": 78.22,
+      "en_duration_s": 0.84,
+      "tts_duration_s": 0.81,
+      "isochrony_ratio": 0.964,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 21,
+      "start": 78.98,
+      "end": 79.98,
+      "en_duration_s": 1.0,
+      "tts_duration_s": 0.98,
+      "isochrony_ratio": 0.98,
+      "fit": 5,
+      "fidelity": 2,
+      "fluency": 2,
+      "note": "Incomplete; lacks context on negation"
+    },
+    {
+      "id": 22,
+      "start": 82.8,
+      "end": 83.6,
+      "en_duration_s": 0.8,
+      "tts_duration_s": 1.44,
+      "isochrony_ratio": 1.8,
+      "fit": 2,
+      "fidelity": 4,
+      "fluency": 3,
+      "note": "English 'सॉरी' instead of natural माफ़ कीजिए"
+    },
+    {
+      "id": 23,
+      "start": 84.94,
+      "end": 84.96,
+      "en_duration_s": 0.02,
+      "tts_duration_s": 0.94,
+      "isochrony_ratio": 47.0,
+      "fit": 1,
+      "fidelity": 1,
+      "fluency": 1,
+      "note": "Duration 0.0; unclear segment"
+    },
+    {
+      "id": 24,
+      "start": 85.98,
+      "end": 87.2,
+      "en_duration_s": 1.22,
+      "tts_duration_s": 0.12,
+      "isochrony_ratio": 0.098,
+      "fit": 3,
+      "fidelity": 3,
+      "fluency": 3,
+      "note": "Incomplete; should end with चाहिए"
+    },
+    {
+      "id": 25,
+      "start": 87.24,
+      "end": 87.46,
+      "en_duration_s": 0.22,
+      "tts_duration_s": 2.83,
+      "isochrony_ratio": 12.864,
+      "fit": 1,
+      "fidelity": 2,
+      "fluency": 1,
+      "note": "Unclear term; possibly transliteration error"
+    },
+    {
+      "id": 26,
+      "start": 88.0,
+      "end": 89.26,
+      "en_duration_s": 1.26,
+      "tts_duration_s": 1.24,
+      "isochrony_ratio": 0.984,
+      "fit": 5,
+      "fidelity": 3,
+      "fluency": 3,
+      "note": "Context unclear; incomplete sentence"
+    },
+    {
+      "id": 27,
+      "start": 90.96,
+      "end": 91.92,
+      "en_duration_s": 0.96,
+      "tts_duration_s": 0.93,
+      "isochrony_ratio": 0.969,
+      "fit": 5,
+      "fidelity": 3,
+      "fluency": 3,
+      "note": "Filler phrase doesn't fully capture original"
+    },
+    {
+      "id": 28,
+      "start": 91.92,
+      "end": 92.24,
+      "en_duration_s": 0.32,
+      "tts_duration_s": 0.32,
       "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 2,
       "fluency": 2,
-      "note": "Source 'Has it just kept last time for that?' is already unclear, but Hindi translation 'क्या यह पिछली बार से रुका है?' doesn't match well. Likely source transcription error."
+      "note": "Vague; 'ट्रैक मिल सकता है' incomplete thought"
     },
     {
-      "id": 20,
-      "start": 78.64,
-      "end": 79.36,
-      "en_duration_s": 0.72,
-      "tts_duration_s": 0.71,
-      "isochrony_ratio": 0.986,
-      "fit": 5,
-      "fidelity": 2,
-      "fluency": 3,
-      "note": "Source 'Mac and better retreat' is garbled/unclear. Hindi 'मैक, पीछे हटो' assumes 'Mac, retreat' but fidelity is low due to source quality."
-    },
-    {
-      "id": 21,
-      "start": 79.36,
-      "end": 81.42,
-      "en_duration_s": 2.06,
-      "tts_duration_s": 2.02,
-      "isochrony_ratio": 0.981,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 22,
-      "start": 90.8,
-      "end": 92.24,
-      "en_duration_s": 1.44,
-      "tts_duration_s": 1.44,
-      "isochrony_ratio": 1.0,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 23,
+      "id": 31,
       "start": 117.56,
       "end": 118.54,
       "en_duration_s": 0.98,
-      "tts_duration_s": 0.94,
-      "isochrony_ratio": 0.959,
+      "tts_duration_s": 0.95,
+      "isochrony_ratio": 0.969,
       "fit": 5,
-      "fidelity": 4,
-      "fluency": 4,
-      "note": "'तुम नीचे नहीं होने चाहिए?' is slightly stiff; 'तुम नीचे नहीं जाना चाहिए?' would flow better."
+      "fidelity": 5,
+      "fluency": 5
     }
   ],
   "text_bleu": {
-    "bleu": 34.18,
-    "back_translated": "The main engine started. Four, three, two, one. You're useless, Tom. Look Celia, we have to follow our passion. You have robotics, I just want to do wonders in space. Why don't you admit that you're afraid of my robot hand? I have no fear. Just... ok, ok. I am scared. I have nightmares about that giant robotic claw chasing me. Whatever, Tom. We are finished. Robot's memory synced and... ...locked. This is very strange. It is strange. Does it tremble? It is strange. Has it stopped since last time? Mac, step back. Oh my god! T- Shouldn't you be down?",
-    "n_segments": 24
+    "bleu": 36.18,
+    "back_translated": "The main engine started. Four, three, two, one. You're useless, Tom. Celia, we have to live our passion. You have robotics, I just want to do wonders in space. Suppose you are scared of my robot hand. I wasn't scared at all. That... ok, ok. I was scared. A big robotic claw chases me in the dream. Whatever, Tom. We are finished. Robot's memory synced and... ...locked. This is very strange. It is strange. No problem. Ok. I'm still a man. Do I want you? I am not. Sorry. is the way. Come to me next time. Video fib. Run the train... I had, that is... can get the track. Shouldn't you be down?",
+    "n_segments": 30
   },
   "back_translation": {
-    "tgt_transcript_chars": 574,
-    "back_translated": "Main engine stalled Four, three, two, one You're useless, Tom Look Celia, we have to live our passion You have robotics, I just want to do wonders in space Why don't you accept that you're scared of my robot hand I'm not afraid of that, okay, okay I'm scared, I have nightmares of a big robotic claw chasing me Who's the guy, tomahog that robot's memory is sunk and locked This is so weird Here's the last one from the eagle रुगा है एथ आथ यू should not be below टी बाज एको पेश payments जहाद और राच्ट सिंगोट है प्यूम रहान भाबन के समात्र से रिंध सम प्राश DF",
-    "bleu": 11.15,
-    "hi_transcript_chars": 574,
-    "back_translated_en": "Main engine stalled Four, three, two, one You're useless, Tom Look Celia, we have to live our passion You have robotics, I just want to do wonders in space Why don't you accept that you're scared of my robot hand I'm not afraid of that, okay, okay I'm scared, I have nightmares of a big robotic claw chasing me Who's the guy, tomahog that robot's memory is sunk and locked This is so weird Here's the last one from the eagle रुगा है एथ आथ यू should not be below टी बाज एको पेश payments जहाद और राच्ट सिंगोट है प्यूम रहान भाबन के समात्र से रिंध सम प्राश DF"
+    "tgt_transcript_chars": 614,
+    "back_translated": "The main engine starts Four Three Two One You are useless Tom We have to live our passion You have robotics I just want to do wonders in space Believe it or not, you got pierced by my robot hand I didn't get pierced at all That's good ok I ducked In my dream a big robotic claw chases me Whatever com we do Robot's memory got sinked and locked This is very strange Never mind ok I'm still a man Don't I want you Swarri Come to me next time Prem chalao mere pas hai i.e. Prem saay kya ki anik hui aur waqaf and pass par kaam nahi huhaanaviya ka yi bhi min wir dejailly ajayar<|hi|> mere jhaal premir lot",
+    "bleu": 6.7,
+    "hi_transcript_chars": 614,
+    "back_translated_en": "The main engine starts Four Three Two One You are useless Tom We have to live our passion You have robotics I just want to do wonders in space Believe it or not, you got pierced by my robot hand I didn't get pierced at all That's good ok I ducked In my dream a big robotic claw chases me Whatever com we do Robot's memory got sinked and locked This is very strange Never mind ok I'm still a man Don't I want you Swarri Come to me next time Prem chalao mere pas hai i.e. Prem saay kya ki anik hui aur waqaf and pass par kaam nahi huhaanaviya ka yi bhi min wir dejailly ajayar<|hi|> mere jhaal premir lot"
   },
   "lipsync": {
-    "sync_score": 0.526,
-    "pearson_r": 0.0521,
+    "sync_score": 0.523,
+    "pearson_r": 0.0463,
     "best_lag_ms": 41.7,
     "faces_pct": 51.4,
     "note": null,
     "wav2lip_applied": false
   },
   "emotion": {
-    "match_pct": 58.3,
-    "avg_soft_score": 85.3,
-    "n_segments": 24,
+    "match_pct": 70.0,
+    "avg_soft_score": 89.7,
+    "n_segments": 30,
     "segments": [
       {
         "id": 0,
@@ -358,8 +431,8 @@
         "source_emotion": "neutral",
         "source_score": 0.824,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.882,
-        "dubbed_back_en": "Look Celia, we have to follow our passion.",
+        "dubbed_score": 0.911,
+        "dubbed_back_en": "Celia, we have to live our passion.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -378,8 +451,8 @@
         "source_emotion": "angry",
         "source_score": 0.479,
         "dubbed_emotion": "fearful",
-        "dubbed_score": 0.662,
-        "dubbed_back_en": "Why don't you admit that you're afraid of my robot hand?",
+        "dubbed_score": 0.966,
+        "dubbed_back_en": "Suppose you are scared of my robot hand.",
         "match": false,
         "va_similarity": 0.929
       },
@@ -388,8 +461,8 @@
         "source_emotion": "fearful",
         "source_score": 0.844,
         "dubbed_emotion": "fearful",
-        "dubbed_score": 0.983,
-        "dubbed_back_en": "I have no fear.",
+        "dubbed_score": 0.974,
+        "dubbed_back_en": "I wasn't scared at all.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -398,8 +471,8 @@
         "source_emotion": "neutral",
         "source_score": 0.785,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.905,
-        "dubbed_back_en": "Bus...",
+        "dubbed_score": 0.772,
+        "dubbed_back_en": "They...",
         "match": true,
         "va_similarity": 1.0
       },
@@ -419,7 +492,7 @@
         "source_score": 0.902,
         "dubbed_emotion": "fearful",
         "dubbed_score": 0.993,
-        "dubbed_back_en": "I am scared.",
+        "dubbed_back_en": "I was scared.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -427,11 +500,11 @@
         "id": 10,
         "source_emotion": "fearful",
         "source_score": 0.989,
-        "dubbed_emotion": "fearful",
-        "dubbed_score": 0.959,
-        "dubbed_back_en": "I have nightmares about that giant robotic claw chasing me.",
-        "match": true,
-        "va_similarity": 1.0
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.426,
+        "dubbed_back_en": "A big robotic claw chases me in the dream.",
+        "match": false,
+        "va_similarity": 0.57
       },
       {
         "id": 11,
@@ -496,65 +569,125 @@
       {
         "id": 17,
         "source_emotion": "neutral",
-        "source_score": 0.607,
-        "dubbed_emotion": "fearful",
-        "dubbed_score": 0.963,
-        "dubbed_back_en": "Does it tremble?",
-        "match": false,
-        "va_similarity": 0.57
+        "source_score": 0.588,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.588,
+        "dubbed_back_en": "No problem.",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 18,
-        "source_emotion": "fearful",
-        "source_score": 0.439,
-        "dubbed_emotion": "surprised",
-        "dubbed_score": 0.708,
-        "dubbed_back_en": "It is strange.",
-        "match": false,
-        "va_similarity": 0.696
+        "source_emotion": "neutral",
+        "source_score": 0.588,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.859,
+        "dubbed_back_en": "Ok.",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 19,
         "source_emotion": "neutral",
-        "source_score": 0.767,
+        "source_score": 0.71,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.738,
-        "dubbed_back_en": "Has it stopped since last time?",
+        "dubbed_score": 0.71,
+        "dubbed_back_en": "I'm still a man.",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 20,
-        "source_emotion": "neutral",
-        "source_score": 0.896,
-        "dubbed_emotion": "fearful",
-        "dubbed_score": 0.365,
-        "dubbed_back_en": "Mac, step back.",
-        "match": false,
-        "va_similarity": 0.57
+        "source_emotion": "surprised",
+        "source_score": 0.415,
+        "dubbed_emotion": "surprised",
+        "dubbed_score": 0.437,
+        "dubbed_back_en": "Do I want you?",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 21,
-        "source_emotion": "surprised",
-        "source_score": 0.875,
-        "dubbed_emotion": "surprised",
-        "dubbed_score": 0.909,
-        "dubbed_back_en": "Oh my god!",
+        "source_emotion": "neutral",
+        "source_score": 0.748,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.712,
+        "dubbed_back_en": "I am not.",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 22,
-        "source_emotion": "neutral",
-        "source_score": 0.529,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.697,
-        "dubbed_back_en": "Tea-",
+        "source_emotion": "sad",
+        "source_score": 0.939,
+        "dubbed_emotion": "sad",
+        "dubbed_score": 0.939,
+        "dubbed_back_en": "Sorry.",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 23,
+        "source_emotion": "neutral",
+        "source_score": 0.695,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.888,
+        "dubbed_back_en": "is the way.",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 24,
+        "source_emotion": "neutral",
+        "source_score": 0.705,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.874,
+        "dubbed_back_en": "Come to me next time.",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 25,
+        "source_emotion": "neutral",
+        "source_score": 0.925,
+        "dubbed_emotion": "disgust",
+        "dubbed_score": 0.562,
+        "dubbed_back_en": "Video fib.",
+        "match": false,
+        "va_similarity": 0.684
+      },
+      {
+        "id": 26,
+        "source_emotion": "neutral",
+        "source_score": 0.773,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.872,
+        "dubbed_back_en": "Drive the train...",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 27,
+        "source_emotion": "neutral",
+        "source_score": 0.693,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.823,
+        "dubbed_back_en": "I had it, that is...",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 28,
+        "source_emotion": "neutral",
+        "source_score": 0.607,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.944,
+        "dubbed_back_en": "Track can be found.",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 31,
         "source_emotion": "angry",
         "source_score": 0.735,
         "dubbed_emotion": "angry",
@@ -565,8 +698,8 @@
       }
     ],
     "tts_fidelity": {
-      "avg_soft_score": 66.7,
-      "n_segments": 24,
+      "avg_soft_score": 81.0,
+      "n_segments": 29,
       "segments": [
         {
           "id": 0,
@@ -583,67 +716,67 @@
         {
           "id": 2,
           "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
+          "perceived": "neutral",
+          "va_similarity": 1.0
         },
         {
           "id": 3,
           "intended": "neutral",
-          "perceived": "angry",
+          "perceived": "happy",
           "va_similarity": 0.5
         },
         {
           "id": 4,
           "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
+          "perceived": "neutral",
+          "va_similarity": 1.0
         },
         {
           "id": 5,
           "intended": "neutral",
-          "perceived": "angry",
+          "perceived": "happy",
           "va_similarity": 0.5
         },
         {
           "id": 6,
           "intended": "neutral",
-          "perceived": "angry",
+          "perceived": "happy",
           "va_similarity": 0.5
         },
         {
           "id": 7,
           "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
+          "perceived": "neutral",
+          "va_similarity": 1.0
         },
         {
           "id": 8,
-          "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
-        },
-        {
-          "id": 9,
           "intended": "neutral",
           "perceived": "neutral",
           "va_similarity": 1.0
         },
         {
-          "id": 10,
+          "id": 9,
           "intended": "neutral",
           "perceived": "angry",
           "va_similarity": 0.5
+        },
+        {
+          "id": 10,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
         },
         {
           "id": 11,
           "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
+          "perceived": "neutral",
+          "va_similarity": 1.0
         },
         {
           "id": 12,
           "intended": "neutral",
-          "perceived": "angry",
+          "perceived": "happy",
           "va_similarity": 0.5
         },
         {
@@ -679,7 +812,7 @@
         {
           "id": 18,
           "intended": "neutral",
-          "perceived": "angry",
+          "perceived": "happy",
           "va_similarity": 0.5
         },
         {
@@ -691,14 +824,14 @@
         {
           "id": 20,
           "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
+          "perceived": "angry",
+          "va_similarity": 0.5
         },
         {
           "id": 21,
           "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
+          "perceived": "neutral",
+          "va_similarity": 1.0
         },
         {
           "id": 22,
@@ -707,10 +840,40 @@
           "va_similarity": 1.0
         },
         {
-          "id": 23,
+          "id": 24,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 25,
           "intended": "neutral",
           "perceived": "angry",
           "va_similarity": 0.5
+        },
+        {
+          "id": 26,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 27,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 28,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 31,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
         }
       ]
     }

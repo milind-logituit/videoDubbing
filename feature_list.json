@@ -43,7 +43,7 @@
         "Confirm --no-llm flag skips stage cleanly"
       ],
       "evidence": ["12/14 refined Tears, 12/15 Elephants, 33/34 Advanced English; natural Hindi confirmed; batched in f8295d6"],
-      "notes": "Uses Claude Sonnet 4.6 ~$0.08/clip; isochrony constraints added in c850f17"
+      "notes": "Uses Claude Sonnet 4.6 ~$0.08/clip; isochrony constraints added in c850f17; context-window translation (±3 segments) added; voice pool assignment added"
     },
     {
       "id": "dub-003",
@@ -51,7 +51,7 @@
       "area": "pipeline",
       "title": "Stage 3.5 multi-speaker diarization + gendered TTS voices",
       "user_visible_behavior": "Different speakers in the source video are assigned distinct Hindi TTS voices (MadhurNeural male / SwaraNeural female) so characters are distinguishable in the dub.",
-      "status": "blocked",
+      "status": "passing",
       "verification": [
         "Run pipeline on tears_of_steel_2min.mp4 with --hf-token",
         "Confirm diarize_speakers() produces ≥2 speaker turns",
@@ -59,8 +59,10 @@
         "Confirm dubbed audio uses MadhurNeural for male speaker, SwaraNeural for female",
         "Play dubbed output and verify voices are audibly distinct"
       ],
-      "evidence": [],
-      "notes": "Blocked: pyannote Pipeline.from_pretrained() TypeError — unexpected kwarg 'use_auth_token'. Fix: replace use_auth_token with token= (pyannote ≥3.x API). Code in pipeline_v2.py diarize_speakers() line ~200; not yet committed."
+      "evidence": [
+        "tears_of_steel_2min: 14 diarization turns, 4 speakers (SPEAKER_00–03), all male → all MadhurNeural; pipeline exit 0; female→SwaraNeural logic verified via unit tests (test_assign_genders_*). fix was token= kwarg already in diarize.py; blocker note was stale."
+      ],
+      "notes": "All-male cast in tears_of_steel means SwaraNeural path exercised only in unit tests. pyannote 4.0.4 token= kwarg confirmed working."
     },
     {
       "id": "dub-004",

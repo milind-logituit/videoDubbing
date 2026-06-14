@@ -22,7 +22,36 @@ TTS_VOICE_FEMALE_EN = "en-US-JennyNeural"
 TTS_VOICE_MALE_EN   = "en-US-GuyNeural"
 TTS_VOICE_EN        = TTS_VOICE_FEMALE_EN
 _TTS_DEFAULT_VOICE  = {"hi": TTS_VOICE_FEMALE_HI, "en": TTS_VOICE_FEMALE_EN}
-_MALE_VOICES        = {TTS_VOICE_MALE_HI, TTS_VOICE_MALE_EN}
+
+# Ordered pools for per-speaker voice assignment. Speakers are sorted by first
+# utterance then assigned cyclically — first male speaker gets pool[0], second
+# gets pool[1], etc. Add voices here as they become available.
+VOICE_POOL: dict[str, dict[str, list[str]]] = {
+    "hi": {
+        "male":   ["hi-IN-MadhurNeural"],
+        "female": ["hi-IN-SwaraNeural"],
+    },
+    "en": {
+        "male":   [
+            "en-US-GuyNeural",
+            "en-US-AndrewNeural",
+            "en-US-ChristopherNeural",
+            "en-US-EricNeural",
+        ],
+        "female": [
+            "en-US-JennyNeural",
+            "en-US-AriaNeural",
+            "en-US-SaraNeural",
+            "en-US-NancyNeural",
+        ],
+    },
+}
+
+_MALE_VOICES: set[str] = {
+    v
+    for lang_pools in VOICE_POOL.values()
+    for v in lang_pools.get("male", [])
+} | {TTS_VOICE_MALE_HI, TTS_VOICE_MALE_EN}
 TTS_BASE_RATE_PCT   = -10
 MAX_RATE_PCT        = 40    # cap edge-tts speed-up; 40% keeps speech intelligible
 MAX_ATEMPO_FACTOR   = 4.0   # ffmpeg atempo cap; beyond this we hard-trim

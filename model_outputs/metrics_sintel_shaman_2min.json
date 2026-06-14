@@ -8,7 +8,7 @@
   "translation": {
     "model": "Google Translate (en→hi)",
     "bleu": null,
-    "n_segments": 12,
+    "n_segments": 17,
     "note": "N/A — no reference text for this clip"
   },
   "tts": {
@@ -20,7 +20,7 @@
     "dubbed_duration_s": 120.0,
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.3,
-    "hi_chars_per_sec": 0.8
+    "hi_chars_per_sec": 1.0
   },
   "segment_quality": [
     {
@@ -32,8 +32,8 @@
       "isochrony_ratio": 0.994,
       "fit": 5,
       "fidelity": 2,
-      "fluency": 3,
-      "note": "Hindi 'चुप बैठो' means 'be quiet, sit down' but English says 'sit still.' The semantic content differs—English emphasizes remaining motionless, Hindi emphasizes silence."
+      "fluency": 2,
+      "note": "चुप बैठो means 'be quiet and sit' but English says 'sit still' (remain motionless). 'चुप' adds unnecessary quietness."
     },
     {
       "id": 1,
@@ -44,7 +44,7 @@
       "isochrony_ratio": 0.993,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 4
+      "fluency": 5
     },
     {
       "id": 2,
@@ -66,108 +66,177 @@
       "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 5
     },
     {
       "id": 4,
       "start": 47.44,
       "end": 47.88,
       "en_duration_s": 0.44,
-      "tts_duration_s": 0.43,
-      "isochrony_ratio": 0.977,
+      "tts_duration_s": 0.44,
+      "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 5
     },
     {
       "id": 5,
       "start": 54.98,
       "end": 55.42,
       "en_duration_s": 0.44,
-      "tts_duration_s": 0.42,
-      "isochrony_ratio": 0.955,
+      "tts_duration_s": 0.44,
+      "isochrony_ratio": 1.0,
       "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
+      "fidelity": 2,
+      "fluency": 3,
+      "emotion_register": 2,
+      "note": "'हुनर' (skill/talent) is a mistranslation of the proper name 'Skills'. Should be 'Skills' or a Hindi transliteration like 'स्किल्स'."
     },
     {
       "id": 6,
       "start": 67.1,
       "end": 68.5,
       "en_duration_s": 1.4,
-      "tts_duration_s": 1.39,
-      "isochrony_ratio": 0.993,
+      "tts_duration_s": 1.4,
+      "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 5
     },
     {
       "id": 7,
-      "start": 90.62,
-      "end": 92.02,
+      "start": 76.84,
+      "end": 78.24,
       "en_duration_s": 1.4,
-      "tts_duration_s": 1.39,
-      "isochrony_ratio": 0.993,
+      "tts_duration_s": 1.4,
+      "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 5
     },
     {
       "id": 8,
-      "start": 93.92,
-      "end": 94.0,
+      "start": 78.52,
+      "end": 79.28,
+      "en_duration_s": 0.76,
+      "tts_duration_s": 0.76,
+      "isochrony_ratio": 1.0,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5,
+      "emotion_register": 5
+    },
+    {
+      "id": 9,
+      "start": 90.56,
+      "end": 91.96,
+      "en_duration_s": 1.4,
+      "tts_duration_s": 1.4,
+      "isochrony_ratio": 1.0,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5,
+      "emotion_register": 5
+    },
+    {
+      "id": 10,
+      "start": 93.96,
+      "end": 95.02,
+      "en_duration_s": 1.06,
+      "tts_duration_s": 1.06,
+      "isochrony_ratio": 1.0,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5,
+      "emotion_register": 5
+    },
+    {
+      "id": 11,
+      "start": 95.9,
+      "end": 96.84,
+      "en_duration_s": 0.94,
+      "tts_duration_s": 0.94,
+      "isochrony_ratio": 1.0,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5,
+      "emotion_register": 5
+    },
+    {
+      "id": 12,
+      "start": 97.98,
+      "end": 98.6,
+      "en_duration_s": 0.62,
+      "tts_duration_s": 0.62,
+      "isochrony_ratio": 1.0,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5,
+      "emotion_register": 5
+    },
+    {
+      "id": 13,
+      "start": 103.02,
+      "end": 104.42,
+      "en_duration_s": 1.4,
+      "tts_duration_s": 1.4,
+      "isochrony_ratio": 1.0,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5,
+      "emotion_register": 5
+    },
+    {
+      "id": 14,
+      "start": 104.98,
+      "end": 105.06,
       "en_duration_s": 0.08,
       "tts_duration_s": 0.08,
       "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 5
     },
     {
-      "id": 9,
-      "start": 96.0,
-      "end": 96.56,
-      "en_duration_s": 0.56,
-      "tts_duration_s": 0.54,
-      "isochrony_ratio": 0.964,
+      "id": 15,
+      "start": 106.4,
+      "end": 107.8,
+      "en_duration_s": 1.4,
+      "tts_duration_s": 1.4,
+      "isochrony_ratio": 1.0,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5,
+      "emotion_register": 5
+    },
+    {
+      "id": 17,
+      "start": 116.84,
+      "end": 118.28,
+      "en_duration_s": 1.44,
+      "tts_duration_s": 1.43,
+      "isochrony_ratio": 0.993,
       "fit": 5,
       "fidelity": 5,
       "fluency": 5
-    },
-    {
-      "id": 10,
-      "start": 96.64,
-      "end": 97.0,
-      "en_duration_s": 0.36,
-      "tts_duration_s": 0.35,
-      "isochrony_ratio": 0.972,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 11,
-      "start": 97.98,
-      "end": 98.56,
-      "en_duration_s": 0.58,
-      "tts_duration_s": 0.56,
-      "isochrony_ratio": 0.966,
-      "fit": 5,
-      "fidelity": 4,
-      "fluency": 4
     }
   ],
   "text_bleu": {
-    "bleu": 63.82,
-    "back_translated": "Hey, shut up. Good night, Skills. Catch him, Skills. Go, catch him. No! Skills? No! No! No! No! Go up! Wow!",
-    "n_segments": 12
+    "bleu": 55.8,
+    "back_translated": "Hey, shut up. Good night, Skills. Catch him, Skills. Quick, hold on. No! Skills?! No! No! No! No! No! Let us go! No! No! No! See! Patreon.com",
+    "n_segments": 17
   },
   "back_translation": {
-    "tgt_transcript_chars": 266,
-    "back_translated": "Hey shut up sit gud night sils wa ko baga time mah oh miya ghuya si alors basta aani ko tati tata time fagata hai a ko yahan wa ko baga silss koil kare ka uu kana silss paklo 259 wa ki don-iyamah ko bug Imm mattress okay a pkrosh m uffyu ko bring this not a beast. bha man va",
-    "bleu": 0.87,
-    "hi_transcript_chars": 266,
-    "back_translated_en": "Hey shut up sit gud night sils wa ko baga time mah oh miya ghuya si alors basta aani ko tati tata time fagata hai a ko yahan wa ko baga silss koil kare ka uu kana silss paklo 259 wa ki don-iyamah ko bug Imm mattress okay a pkrosh m uffyu ko bring this not a beast. bha man va"
+    "tgt_transcript_chars": 121,
+    "back_translated": "Hey Chap Sit Gud Night Sills Hey Chap Sit Hey Chap Sit Hey Chap Sit Hey Chap Sit Hey Chap Sit Hey Chap Sit Hey Chap Sit patreon.com",
+    "bleu": 1.46,
+    "hi_transcript_chars": 121,
+    "back_translated_en": "Hey Chap Sit Gud Night Sills Hey Chap Sit Hey Chap Sit Hey Chap Sit Hey Chap Sit Hey Chap Sit Hey Chap Sit Hey Chap Sit patreon.com"
   },
   "lipsync": {
     "sync_score": 0.496,
@@ -178,9 +247,9 @@
     "wav2lip_applied": false
   },
   "emotion": {
-    "match_pct": 91.7,
-    "avg_soft_score": 95.8,
-    "n_segments": 12,
+    "match_pct": 88.2,
+    "avg_soft_score": 92.9,
+    "n_segments": 17,
     "segments": [
       {
         "id": 0,
@@ -217,8 +286,8 @@
         "source_emotion": "angry",
         "source_score": 0.839,
         "dubbed_emotion": "angry",
-        "dubbed_score": 0.525,
-        "dubbed_back_en": "Go, catch him.",
+        "dubbed_score": 0.57,
+        "dubbed_back_en": "Quick, hold on.",
         "match": true,
         "va_similarity": 1.0
       },
@@ -237,8 +306,8 @@
         "source_emotion": "surprised",
         "source_score": 0.631,
         "dubbed_emotion": "surprised",
-        "dubbed_score": 0.631,
-        "dubbed_back_en": "Skills?",
+        "dubbed_score": 0.891,
+        "dubbed_back_en": "Skills?!",
         "match": true,
         "va_similarity": 1.0
       },
@@ -284,28 +353,78 @@
       },
       {
         "id": 10,
-        "source_emotion": "neutral",
-        "source_score": 0.3,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.3,
-        "dubbed_back_en": "Go up!",
+        "source_emotion": "angry",
+        "source_score": 0.569,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.569,
+        "dubbed_back_en": "No!",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 11,
-        "source_emotion": "surprised",
-        "source_score": 0.652,
-        "dubbed_emotion": "surprised",
-        "dubbed_score": 0.966,
-        "dubbed_back_en": "Wow!",
+        "source_emotion": "angry",
+        "source_score": 0.724,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.743,
+        "dubbed_back_en": "Let us go!",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 12,
+        "source_emotion": "angry",
+        "source_score": 0.569,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.569,
+        "dubbed_back_en": "No!",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 13,
+        "source_emotion": "angry",
+        "source_score": 0.569,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.569,
+        "dubbed_back_en": "No!",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 14,
+        "source_emotion": "angry",
+        "source_score": 0.569,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.569,
+        "dubbed_back_en": "No!",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 15,
+        "source_emotion": "angry",
+        "source_score": 0.637,
+        "dubbed_emotion": "happy",
+        "dubbed_score": 0.671,
+        "dubbed_back_en": "See!",
+        "match": false,
+        "va_similarity": 0.293
+      },
+      {
+        "id": 17,
+        "source_emotion": "neutral",
+        "source_score": 0.774,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.774,
+        "dubbed_back_en": "Patreon.com",
         "match": true,
         "va_similarity": 1.0
       }
     ],
     "tts_fidelity": {
-      "avg_soft_score": 77.3,
-      "n_segments": 11,
+      "avg_soft_score": 91.6,
+      "n_segments": 16,
       "segments": [
         {
           "id": 0,
@@ -327,51 +446,81 @@
         },
         {
           "id": 3,
-          "intended": "neutral",
+          "intended": "angry",
           "perceived": "angry",
-          "va_similarity": 0.5
-        },
-        {
-          "id": 4,
-          "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
-        },
-        {
-          "id": 5,
-          "intended": "neutral",
-          "perceived": "neutral",
           "va_similarity": 1.0
         },
         {
+          "id": 4,
+          "intended": "angry",
+          "perceived": "angry",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 5,
+          "intended": "surprised",
+          "perceived": "angry",
+          "va_similarity": 0.65
+        },
+        {
           "id": 6,
-          "intended": "neutral",
-          "perceived": "neutral",
+          "intended": "angry",
+          "perceived": "angry",
           "va_similarity": 1.0
         },
         {
           "id": 7,
-          "intended": "neutral",
-          "perceived": "neutral",
+          "intended": "angry",
+          "perceived": "angry",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 8,
+          "intended": "angry",
+          "perceived": "angry",
           "va_similarity": 1.0
         },
         {
           "id": 9,
-          "intended": "neutral",
-          "perceived": "neutral",
+          "intended": "angry",
+          "perceived": "angry",
           "va_similarity": 1.0
         },
         {
           "id": 10,
-          "intended": "neutral",
-          "perceived": "neutral",
+          "intended": "angry",
+          "perceived": "angry",
           "va_similarity": 1.0
         },
         {
           "id": 11,
+          "intended": "angry",
+          "perceived": "angry",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 12,
+          "intended": "angry",
+          "perceived": "angry",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 13,
+          "intended": "angry",
+          "perceived": "angry",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 15,
+          "intended": "angry",
+          "perceived": "angry",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 17,
           "intended": "neutral",
-          "perceived": "happy",
-          "va_similarity": 0.5
+          "perceived": "neutral",
+          "va_similarity": 1.0
         }
       ]
     }

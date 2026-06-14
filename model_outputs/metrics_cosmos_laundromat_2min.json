@@ -20,66 +20,70 @@
     "dubbed_duration_s": 120.0,
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.3,
-    "hi_chars_per_sec": 0.5
+    "hi_chars_per_sec": 0.8
   },
   "segment_quality": [
     {
       "id": 0,
-      "start": 26.94,
-      "end": 29.74,
-      "en_duration_s": 2.8,
-      "tts_duration_s": 1.7,
-      "isochrony_ratio": 0.607,
-      "fit": 3,
-      "fidelity": 2,
-      "fluency": 2,
-      "note": "जगलिंग करो is not standard Hindi. Better would be जगलिंग करना/जगलिंग करें. The transliteration 'जगलिंग' is anglicized; more natural would be 'जुगलबंदी करो' or simply 'जगल करो' depending on context."
+      "start": 28.58,
+      "end": 29.98,
+      "en_duration_s": 1.4,
+      "tts_duration_s": 1.39,
+      "isochrony_ratio": 0.993,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
     },
     {
       "id": 1,
       "start": 41.84,
       "end": 46.98,
       "en_duration_s": 5.14,
-      "tts_duration_s": 4.9,
-      "isochrony_ratio": 0.953,
+      "tts_duration_s": 5.13,
+      "isochrony_ratio": 0.998,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 5,
+      "emotion_register": 5
     },
     {
       "id": 2,
       "start": 70.82,
-      "end": 74.6,
-      "en_duration_s": 3.78,
-      "tts_duration_s": 3.76,
-      "isochrony_ratio": 0.995,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
+      "end": 89.86,
+      "en_duration_s": 19.04,
+      "tts_duration_s": 13.97,
+      "isochrony_ratio": 0.734,
+      "fit": 3,
+      "fidelity": 3,
+      "fluency": 4,
+      "emotion_register": 5,
+      "note": "Adds 'बचाओ' (save me) which deviates from source text but enhances fearful emotion effectively"
     },
     {
       "id": 3,
-      "start": 95.38,
-      "end": 97.0,
-      "en_duration_s": 1.62,
-      "tts_duration_s": 1.61,
-      "isochrony_ratio": 0.994,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
+      "start": 95.62,
+      "end": 119.74,
+      "en_duration_s": 24.12,
+      "tts_duration_s": 13.94,
+      "isochrony_ratio": 0.578,
+      "fit": 3,
+      "fidelity": 3,
+      "fluency": 4,
+      "emotion_register": 5,
+      "note": "Adds 'खतरा है' (there's danger) which deviates from source but powerfully reinforces fearful register"
     }
   ],
   "text_bleu": {
-    "bleu": 86.64,
-    "back_translated": "No juggling! No! No! No! No! No! No! No! No! No!",
+    "bleu": 19.64,
+    "back_translated": "You don't... no... no, no, no! No... no... save, no, no! No... no... there is danger, no, no!",
     "n_segments": 4
   },
   "back_translation": {
-    "tgt_transcript_chars": 66,
-    "back_translated": "You don't no no no no no no don't don't don't don't don't do",
-    "bleu": 0.0,
-    "hi_transcript_chars": 66,
-    "back_translated_en": "You don't no no no no no no don't don't don't don't don't do"
+    "tgt_transcript_chars": 255,
+    "back_translated": "Tum yeh ye toh dom Baba wasn't volumes of it that person Prosody pitch plus twelve percent volume soft rate plus ten percent no no no save no no prosody Prosody pitch plus twelve percent volume soft rate plus ten percent no no no danger no no prosody",
+    "bleu": 1.35,
+    "hi_transcript_chars": 255,
+    "back_translated_en": "Tum yeh ye toh dom Baba wasn't volumes of it that person Prosody pitch plus twelve percent volume soft rate plus ten percent no no no save no no prosody Prosody pitch plus twelve percent volume soft rate plus ten percent no no no danger no no prosody"
   },
   "lipsync": {
     "sync_score": 0.495,
@@ -97,46 +101,46 @@
       {
         "id": 0,
         "source_emotion": "neutral",
-        "source_score": 0.799,
+        "source_score": 0.934,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.816,
-        "dubbed_back_en": "juggle",
+        "dubbed_score": 0.934,
+        "dubbed_back_en": "You",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 1,
-        "source_emotion": "angry",
-        "source_score": 0.44,
-        "dubbed_emotion": "angry",
-        "dubbed_score": 0.44,
-        "dubbed_back_en": "No! No! No! No! No!",
+        "source_emotion": "fearful",
+        "source_score": 0.425,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.633,
+        "dubbed_back_en": "No... no... no, no, no!",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 2,
-        "source_emotion": "angry",
-        "source_score": 0.464,
-        "dubbed_emotion": "angry",
-        "dubbed_score": 0.464,
-        "dubbed_back_en": "No! No! No!",
+        "source_emotion": "fearful",
+        "source_score": 0.425,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.499,
+        "dubbed_back_en": "No... no... save, no, no!",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 3,
-        "source_emotion": "angry",
-        "source_score": 0.519,
-        "dubbed_emotion": "angry",
-        "dubbed_score": 0.519,
-        "dubbed_back_en": "No! No!",
+        "source_emotion": "fearful",
+        "source_score": 0.425,
+        "dubbed_emotion": "fearful",
+        "dubbed_score": 0.902,
+        "dubbed_back_en": "No... no... there is danger, no, no!",
         "match": true,
         "va_similarity": 1.0
       }
     ],
     "tts_fidelity": {
-      "avg_soft_score": 87.5,
+      "avg_soft_score": 76.7,
       "n_segments": 4,
       "segments": [
         {
@@ -147,21 +151,21 @@
         },
         {
           "id": 1,
-          "intended": "neutral",
+          "intended": "fearful",
           "perceived": "angry",
-          "va_similarity": 0.5
+          "va_similarity": 0.929
         },
         {
           "id": 2,
-          "intended": "neutral",
+          "intended": "fearful",
           "perceived": "neutral",
-          "va_similarity": 1.0
+          "va_similarity": 0.57
         },
         {
           "id": 3,
-          "intended": "neutral",
+          "intended": "fearful",
           "perceived": "neutral",
-          "va_similarity": 1.0
+          "va_similarity": 0.57
         }
       ]
     }

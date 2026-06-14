@@ -1,25 +1,31 @@
-id,start,end,duration,en_text,hi_text
-0,4.16,6.28,2.12,We have main engine start.,मुख्य इंजन स्टार्ट हो गया।
-1,6.64,9.56,2.92,"Four, three, two, one.","चार, तीन, दो, एक।"
-2,22.74,24.28,1.54,"You're a jerk, Tom.","तुम बेकार हो, टॉम।"
-3,24.5,26.86,2.36,"Look, Celia, we have to follow our passions.","देखो सेलिया, हमें अपने जुनून के पीछे जाना होगा।"
-4,26.86,29.96,3.1,You have your robotics and I just want to be awesome in space.,"तुम्हारे पास रोबोटिक्स है, मैं बस अंतरिक्ष में कमाल करना चाहता हूँ।"
-5,30.38,34.3,3.92,Why don't you just admit that you're freaked out by my robot hand?,मान क्यों नहीं लेते कि मेरे रोबोट हाथ से डरते हो तुम?
-6,34.54,35.84,1.3,I'm not freaked out by it.,मुझे कोई डर नहीं है।
-7,36.56,37.04,0.48,It's...,बस...
-8,37.04,38.26,1.22,"All right, fine.","अच्छा, ठीक है।"
-9,38.56,39.4,0.84,I'm freaked out.,मैं डरा हुआ हूँ।
-10,39.52,42.42,2.9,I'm having nightmares that I'm being chased by this giant robotic claw.,बुरे सपने आते हैं कि वो विशाल रोबोटिक पंजा मेरा पीछा कर रहा है।
-11,42.44,43.32,0.88,"Oh, whatever, Tom.","जो भी हो, टॉम।"
-12,44.1,44.84,0.74,We're done.,हम खत्म हैं।
-13,50.14,53.0,2.86,Robot's memory synced and...,रोबोट की मेमोरी सिंक हुई और...
-14,53.0,53.76,0.76,...locked.,...लॉक।
-15,60.3,62.16,1.86,This is pretty freaky.,यह तो बड़ा अजीब है।
-16,62.16,62.26,0.1,This is pretty freaky.,अजीब है।
-17,64.04,65.12,1.08,Does it quiver?,क्या यह काँपता है?
-18,65.48,65.58,0.1,This is pretty freaky.,अजीब है।
-19,66.3,67.6,1.3,Has it just kept last time for that?,क्या यह पिछली बार से रुका है?
-20,78.64,79.36,0.72,Mac and better retreat.,"मैक, पीछे हटो।"
-21,79.36,81.42,2.06,"Oh, my God!",अरे बाप रे!
-22,90.8,92.24,1.44,Tee-,टी-
-23,117.56,118.54,0.98,Shouldn't you be down there?,तुम नीचे नहीं होने चाहिए?
+id,start,end,duration,en_text,hi_text,speaker
+0,4.16,6.28,2.12,We have main engine start.,मुख्य इंजन शुरू हो गया।,SPEAKER_00
+1,6.64,9.56,2.92,"Four, three, two, one.","चार, तीन, दो, एक।",SPEAKER_00
+2,22.74,24.28,1.54,"You're a jerk, Tom.","तुम बेकार हो, टॉम।",SPEAKER_03
+3,24.5,26.86,2.36,"Look, Celia, we have to follow our passions.","सेलिया, हमें अपना जुनून जीना होगा।",SPEAKER_03
+4,26.86,29.96,3.1,You have your robotics and I just want to be awesome in space.,"तुम्हारे पास रोबोटिक्स है, मैं बस अंतरिक्ष में कमाल करना चाहता हूँ।",SPEAKER_03
+5,30.38,34.3,3.92,Why don't you just admit that you're freaked out by my robot hand?,मान लो ना कि मेरे रोबोट हाथ से तुम डर गए हो।,SPEAKER_01
+6,34.54,35.84,1.3,I'm not freaked out by it.,मैं बिल्कुल नहीं डरा।,SPEAKER_01
+7,36.56,37.04,0.48,It's...,वो...,SPEAKER_02
+8,37.04,38.26,1.22,"All right, fine.","अच्छा, ठीक है।",SPEAKER_02
+9,38.56,39.4,0.84,I'm freaked out.,मैं डर गया।,SPEAKER_02
+10,39.52,42.42,2.9,I'm having nightmares that I'm being chased by this giant robotic claw.,सपने में एक बड़ा रोबोटिक पंजा मेरा पीछा करता है।,SPEAKER_02
+11,42.44,43.32,0.88,"Oh, whatever, Tom.","जो भी हो, टॉम।",SPEAKER_02
+12,44.1,44.84,0.74,We're done.,हम खत्म हैं।,SPEAKER_02
+13,50.14,53.0,2.86,Robot's memory synced and...,रोबोट की मेमोरी सिंक हुई और...,SPEAKER_00
+14,53.0,53.76,0.76,...locked.,...लॉक।,SPEAKER_00
+15,60.3,62.16,1.86,This is pretty freaky.,यह तो बड़ा अजीब है।,SPEAKER_01
+16,62.16,62.26,0.1,This is pretty freaky.,अजीब है।,SPEAKER_01
+17,62.26,67.26,5.0,No problem.,कोई बात नहीं।,SPEAKER_01
+18,71.16,71.66,0.5,No problem.,ठीक है।,SPEAKER_01
+19,73.58,74.94,1.36,I'm still a man.,मैं अब भी मर्द हूँ।,SPEAKER_01
+20,77.38,78.22,0.84,Do I need you?,क्या मुझे तुम चाहिए?,SPEAKER_01
+21,78.98,79.98,1.0,I'm not.,नहीं हूँ।,SPEAKER_01
+22,82.8,83.6,0.8,Sorry.,सॉरी।,SPEAKER_01
+23,84.94,84.96,0.02,There's a road.,रास्ता है।,SPEAKER_01
+24,85.98,87.2,1.22,I need you to come to me next time.,अगली बार मेरे पास आना।,SPEAKER_01
+25,87.24,87.46,0.22,Video Foibe.,वीडियो फ़ॉइब।,SPEAKER_01
+26,88.0,89.26,1.26,You move the train...,ट्रेन चलाओ...,SPEAKER_01
+27,90.96,91.92,0.96,"I had, you know...","मेरे पास था, यानी...",SPEAKER_02
+28,91.92,92.24,0.32,It might get me the track.,ट्रैक मिल सकता है।,SPEAKER_02
+31,117.56,118.54,0.98,Shouldn't you be down there?,तुम नीचे नहीं होने चाहिए?,SPEAKER_02

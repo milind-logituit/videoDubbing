@@ -1,13 +1,18 @@
-id,start,end,duration,en_text,hi_text
-0,0.0,1.76,1.76,"Hey, sit still.","अरे, चुप बैठो।"
-1,17.48,18.84,1.36,"Good night, Skills.","गुड नाइट, स्किल्स।"
-2,39.88,40.94,1.06,"Get him, Skills.","पकड़ो उसे, स्किल्स।"
-3,41.06,41.96,0.9,"Come on, get him.","जाओ, पकड़ो उसे।"
-4,47.44,47.88,0.44,No!,नहीं!
-5,54.98,55.42,0.44,Skills?,स्किल्स?
-6,67.1,68.5,1.4,No!,नहीं!
-7,90.62,92.02,1.4,No!,नहीं!
-8,93.92,94.0,0.08,No!,नहीं!
-9,96.0,96.56,0.56,No!,नहीं!
-10,96.64,97.0,0.36,Go up!,ऊपर जाओ!
-11,97.98,98.56,0.58,Woo!,वाह!
+id,start,end,duration,en_text,hi_text,emotion,emotion_score,emotion_dist
+0,0.0,1.76,1.76,"Hey, sit still.","अरे, चुप बैठो।",neutral,0.473,"{'neutral': 0.473, 'disgust': 0.179, 'sad': 0.153, 'angry': 0.134}"
+1,17.48,18.84,1.36,"Good night, Skills.","शुभ रात, Skills।",neutral,0.937,{'neutral': 0.937}
+2,39.88,40.94,1.06,"Get him, Skills.","पकड़ो उसे, Skills।",neutral,0.937,{'neutral': 0.937}
+3,41.06,41.96,0.9,"Come on, get him.","जल्दी, पकड़ो।",angry,0.839,"{'angry': 0.839, 'fearful': 0.071}"
+4,47.44,47.88,0.44,No!,नहीं!,angry,0.569,"{'angry': 0.569, 'disgust': 0.147, 'surprised': 0.141, 'sad': 0.051}"
+5,54.98,55.42,0.44,Skills?,हुनर?!,surprised,0.631,"{'surprised': 0.631, 'neutral': 0.304}"
+6,67.1,68.5,1.4,No!,नहीं!,angry,0.569,"{'angry': 0.569, 'disgust': 0.147, 'surprised': 0.141, 'sad': 0.051}"
+7,76.84,78.24,1.4,No!,नहीं!,angry,0.569,"{'angry': 0.569, 'disgust': 0.147, 'surprised': 0.141, 'sad': 0.051}"
+8,78.52,79.28,0.76,No!,नहीं!,angry,0.569,"{'angry': 0.569, 'disgust': 0.147, 'surprised': 0.141, 'sad': 0.051}"
+9,90.56,91.96,1.4,No!,नहीं!,angry,0.569,"{'angry': 0.569, 'disgust': 0.147, 'surprised': 0.141, 'sad': 0.051}"
+10,93.96,95.02,1.06,No!,नहीं!,angry,0.569,"{'angry': 0.569, 'disgust': 0.147, 'surprised': 0.141, 'sad': 0.051}"
+11,95.9,96.84,0.94,Come on!,चलो!,angry,0.724,"{'angry': 0.724, 'happy': 0.074, 'fearful': 0.067, 'neutral': 0.056}"
+12,97.98,98.6,0.62,No!,नहीं!,angry,0.569,"{'angry': 0.569, 'disgust': 0.147, 'surprised': 0.141, 'sad': 0.051}"
+13,103.02,104.42,1.4,No!,नहीं!,angry,0.569,"{'angry': 0.569, 'disgust': 0.147, 'surprised': 0.141, 'sad': 0.051}"
+14,104.98,105.06,0.08,No!,नहीं!,angry,0.569,"{'angry': 0.569, 'disgust': 0.147, 'surprised': 0.141, 'sad': 0.051}"
+15,106.4,107.8,1.4,Look!,देखो!,angry,0.637,"{'angry': 0.637, 'surprised': 0.146, 'disgust': 0.102, 'happy': 0.056}"
+17,116.84,118.28,1.44,Patreon.com,Patreon.com,neutral,0.774,"{'neutral': 0.774, 'surprised': 0.125}"
