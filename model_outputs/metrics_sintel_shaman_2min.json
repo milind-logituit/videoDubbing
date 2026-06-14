@@ -8,7 +8,7 @@
   "translation": {
     "model": "Google Translate (en→hi)",
     "bleu": null,
-    "n_segments": 11,
+    "n_segments": 12,
     "note": "N/A — no reference text for this clip"
   },
   "tts": {
@@ -31,9 +31,9 @@
       "tts_duration_s": 1.75,
       "isochrony_ratio": 0.994,
       "fit": 5,
-      "fidelity": 3,
+      "fidelity": 2,
       "fluency": 3,
-      "note": "Hindi 'चुपचाप बैठो' means 'sit quietly' rather than 'sit still'; semantically slightly off"
+      "note": "Hindi 'चुप बैठो' means 'be quiet, sit down' but English says 'sit still.' The semantic content differs—English emphasizes remaining motionless, Hindi emphasizes silence."
     },
     {
       "id": 1,
@@ -44,7 +44,7 @@
       "isochrony_ratio": 0.993,
       "fit": 5,
       "fidelity": 5,
-      "fluency": 5
+      "fluency": 4
     },
     {
       "id": 2,
@@ -92,8 +92,8 @@
     },
     {
       "id": 6,
-      "start": 65.98,
-      "end": 67.38,
+      "start": 67.1,
+      "end": 68.5,
       "en_duration_s": 1.4,
       "tts_duration_s": 1.39,
       "isochrony_ratio": 0.993,
@@ -115,10 +115,10 @@
     {
       "id": 8,
       "start": 93.92,
-      "end": 95.02,
-      "en_duration_s": 1.1,
-      "tts_duration_s": 1.08,
-      "isochrony_ratio": 0.982,
+      "end": 94.0,
+      "en_duration_s": 0.08,
+      "tts_duration_s": 0.08,
+      "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 5,
       "fluency": 5
@@ -126,56 +126,71 @@
     {
       "id": 9,
       "start": 96.0,
-      "end": 96.72,
-      "en_duration_s": 0.72,
-      "tts_duration_s": 0.71,
-      "isochrony_ratio": 0.986,
+      "end": 96.56,
+      "en_duration_s": 0.56,
+      "tts_duration_s": 0.54,
+      "isochrony_ratio": 0.964,
       "fit": 5,
       "fidelity": 5,
       "fluency": 5
     },
     {
       "id": 10,
-      "start": 97.92,
+      "start": 96.64,
+      "end": 97.0,
+      "en_duration_s": 0.36,
+      "tts_duration_s": 0.35,
+      "isochrony_ratio": 0.972,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5
+    },
+    {
+      "id": 11,
+      "start": 97.98,
       "end": 98.56,
-      "en_duration_s": 0.64,
-      "tts_duration_s": 0.64,
-      "isochrony_ratio": 1.0,
+      "en_duration_s": 0.58,
+      "tts_duration_s": 0.56,
+      "isochrony_ratio": 0.966,
       "fit": 5,
       "fidelity": 4,
-      "fluency": 4,
-      "note": "'वाह!' is more of an exclamation of amazement/wow; 'Woo!' as an excited cheer might benefit from 'वूह!' or 'शाबाश!' but acceptable"
+      "fluency": 4
     }
   ],
+  "text_bleu": {
+    "bleu": 63.82,
+    "back_translated": "Hey, shut up. Good night, Skills. Catch him, Skills. Go, catch him. No! Skills? No! No! No! No! Go up! Wow!",
+    "n_segments": 12
+  },
   "back_translation": {
-    "tgt_transcript_chars": 256,
-    "back_translated": "Hey Chup Chap Baito Gud Night Sils Hey Chap Baito Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Naa No Naa Ma Va",
-    "bleu": 0.89,
-    "hi_transcript_chars": 256,
-    "back_translated_en": "Hey Chup Chap Baito Gud Night Sils Hey Chap Baito Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Night Sils Naa No Naa Ma Va"
+    "tgt_transcript_chars": 266,
+    "back_translated": "Hey shut up sit gud night sils wa ko baga time mah oh miya ghuya si alors basta aani ko tati tata time fagata hai a ko yahan wa ko baga silss koil kare ka uu kana silss paklo 259 wa ki don-iyamah ko bug Imm mattress okay a pkrosh m uffyu ko bring this not a beast. bha man va",
+    "bleu": 0.87,
+    "hi_transcript_chars": 266,
+    "back_translated_en": "Hey shut up sit gud night sils wa ko baga time mah oh miya ghuya si alors basta aani ko tati tata time fagata hai a ko yahan wa ko baga silss koil kare ka uu kana silss paklo 259 wa ki don-iyamah ko bug Imm mattress okay a pkrosh m uffyu ko bring this not a beast. bha man va"
   },
   "lipsync": {
     "sync_score": 0.496,
-    "pearson_r": -0.0087,
+    "pearson_r": -0.0083,
     "best_lag_ms": 41.7,
     "faces_pct": 41.0,
     "note": null,
     "wav2lip_applied": false
   },
   "emotion": {
-    "match_pct": 100.0,
-    "avg_soft_score": 100.0,
-    "n_segments": 11,
+    "match_pct": 91.7,
+    "avg_soft_score": 95.8,
+    "n_segments": 12,
     "segments": [
       {
         "id": 0,
         "source_emotion": "neutral",
         "source_score": 0.473,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.712,
-        "dubbed_back_en": "Hey, sit quietly.",
-        "match": true,
-        "va_similarity": 1.0
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.805,
+        "dubbed_back_en": "Hey, shut up.",
+        "match": false,
+        "va_similarity": 0.5
       },
       {
         "id": 1,
@@ -229,11 +244,11 @@
       },
       {
         "id": 6,
-        "source_emotion": "neutral",
-        "source_score": 0.83,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.83,
-        "dubbed_back_en": "No.",
+        "source_emotion": "angry",
+        "source_score": 0.569,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.569,
+        "dubbed_back_en": "No!",
         "match": true,
         "va_similarity": 1.0
       },
@@ -259,16 +274,26 @@
       },
       {
         "id": 9,
-        "source_emotion": "surprised",
-        "source_score": 0.601,
-        "dubbed_emotion": "surprised",
-        "dubbed_score": 0.511,
-        "dubbed_back_en": "Mother!",
+        "source_emotion": "angry",
+        "source_score": 0.569,
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.569,
+        "dubbed_back_en": "No!",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 10,
+        "source_emotion": "neutral",
+        "source_score": 0.3,
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.3,
+        "dubbed_back_en": "Go up!",
+        "match": true,
+        "va_similarity": 1.0
+      },
+      {
+        "id": 11,
         "source_emotion": "surprised",
         "source_score": 0.652,
         "dubbed_emotion": "surprised",
@@ -279,7 +304,7 @@
       }
     ],
     "tts_fidelity": {
-      "avg_soft_score": 72.7,
+      "avg_soft_score": 77.3,
       "n_segments": 11,
       "segments": [
         {
@@ -331,12 +356,6 @@
           "va_similarity": 1.0
         },
         {
-          "id": 8,
-          "intended": "neutral",
-          "perceived": "happy",
-          "va_similarity": 0.5
-        },
-        {
           "id": 9,
           "intended": "neutral",
           "perceived": "neutral",
@@ -344,6 +363,12 @@
         },
         {
           "id": 10,
+          "intended": "neutral",
+          "perceived": "neutral",
+          "va_similarity": 1.0
+        },
+        {
+          "id": 11,
           "intended": "neutral",
           "perceived": "happy",
           "va_similarity": 0.5

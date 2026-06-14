@@ -20,19 +20,20 @@
     "dubbed_duration_s": 120.0,
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.3,
-    "hi_chars_per_sec": 0.4
+    "hi_chars_per_sec": 0.5
   },
   "segment_quality": [
     {
       "id": 0,
-      "start": 9.88,
-      "end": 11.28,
-      "en_duration_s": 1.4,
-      "tts_duration_s": 1.39,
-      "isochrony_ratio": 0.993,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
+      "start": 26.94,
+      "end": 29.74,
+      "en_duration_s": 2.8,
+      "tts_duration_s": 1.7,
+      "isochrony_ratio": 0.607,
+      "fit": 3,
+      "fidelity": 2,
+      "fluency": 2,
+      "note": "जगलिंग करो is not standard Hindi. Better would be जगलिंग करना/जगलिंग करें. The transliteration 'जगलिंग' is anglicized; more natural would be 'जुगलबंदी करो' or simply 'जगल करो' depending on context."
     },
     {
       "id": 1,
@@ -68,12 +69,17 @@
       "fluency": 5
     }
   ],
+  "text_bleu": {
+    "bleu": 86.64,
+    "back_translated": "No juggling! No! No! No! No! No! No! No! No! No!",
+    "n_segments": 4
+  },
   "back_translation": {
-    "tgt_transcript_chars": 297,
-    "back_translated": "You don't, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no",
+    "tgt_transcript_chars": 66,
+    "back_translated": "You don't no no no no no no don't don't don't don't don't do",
     "bleu": 0.0,
-    "hi_transcript_chars": 297,
-    "back_translated_en": "You don't, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no, no"
+    "hi_transcript_chars": 66,
+    "back_translated_en": "You don't no no no no no no don't don't don't don't don't do"
   },
   "lipsync": {
     "sync_score": 0.495,
@@ -91,10 +97,10 @@
       {
         "id": 0,
         "source_emotion": "neutral",
-        "source_score": 0.561,
+        "source_score": 0.799,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.561,
-        "dubbed_back_en": "Oh",
+        "dubbed_score": 0.816,
+        "dubbed_back_en": "juggle",
         "match": true,
         "va_similarity": 1.0
       },
@@ -130,14 +136,14 @@
       }
     ],
     "tts_fidelity": {
-      "avg_soft_score": 75.0,
+      "avg_soft_score": 87.5,
       "n_segments": 4,
       "segments": [
         {
           "id": 0,
           "intended": "neutral",
-          "perceived": "happy",
-          "va_similarity": 0.5
+          "perceived": "neutral",
+          "va_similarity": 1.0
         },
         {
           "id": 1,

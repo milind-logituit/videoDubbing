@@ -49,7 +49,7 @@ from tts_audio import (                                       # noqa: E402
     BG_AUDIO_VOL, BG_AUDIO_VOL_SPEECH,
 )
 from metrics import (                                         # noqa: E402
-    compute_metrics, compute_back_translation_bleu,
+    compute_metrics, compute_text_bleu, compute_back_translation_bleu,
     compute_segment_isochrony, grade_translations,
     _merge_segment_quality,
 )
@@ -746,6 +746,10 @@ if __name__ == "__main__":
 
     print("\nStage 8c — Back-translation BLEU …")
     original_src = whisper_result["text"].strip()
+    metrics["text_bleu"] = compute_text_bleu(
+        segments, original_src, source_lang=source_lang, target_lang=target_lang,
+    )
+    print(f"  Text-level BLEU: {metrics['text_bleu'].get('bleu')}")
     metrics["back_translation"] = compute_back_translation_bleu(
         hindi_audio, original_src,
         source_lang=source_lang, target_lang=target_lang,
@@ -784,6 +788,7 @@ if __name__ == "__main__":
     print("\n── Quality metrics ──")
     wer_pct    = metrics["asr"]["wer_pct"]
     bleu       = metrics["translation"]["bleu"]
+    txt_bleu   = metrics.get("text_bleu", {}).get("bleu")
     bt_bleu    = metrics["back_translation"].get("bleu")
     sync_score = metrics["lipsync"].get("sync_score")
     _emo_data    = metrics.get("emotion", {})
@@ -792,6 +797,7 @@ if __name__ == "__main__":
     emo_tts      = _emo_data.get("tts_fidelity", {}).get("avg_soft_score")
     print(f"  ASR WER              : {f'{wer_pct:.1f}%' if wer_pct is not None else 'N/A'}")
     print(f"  Translation BLEU     : {f'{bleu:.1f}' if bleu is not None else 'N/A'}")
+    print(f"  Text-level BLEU      : {f'{txt_bleu:.1f}' if txt_bleu is not None else 'N/A'}")
     print(f"  Back-translation BLEU: {f'{bt_bleu:.1f}' if bt_bleu is not None else 'N/A'}")
     print(f"  Lip-sync score       : {f'{sync_score:.3f}' if sync_score is not None else 'N/A'}")
     print(f"  Emotion match (bin)  : {f'{emo_match:.1f}%' if emo_match is not None else 'N/A'}")

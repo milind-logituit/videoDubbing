@@ -134,6 +134,28 @@ def compute_metrics(whisper_result: dict, segments: list[dict],
     }
 
 
+def compute_text_bleu(segments: list[dict],
+                      original_source_text: str,
+                      source_lang: str = "en",
+                      target_lang: str = "hi") -> dict:
+    """Back-translate joined target text directly — no TTS/ASR noise in the loop."""
+    try:
+        tgt_text = " ".join(
+            str(s.get(f"{target_lang}_text") or s.get("hi_text") or "").strip()
+            for s in segments
+            if str(s.get(f"{target_lang}_text") or s.get("hi_text") or "").strip()
+        )
+        bt_text = GoogleTranslator(source=target_lang, target=source_lang).translate(tgt_text)
+        bleu_obj = sacrebleu.corpus_bleu([bt_text], [[original_source_text]])
+        return {
+            "bleu": round(bleu_obj.score, 2),
+            "back_translated": bt_text,
+            "n_segments": len(segments),
+        }
+    except Exception as exc:
+        return {"bleu": None, "note": f"Failed: {exc}"}
+
+
 def compute_back_translation_bleu(dubbed_audio: Path,
                                    original_source_text: str,
                                    source_lang: str = "en",
