@@ -277,3 +277,94 @@ def _merge_segment_quality(
                 merged["note"] = g["note"]
         out.append(merged)
     return out
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 8f — MOS-style rubric (5-dimension spot-check via Claude Sonnet)
+# ─────────────────────────────────────────────────────────────────────────────
+
+_MOS_SYSTEM = """\
+You are a professional dubbing quality evaluator for OTT streaming content.
+Rate each segment on five dimensions (1 = poor, 5 = excellent):
+- naturalness: Does the Hindi sound like natural spoken dialogue, not literal translation?
+- fidelity: Is the core meaning of the English accurately preserved?
+- timing: Does the Hindi length fit the duration_s window? Shorter or equal is better.
+- emotion: Does the Hindi carry the right emotional register? Assume neutral if no emotion field.
+- names: Are proper nouns / character names correctly transliterated? Rate 5 if none present.
+
+Return ONLY a JSON array in input order:
+[{"id": <int>, "naturalness": <1-5>, "fidelity": <1-5>, "timing": <1-5>, "emotion": <1-5>, "names": <1-5>}, ...]
+No markdown, no explanation."""
+
+_MOS_DIMS = ["naturalness", "fidelity", "timing", "emotion", "names"]
+
+
+def score_mos_rubric(
+    segments: list[dict],
+    glossary: dict[str, str] | None = None,
+    n_sample: int = 10,
+) -> dict:
+    """Sample up to n_sample segments evenly and rate on 5 dimensions via Claude Sonnet.
+
+    Returns {"mos": float (0-100), "n_sampled": int, "breakdown": {...}, "per_segment": [...]}.
+    """
+    valid = [s for s in segments if str(s.get("hi_text") or "").strip()]
+    if not valid:
+        return {"mos": None, "note": "No segments to evaluate"}
+
+    step   = max(1, len(valid) // n_sample)
+    sample = valid[::step][:n_sample]
+
+    payload = [
+        {
+            "id": int(s["id"]),
+            "en": str(s.get("en_text", "")),
+            "hi": str(s.get("hi_text", "")),
+            "duration_s": round(float(s["end"]) - float(s["start"]), 1),
+            **({"emotion": s["emotion"]}
+               if s.get("emotion") and s["emotion"] != "neutral" else {}),
+        }
+        for s in sample
+    ]
+
+    system = _MOS_SYSTEM
+    if glossary:
+        terms = "; ".join(f"{k}={v}" for k, v in glossary.items())
+        system += f"\n\nExpected transliterations (use for 'names' score): {terms}"
+
+    client = anthropic.Anthropic()
+    try:
+        msg = client.messages.create(
+            model="claude-sonnet-4-6",
+            max_tokens=1024,
+            system=system,
+            messages=[{"role": "user",
+                       "content": json.dumps(payload, ensure_ascii=False)}],
+        )
+        raw = msg.content[0].text.strip()
+        if raw.startswith("```"):
+            raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+        ratings = json.loads(raw)
+    except Exception as exc:
+        return {"mos": None, "note": f"Failed: {exc}"}
+
+    totals = {d: 0.0 for d in _MOS_DIMS}
+    count  = 0
+    for r in ratings:
+        for d in _MOS_DIMS:
+            if d in r:
+                totals[d] += float(r[d])
+        count += 1
+
+    if count == 0:
+        return {"mos": None, "note": "No ratings returned"}
+
+    averages = {d: round(totals[d] / count, 2) for d in _MOS_DIMS}
+    mos      = round(sum(averages.values()) / len(_MOS_DIMS) / 5 * 100, 1)
+
+    return {
+        "mos":         mos,
+        "n_sampled":   count,
+        "breakdown":   averages,
+        "per_segment": ratings,
+    }

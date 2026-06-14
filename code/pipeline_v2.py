@@ -53,7 +53,7 @@ from tts_audio import (                                       # noqa: E402
 from metrics import (                                         # noqa: E402
     compute_metrics, compute_text_bleu, compute_back_translation_bleu,
     compute_segment_isochrony, grade_translations,
-    _merge_segment_quality,
+    _merge_segment_quality, score_mos_rubric,
 )
 
 ROOT      = Path(__file__).parent.parent
@@ -245,6 +245,8 @@ def translate_segments(whisper_result: dict,
         }
         if "speaker" in seg:
             entry["speaker"] = seg["speaker"]
+        if "no_speech_prob" in seg:
+            entry["no_speech_prob"] = round(seg["no_speech_prob"], 3)
         segments_out.append(entry)
         print(f"    [{seg['start']:.1f}s]  {en[:55]}")
         print(f"           →  {hi[:55]}")
@@ -257,6 +259,7 @@ def translate_segments(whisper_result: dict,
 # ─────────────────────────────────────────────────────────────────────────────
 
 _LLM_BATCH = 100
+_ASR_SKIP_THRESH = 0.70   # skip LLM refinement for segments where Whisper is unsure
 
 _LANG_NAMES = {"en": "English", "hi": "Hindi", "de": "German"}
 
@@ -433,9 +436,19 @@ def refine_segments(
         print("  Stage 4b skipped (--no-llm).")
         return segments
 
+    # Gate: skip segments where Whisper itself was unsure (likely silence or noise)
+    skipped_ids: set[int] = {
+        s["id"] for s in segments
+        if s.get("no_speech_prob", 0) > _ASR_SKIP_THRESH
+    }
+    to_refine = [s for s in segments if s["id"] not in skipped_ids]
+    if skipped_ids:
+        print(f"  Skipping {len(skipped_ids)} low-confidence ASR segment(s) "
+              f"(no_speech_prob > {_ASR_SKIP_THRESH}).")
+
     refine_system = _make_refine_system(source_lang, target_lang, glossary)
     client = anthropic.Anthropic()
-    n = len(segments)
+    n = len(to_refine)
     n_batches = (n + _LLM_BATCH - 1) // _LLM_BATCH
     tgt_name = _LANG_NAMES.get(target_lang, target_lang.upper())
     print(
@@ -447,9 +460,9 @@ def refine_segments(
     for i in range(n_batches):
         start = i * _LLM_BATCH
         end   = min(start + _LLM_BATCH, n)
-        batch = segments[start:end]
-        ctx_before = segments[max(0, start - _CTX_WINDOW):start]
-        ctx_after  = segments[end:end + _CTX_WINDOW]
+        batch = to_refine[start:end]
+        ctx_before = to_refine[max(0, start - _CTX_WINDOW):start]
+        ctx_after  = to_refine[end:end + _CTX_WINDOW]
         if n_batches > 1:
             print(f"    Batch {i + 1}/{n_batches} ({len(batch)} segments) …")
         refined.update(_refine_batch(client, batch, refine_system,
@@ -680,17 +693,23 @@ def _srt_time(s: float) -> str:
 def generate_vtt(segments: list[dict]) -> str:
     lines = ["WEBVTT", ""]
     for seg in segments:
+        speaker = seg.get("speaker", "")
+        text    = seg["hi_text"]
+        if speaker:
+            text = f"<v {speaker}>{text}</v>"
         lines += [f"{_vtt_time(seg['start'])} --> {_vtt_time(seg['end'])}",
-                  seg["hi_text"], ""]
+                  text, ""]
     return "\n".join(lines)
 
 
 def generate_srt(segments: list[dict]) -> str:
     lines = []
     for i, seg in enumerate(segments, 1):
+        speaker = seg.get("speaker", "")
+        text    = f"[{speaker}] {seg['hi_text']}" if speaker else seg["hi_text"]
         lines += [str(i),
                   f"{_srt_time(seg['start'])} --> {_srt_time(seg['end'])}",
-                  seg["hi_text"], ""]
+                  text, ""]
     return "\n".join(lines)
 
 
@@ -779,44 +798,35 @@ def save_outputs(segments, vtt, srt, metrics, src_audio, dubbed_audio,
 # Main
 # ─────────────────────────────────────────────────────────────────────────────
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="VideoDubbing v2 pipeline")
-    parser.add_argument("--input", type=Path, default=None,
-                        help="Path to an existing MP4/MOV to dub. "
-                             "Skips synthetic sample-video generation.")
-    parser.add_argument("--no-llm", action="store_true",
-                        help="Skip Stage 4b Claude post-correction.")
-    parser.add_argument("--no-diarize", action="store_true",
-                        help="Skip Stage 3.5 speaker diarization.")
-    parser.add_argument("--no-stems", action="store_true",
-                        help="Skip Stage 2.1 demucs stem separation; "
-                             "fall back to audio ducking.")
-    parser.add_argument("--hf-token", type=str, default=None,
-                        help="HuggingFace token for pyannote models. "
-                             "Reads HF_TOKEN env var if not provided.")
-    parser.add_argument("--gender-thresh", type=float,
-                        default=_FEMALE_CONFIDENCE_THRESH,
-                        help="Min female probability to assign female voice "
-                             f"(default {_FEMALE_CONFIDENCE_THRESH}).")
-    parser.add_argument("--lipsync", action="store_true",
-                        help="Run Wav2Lip (Stage 7b) to re-generate mouth movements. "
-                             "Slow — adds ~5 min per 2 min of video.")
-    parser.add_argument("--source-lang", type=str, default="en",
-                        help="Source language for ASR (Whisper language code, default: en).")
-    parser.add_argument("--target-lang", type=str, default="hi",
-                        help="Target language for translation and TTS (default: hi).")
-    args = parser.parse_args()
+def _print_quality(metrics: dict) -> None:
+    wer_pct    = metrics["asr"]["wer_pct"]
+    bleu       = metrics["translation"]["bleu"]
+    txt_bleu   = metrics.get("text_bleu", {}).get("bleu")
+    bt_bleu    = metrics["back_translation"].get("bleu")
+    sync_score = metrics["lipsync"].get("sync_score")
+    _emo       = metrics.get("emotion", {})
+    emo_match  = _emo.get("match_pct")
+    emo_soft   = _emo.get("avg_soft_score")
+    emo_tts    = _emo.get("tts_fidelity", {}).get("avg_soft_score")
+    mos        = metrics.get("mos_rubric", {}).get("mos")
+    print("\n── Quality metrics ──")
+    print(f"  ASR WER              : {f'{wer_pct:.1f}%' if wer_pct is not None else 'N/A'}")
+    print(f"  Translation BLEU     : {f'{bleu:.1f}' if bleu is not None else 'N/A'}")
+    print(f"  Text-level BLEU      : {f'{txt_bleu:.1f}' if txt_bleu is not None else 'N/A'}")
+    print(f"  Back-translation BLEU: {f'{bt_bleu:.1f}' if bt_bleu is not None else 'N/A'}")
+    print(f"  Lip-sync score       : {f'{sync_score:.3f}' if sync_score is not None else 'N/A'}")
+    print(f"  Emotion match (bin)  : {f'{emo_match:.1f}%' if emo_match is not None else 'N/A'}")
+    print(f"  Emotion soft score   : {f'{emo_soft:.1f}%' if emo_soft is not None else 'N/A'}")
+    print(f"  TTS emotion fidelity : {f'{emo_tts:.1f}%' if emo_tts is not None else 'N/A'}")
+    print(f"  Duration ratio       : {metrics['alignment']['duration_ratio']:.3f}")
+    print(f"  MOS rubric (0-100)   : {f'{mos:.1f}' if mos is not None else 'N/A'}")
+
+
+def run_pipeline(video_path: Path, args, *, has_ref: bool = False) -> dict:
+    """Run all pipeline stages on one video. Returns the metrics dict."""
+    import os
     source_lang = args.source_lang
     target_lang = args.target_lang
-
-    if args.input:
-        if not args.input.exists():
-            raise FileNotFoundError(f"Input video not found: {args.input}")
-        video_path = args.input
-        print(f"Stage 1 — Using provided video: {video_path.name}")
-    else:
-        print("Stage 1 — Generating sample video …")
-        video_path = generate_sample_video()
 
     print("\nStage 2 — Extracting audio …")
     audio_path = extract_audio(video_path)
@@ -828,7 +838,7 @@ if __name__ == "__main__":
     else:
         _vocals, no_vocals_path = separate_stems(audio_path)
         if no_vocals_path == audio_path:
-            no_vocals_path = None  # fallback triggered — use ducking path
+            no_vocals_path = None
 
     print("\nStage 3 — ASR (Whisper) …")
     whisper_result = transcribe(audio_path, source_lang=source_lang)
@@ -838,7 +848,6 @@ if __name__ == "__main__":
     if args.no_diarize:
         print("  Skipped (--no-diarize).")
     else:
-        import os
         hf_token = args.hf_token or os.environ.get("HF_TOKEN", "")
         if not hf_token:
             print("  No HF token found — skipping diarization. "
@@ -875,7 +884,9 @@ if __name__ == "__main__":
     segments = classify_segment_emotions(audio_path, segments)
     emo_counts: dict[str, int] = {}
     for s in segments:
-        emo_counts[s.get("emotion", "neutral")] = emo_counts.get(s.get("emotion", "neutral"), 0) + 1
+        emo_counts[s.get("emotion", "neutral")] = (
+            emo_counts.get(s.get("emotion", "neutral"), 0) + 1
+        )
     print(f"  Emotion distribution: {emo_counts}")
 
     print("\nStage 4c — Emotion register repair …")
@@ -921,7 +932,6 @@ if __name__ == "__main__":
         metrics_lipsync_video = dubbed_video
 
     print("\nStage 8 — Computing metrics …")
-    has_ref   = args.input is None
     src_audio = RAW / "source_en.mp3" if has_ref else audio_path
     metrics   = compute_metrics(whisper_result, segments, src_audio,
                                 hindi_audio, has_reference=has_ref)
@@ -929,7 +939,7 @@ if __name__ == "__main__":
 
     print("\nStage 8b — Segment quality …")
     seg_dir = PREPARED / f"hi_segments_{video_path.stem}"
-    iso = compute_segment_isochrony(segments, seg_dir)
+    iso    = compute_segment_isochrony(segments, seg_dir)
     grades = grade_translations(segments) if not args.no_llm else []
     if grades:
         print(f"  LLM graded {len(grades)} segments.")
@@ -962,9 +972,8 @@ if __name__ == "__main__":
     try:
         emo = score_emotion_consistency(audio_path, hindi_audio, segments,
                                         target_lang=target_lang)
-        ep  = emo
-        print(f"  Text match: {ep['match_pct']}%  soft: {ep['avg_soft_score']}%  "
-              f"over {ep['n_segments']} segments")
+        print(f"  Text match: {emo['match_pct']}%  soft: {emo['avg_soft_score']}%  "
+              f"over {emo['n_segments']} segments")
         print("  Stage 8e-ii — TTS emotion fidelity (audio SER) …")
         emo["tts_fidelity"] = score_tts_emotion_fidelity(hindi_audio, segments)
         tf = emo["tts_fidelity"]
@@ -975,27 +984,101 @@ if __name__ == "__main__":
         metrics["emotion"] = {"match_pct": None, "note": str(exc)}
         print(f"  [warn] Emotion scoring failed: {exc}")
 
+    print("\nStage 8f — MOS rubric (5-dim spot-check) …")
+    if not args.no_llm:
+        mos_result = score_mos_rubric(segments, glossary=glossary or None)
+        metrics["mos_rubric"] = mos_result
+        mos = mos_result.get("mos")
+        breakdown = mos_result.get("breakdown", {})
+        if mos is not None:
+            print(f"  MOS: {mos}/100  (n={mos_result['n_sampled']})  "
+                  + "  ".join(f"{k}={v}" for k, v in breakdown.items()))
+        else:
+            print(f"  MOS unavailable: {mos_result.get('note')}")
+    else:
+        metrics["mos_rubric"] = {"mos": None, "note": "skipped (--no-llm)"}
+        print("  Skipped (--no-llm).")
+
     save_outputs(segments, vtt, srt, metrics, src_audio, hindi_audio,
                  stem=video_path.stem, target_lang=target_lang)
+    _print_quality(metrics)
+    return metrics
 
-    print("\n── Quality metrics ──")
-    wer_pct    = metrics["asr"]["wer_pct"]
-    bleu       = metrics["translation"]["bleu"]
-    txt_bleu   = metrics.get("text_bleu", {}).get("bleu")
-    bt_bleu    = metrics["back_translation"].get("bleu")
-    sync_score = metrics["lipsync"].get("sync_score")
-    _emo_data    = metrics.get("emotion", {})
-    emo_match    = _emo_data.get("match_pct")
-    emo_soft     = _emo_data.get("avg_soft_score")
-    emo_tts      = _emo_data.get("tts_fidelity", {}).get("avg_soft_score")
-    print(f"  ASR WER              : {f'{wer_pct:.1f}%' if wer_pct is not None else 'N/A'}")
-    print(f"  Translation BLEU     : {f'{bleu:.1f}' if bleu is not None else 'N/A'}")
-    print(f"  Text-level BLEU      : {f'{txt_bleu:.1f}' if txt_bleu is not None else 'N/A'}")
-    print(f"  Back-translation BLEU: {f'{bt_bleu:.1f}' if bt_bleu is not None else 'N/A'}")
-    print(f"  Lip-sync score       : {f'{sync_score:.3f}' if sync_score is not None else 'N/A'}")
-    print(f"  Emotion match (bin)  : {f'{emo_match:.1f}%' if emo_match is not None else 'N/A'}")
-    print(f"  Emotion soft score   : {f'{emo_soft:.1f}%' if emo_soft is not None else 'N/A'}")
-    print(f"  TTS emotion fidelity : {f'{emo_tts:.1f}%' if emo_tts is not None else 'N/A'}")
-    print(f"  Duration ratio       : {metrics['alignment']['duration_ratio']:.3f}")
-    print("\nDone.")
+
+def _metrics_summary_row(clip: str, m: dict) -> dict:
+    return {
+        "clip":           clip,
+        "text_bleu":      m.get("text_bleu", {}).get("bleu"),
+        "lip_sync":       m.get("lipsync", {}).get("sync_score"),
+        "emotion_soft":   m.get("emotion", {}).get("avg_soft_score"),
+        "mos":            m.get("mos_rubric", {}).get("mos"),
+        "duration_ratio": m.get("alignment", {}).get("duration_ratio"),
+        "n_segments":     m.get("translation", {}).get("n_segments"),
+    }
+
+
+if __name__ == "__main__":
+    import datetime
+    import sys
+
+    parser = argparse.ArgumentParser(description="VideoDubbing v2 pipeline")
+    parser.add_argument("--input", type=Path, default=None,
+                        help="Path to an existing MP4/MOV to dub.")
+    parser.add_argument("--batch", type=Path, default=None,
+                        help="Directory of MP4/MOV files to dub in sequence; "
+                             "writes a batch_summary CSV to model_outputs/.")
+    parser.add_argument("--no-llm", action="store_true",
+                        help="Skip Stage 4b Claude post-correction.")
+    parser.add_argument("--no-diarize", action="store_true",
+                        help="Skip Stage 3.5 speaker diarization.")
+    parser.add_argument("--no-stems", action="store_true",
+                        help="Skip Stage 2.1 demucs stem separation; "
+                             "fall back to audio ducking.")
+    parser.add_argument("--hf-token", type=str, default=None,
+                        help="HuggingFace token for pyannote models. "
+                             "Reads HF_TOKEN env var if not provided.")
+    parser.add_argument("--gender-thresh", type=float,
+                        default=_FEMALE_CONFIDENCE_THRESH,
+                        help="Min female probability to assign female voice "
+                             f"(default {_FEMALE_CONFIDENCE_THRESH}).")
+    parser.add_argument("--lipsync", action="store_true",
+                        help="Run Wav2Lip (Stage 7b) to re-generate mouth movements.")
+    parser.add_argument("--source-lang", type=str, default="en",
+                        help="Source language for ASR (default: en).")
+    parser.add_argument("--target-lang", type=str, default="hi",
+                        help="Target language for TTS (default: hi).")
+    args = parser.parse_args()
+
+    if args.batch:
+        clips = sorted(args.batch.glob("*.mp4")) + sorted(args.batch.glob("*.mov"))
+        if not clips:
+            print(f"No .mp4/.mov files found in {args.batch}")
+            sys.exit(1)
+        rows = []
+        for clip in clips:
+            print(f"\n{'=' * 60}\nProcessing: {clip.name}\n{'=' * 60}")
+            m = run_pipeline(clip, args, has_ref=False)
+            rows.append(_metrics_summary_row(clip.name, m))
+            print("\nDone.")
+        ts  = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        csv_path = MODEL_OUT / f"batch_summary_{ts}.csv"
+        import csv
+        with open(csv_path, "w", newline="") as f:
+            writer = csv.DictWriter(f, fieldnames=list(rows[0].keys()))
+            writer.writeheader()
+            writer.writerows(rows)
+        print(f"\nBatch complete ({len(rows)} clips). Summary: {csv_path}")
+    else:
+        if args.input:
+            if not args.input.exists():
+                raise FileNotFoundError(f"Input video not found: {args.input}")
+            video_path = args.input
+            print(f"Stage 1 — Using provided video: {video_path.name}")
+            has_ref = False
+        else:
+            print("Stage 1 — Generating sample video …")
+            video_path = generate_sample_video()
+            has_ref = True
+        run_pipeline(video_path, args, has_ref=has_ref)
+        print("\nDone.")
 

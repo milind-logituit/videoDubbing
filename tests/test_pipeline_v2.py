@@ -27,6 +27,8 @@ VOICE_POOL = _mod.VOICE_POOL
 MAX_RATE_PCT = _mod.MAX_RATE_PCT
 _LLM_BATCH = _mod._LLM_BATCH
 _CTX_WINDOW = _mod._CTX_WINDOW
+_ASR_SKIP_THRESH = _mod._ASR_SKIP_THRESH
+_metrics_summary_row = _mod._metrics_summary_row
 
 
 # ── assign_speakers ───────────────────────────────────────────────────────────
@@ -368,3 +370,109 @@ def test_subtitle_srt_uses_updated_end_times():
     seg["end"] = 1.6
     srt = generate_srt([seg])
     assert "00:00:01,600" in srt
+
+
+# ── Item 1 — speaker labels in subtitles ─────────────────────────────────────
+
+def test_generate_vtt_includes_voice_span_when_speaker_present():
+    seg = _timed_seg(0, 0.0, 2.0, hi="नमस्ते")
+    seg["speaker"] = "SPEAKER_00"
+    vtt = generate_vtt([seg])
+    assert "<v SPEAKER_00>नमस्ते</v>" in vtt
+
+
+def test_generate_vtt_no_voice_span_when_speaker_absent():
+    seg = _timed_seg(0, 0.0, 2.0, hi="नमस्ते")
+    vtt = generate_vtt([seg])
+    assert "<v " not in vtt
+    assert "नमस्ते" in vtt
+
+
+def test_generate_srt_includes_speaker_prefix():
+    seg = _timed_seg(0, 0.0, 2.0, hi="नमस्ते")
+    seg["speaker"] = "SPEAKER_01"
+    srt = generate_srt([seg])
+    assert "[SPEAKER_01] नमस्ते" in srt
+
+
+def test_generate_srt_no_prefix_when_speaker_absent():
+    seg = _timed_seg(0, 0.0, 2.0, hi="नमस्ते")
+    srt = generate_srt([seg])
+    assert "[" not in srt
+    assert "नमस्ते" in srt
+
+
+# ── Item 2 — ASR confidence gating ───────────────────────────────────────────
+
+def test_asr_skip_thresh_is_sensible():
+    assert 0.5 < _ASR_SKIP_THRESH <= 1.0
+
+
+def test_no_speech_prob_carried_through_translate(monkeypatch):
+    """translate_segments should copy no_speech_prob into the output segment."""
+    from unittest.mock import MagicMock, patch
+
+    fake_translator = MagicMock()
+    fake_translator.translate.return_value = "हैलो"
+
+    whisper_seg = {
+        "id": 0, "start": 0.0, "end": 1.0, "text": "Hello",
+        "no_speech_prob": 0.82,
+    }
+    whisper_result = {"segments": [whisper_seg]}
+
+    with patch("pipeline_v2.GoogleTranslator", return_value=fake_translator):
+        result = _mod.translate_segments(whisper_result)
+
+    assert result[0]["no_speech_prob"] == 0.82
+
+
+def test_refine_segments_skips_high_no_speech_prob(monkeypatch):
+    """Segments with no_speech_prob > threshold must be excluded from the LLM call."""
+    from unittest.mock import patch
+
+    segments = [
+        {"id": 0, "start": 0.0, "end": 1.0, "duration": 1.0,
+         "en_text": "Hello", "hi_text": "हैलो", "no_speech_prob": 0.90},
+        {"id": 1, "start": 1.0, "end": 2.0, "duration": 1.0,
+         "en_text": "World", "hi_text": "दुनिया", "no_speech_prob": 0.10},
+    ]
+
+    batches_sent = []
+
+    def fake_refine_batch(client, batch, system, ctx_before=None, ctx_after=None):
+        batches_sent.append([s["id"] for s in batch])
+        return {s["id"]: s for s in batch}
+
+    with patch("pipeline_v2._refine_batch", side_effect=fake_refine_batch):
+        with patch("pipeline_v2.anthropic.Anthropic"):
+            _mod.refine_segments(segments, skip=False)
+
+    sent_ids = [sid for batch in batches_sent for sid in batch]
+    assert 0 not in sent_ids   # high no_speech_prob → skipped
+    assert 1 in sent_ids
+
+
+# ── Item 3 — batch summary row ────────────────────────────────────────────────
+
+def test_metrics_summary_row_extracts_key_fields():
+    metrics = {
+        "text_bleu":      {"bleu": 36.2},
+        "lipsync":        {"sync_score": 0.523},
+        "emotion":        {"avg_soft_score": 89.7},
+        "mos_rubric":     {"mos": 74.5},
+        "alignment":      {"duration_ratio": 1.000},
+        "translation":    {"n_segments": 30},
+    }
+    row = _metrics_summary_row("my_clip.mp4", metrics)
+    assert row["clip"] == "my_clip.mp4"
+    assert row["text_bleu"] == 36.2
+    assert row["lip_sync"] == 0.523
+    assert row["mos"] == 74.5
+    assert row["duration_ratio"] == 1.000
+
+
+def test_metrics_summary_row_handles_missing_keys():
+    row = _metrics_summary_row("clip.mp4", {})
+    assert row["text_bleu"] is None
+    assert row["mos"] is None
