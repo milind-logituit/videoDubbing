@@ -223,6 +223,9 @@ def smooth_emotion_arc(segments: list[dict], window: int = 5) -> list[dict]:
     window to detect one-off emotions that differ from the surrounding context.
     Segments that are outliers get arc_flagged=True; all other fields are left untouched.
     """
+    for seg in segments:
+        seg.setdefault("arc_flagged", False)
+
     half = window // 2
 
     by_speaker: dict[str, list[int]] = {}

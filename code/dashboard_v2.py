@@ -275,7 +275,7 @@ with tab4:
                 st.markdown(f"> {row['hi_text']}")
 
     def _emotion_row_style(row):
-        arc = row.get("arc_flagged", False)
+        arc = row.get("arc_flagged") is True  # NaN/False/missing all → False
         if arc:
             colour = "#FEF9C3"
         else:
