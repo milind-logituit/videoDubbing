@@ -268,12 +268,10 @@ def classify_face_emotions(video_path: Path, segments: list[dict]) -> list[dict]
     """
     try:
         import cv2
-        import mediapipe as mp
+        from mediapipe.python.solutions import face_mesh as mp_face  # 0.10+ moved solutions
     except ImportError:
         print("  [warn] mediapipe/cv2 not installed — skipping face emotion")
         return segments
-
-    mp_face = mp.solutions.face_mesh
     cap = cv2.VideoCapture(str(video_path))
     if not cap.isOpened():
         print(f"  [warn] Could not open video for face emotion: {video_path}")
