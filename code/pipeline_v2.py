@@ -375,7 +375,10 @@ def _make_refine_system(
         "to speak this line), and optionally emotion fields.\n"
         "When present, 'emotion' is the dominant label and 'emotion_blend' is the full "
         "probability distribution (e.g. {fearful: 0.65, disgust: 0.20, neutral: 0.15}). "
-        "Use the blend to capture emotional undertones, not just the top label.\n"
+        "Use the blend to capture emotional undertones, not just the top label. "
+        "When 'arousal' (0=calm, 1=excited) and 'valence' (-1=negative, +1=positive) are "
+        "present, use them to calibrate intensity: high arousal → urgent/energetic phrasing; "
+        "low valence → heavier, darker word choices.\n"
         "The input may include optional 'context_before' and 'context_after' arrays "
         "with neighbouring segments in their already-refined form. Use these ONLY for "
         "contextual consistency: match character names, terminology, and emotional arc "
@@ -415,8 +418,10 @@ def _refine_batch(
                 "en_text": s["en_text"],
                 "hi_text": s["hi_text"],
                 "duration_s": round(s["duration"], 2),
-                **({"emotion": s["emotion"],
-                    "emotion_blend": s["emotion_dist"]}
+                **({"emotion":       s["emotion"],
+                    "emotion_blend":  s["emotion_dist"],
+                    **( {"arousal": s["arousal"], "valence": s["valence"]}
+                        if s.get("arousal") is not None else {} )}
                    if s.get("emotion_dist") and s.get("emotion") != "neutral"
                    else {"emotion": s["emotion"]} if s.get("emotion") else {}),
             }
