@@ -30,8 +30,8 @@ import sys as _sys
 _sys.path.insert(0, str(Path(__file__).parent))
 from eval_lipsync import compute_lipsync_score
 from apply_lipsync import apply_wav2lip
-from emotion import (classify_segment_emotions, score_emotion_consistency,
-                     score_tts_emotion_fidelity)
+from emotion import (classify_segment_emotions, smooth_emotion_arc,
+                     score_emotion_consistency, score_tts_emotion_fidelity)
 
 # Re-exported from sub-modules so tests pulling from this module still work
 from diarize import (                                         # noqa: E402
@@ -918,6 +918,10 @@ def run_pipeline(video_path: Path, args, *, has_ref: bool = False) -> dict:
             emo_counts.get(s.get("emotion", "neutral"), 0) + 1
         )
     print(f"  Emotion distribution: {emo_counts}")
+    segments = smooth_emotion_arc(segments)
+    arc_flagged = sum(1 for s in segments if s.get("arc_flagged"))
+    if arc_flagged:
+        print(f"  Arc smoother flagged {arc_flagged} outlier segment(s)")
 
     print("\nStage 4c — Emotion register repair …")
     segments = repair_emotion_register(segments, skip=args.no_llm,
