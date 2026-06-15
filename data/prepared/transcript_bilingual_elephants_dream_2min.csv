@@ -1,20 +1,18 @@
-id,start,end,duration,en_text,hi_text,emotion,emotion_score,emotion_dist
-0,14.72,24.46,9.74,"We can see. We can see the... at the right we can see the... the Hatsnarlers! Everything is safe, perfectly safe.","हम देख सकते हैं. हम देख सकते हैं... दाईं तरफ देखो... हैट स्नार्लर! सब कुछ ठीक है, बिल्कुल ठीक।",neutral,0.87,"{'neutral': 0.87, 'happy': 0.056}"
-1,24.8,26.68,1.88,Emo? Emo!,"छी, इमो? अरे, इमो!",disgust,0.637,"{'disgust': 0.637, 'angry': 0.177, 'neutral': 0.071}"
-2,28.32,29.3,0.98,Watch out!,बचो!,angry,0.272,"{'angry': 0.272, 'neutral': 0.259, 'fearful': 0.208, 'happy': 0.157, 'surprised': 0.08}"
-3,46.24,47.48,1.24,Are you hurt?,चोट लगी?,sad,0.387,"{'sad': 0.387, 'surprised': 0.254, 'neutral': 0.138, 'fearful': 0.08, 'angry': 0.077, 'disgust': 0.057}"
-4,51.52,53.8,2.28,I don't think so. You?,"अरे, नहीं लगता तो! और तुम?",surprised,0.811,"{'surprised': 0.811, 'disgust': 0.063, 'neutral': 0.056, 'angry': 0.052}"
-5,55.26,56.28,1.02,I'm okay.,मैं ठीक हूँ।,neutral,0.552,"{'neutral': 0.552, 'fearful': 0.121, 'happy': 0.091, 'sad': 0.09, 'disgust': 0.084, 'angry': 0.056}"
-6,57.1,58.74,1.64,Get up. Emo.,उठो। इमो।,neutral,0.392,"{'neutral': 0.392, 'angry': 0.229, 'sad': 0.19, 'disgust': 0.097}"
-7,59.3,64.14,4.84,It's not safe here. Let's go. What's next?,यहाँ खतरा है। चलो। आगे क्या है?,neutral,0.343,"{'neutral': 0.343, 'sad': 0.245, 'fearful': 0.166, 'angry': 0.124, 'disgust': 0.098}"
-8,65.14,68.42,3.28,You'll see. You'll see.,देखते जाओ। देखते जाओ।,neutral,0.838,{'neutral': 0.838}
-9,75.86,77.64,1.78,Emo. This way.,"इमो। चल, इधर।",disgust,0.654,"{'disgust': 0.654, 'neutral': 0.268}"
-10,94.0,95.26,1.26,Follow me.,मेरे पीछे आओ।,neutral,0.935,{'neutral': 0.935}
-11,96.2,97.86,1.66,Let me get my...,मुझे मेरा...,neutral,0.543,"{'neutral': 0.543, 'angry': 0.241, 'disgust': 0.06, 'fearful': 0.059}"
-12,97.86,99.3,1.44,Let me get my...,मुझे मेरा...,neutral,0.543,"{'neutral': 0.543, 'angry': 0.241, 'disgust': 0.06, 'fearful': 0.059}"
-13,99.3,99.8,0.5,Let's go.,चलो।,neutral,0.682,"{'neutral': 0.682, 'angry': 0.115, 'sad': 0.063, 'fearful': 0.057, 'happy': 0.05}"
-14,100.94,101.82,0.88,Let's go.,चलो।,neutral,0.682,"{'neutral': 0.682, 'angry': 0.115, 'sad': 0.063, 'fearful': 0.057, 'happy': 0.05}"
-15,105.02,106.7,1.68,Let me get my...,मुझे मेरा...,neutral,0.543,"{'neutral': 0.543, 'angry': 0.241, 'disgust': 0.06, 'fearful': 0.059}"
-16,112.92,115.02,2.1,It's healthy.,यह ठीक है।,neutral,0.738,"{'neutral': 0.738, 'happy': 0.206}"
-17,118.42,119.88,1.46,Don't say it.,मत बोलो।,angry,0.499,"{'angry': 0.499, 'neutral': 0.216, 'fearful': 0.14, 'disgust': 0.088}"
-18,119.88,119.98,0.1,Thank you.,शुक्रिया।,neutral,0.666,"{'neutral': 0.666, 'happy': 0.211, 'surprised': 0.08}"
+id,start,end,duration,en_text,hi_text,speaker,no_speech_prob,emotion,emotion_score,emotion_dist,emotion_source,arousal,valence
+0,13.6,15.0,1.4,Tindus the,टिंडस द,SPEAKER_01,0.0,neutral,0.926,{'neutral': 0.926},text,0.0,0.0
+1,15.0,16.861,1.92,the driver?,क्या?! ड्राइवर?!,SPEAKER_01,0.0,surprised,0.854,"{'surprised': 0.854, 'neutral': 0.094}",text,0.683,0.085
+2,16.92,21.772000000000002,4.86,We can see the... at the right we can see the... the hat snarlers.,देखो!... दाईं तरफ देखो!... वो हैट स्नार्लर्स!,SPEAKER_01,0.0,angry,0.674,"{'angry': 0.674, 'neutral': 0.188, 'disgust': 0.088}",text,0.557,-0.457
+3,21.96,24.427,2.48,Everything is safe. Perfectly safe.,सब ठीक है। बिल्कुल ठीक।,SPEAKER_01,0.0,neutral,0.896,"{'neutral': 0.896, 'happy': 0.068}",text,0.041,0.054
+4,24.8,26.663,1.88,Emo? Emo?,"छी, इमो?! यह इमो है?!",SPEAKER_01,0.0,disgust,0.361,"{'angry': 0.157, 'neutral': 0.186, 'surprised': 0.06, 'disgust': 0.361, 'sad': 0.168}",audio+text,0.162,-0.422
+5,28.32,29.262,0.96,Watch out!,बचो!,SPEAKER_01,0.0,neutral,0.322,"{'angry': 0.194, 'neutral': 0.322, 'happy': 0.275, 'surprised': 0.057, 'fearful': 0.148}",audio+text,0.469,0.035
+6,46.18,47.479,1.3,Are you hurt?,कोई चोट तो नहीं लगी?,SPEAKER_00,0.0,sad,0.294,"{'angry': 0.065, 'neutral': 0.161, 'happy': 0.206, 'surprised': 0.178, 'sad': 0.294, 'fearful': 0.056}",audio+text,0.21,-0.09
+7,51.46,53.776,2.34,I don't think so. You?,नहीं लगता। तुम?,SPEAKER_00,0.0,surprised,0.811,"{'surprised': 0.811, 'disgust': 0.063, 'neutral': 0.056, 'angry': 0.052}",text,0.703,0.012
+8,55.2,56.266000000000005,1.08,I'm okay.,मैं ठीक हूँ।,SPEAKER_00,0.0,neutral,0.426,"{'angry': 0.277, 'neutral': 0.426, 'happy': 0.086, 'disgust': 0.059, 'sad': 0.067, 'fearful': 0.085}",audio+text,0.311,-0.222
+9,56.28,58.06,4.64,Get up! Emo! It's not safe here.,"उठो! इमो! यहाँ खतरा है, चलो!",SPEAKER_02,0.0,sad,0.727,"{'sad': 0.727, 'surprised': 0.079, 'neutral': 0.072, 'angry': 0.055}",text,-0.256,-0.534
+10,61.52,62.752,2.6,Let's go. What's next?,चलो। आगे क्या है?,SPEAKER_02,0.0,neutral,0.452,"{'angry': 0.207, 'neutral': 0.452, 'happy': 0.147, 'sad': 0.068, 'fearful': 0.063}",audio+text,0.264,-0.086
+11,64.84,66.48100000000001,1.74,You'll... you'll see.,तुम... तुम देखोगे।,SPEAKER_02,0.0,neutral,0.836,"{'neutral': 0.836, 'happy': 0.054}",text,0.032,0.043
+12,67.28,68.4,1.14,You'll see.,देख लोगे।,SPEAKER_02,0.0,neutral,0.895,{'neutral': 0.895},text,0.0,0.0
+13,75.38,77.63799999999999,2.28,"Emo, this way.","इमो, चल इधर!",SPEAKER_02,0.0,disgust,0.671,"{'disgust': 0.671, 'neutral': 0.257}",text,0.134,-0.403
+14,81.88,83.26299999999999,1.4,Music,संगीत,SPEAKER_02,0.0,neutral,0.798,"{'neutral': 0.798, 'sad': 0.093}",text,-0.046,-0.065
+15,93.4,95.176,1.78,Follow me.,मेरे पीछे आओ।,SPEAKER_01,0.0,neutral,0.935,{'neutral': 0.935},text,0.0,0.0
+16,96.4,97.5,1.1,Let me get me.,मुझे जाने दो।,SPEAKER_01,0.0,neutral,0.418,"{'angry': 0.409, 'neutral': 0.418, 'fearful': 0.092}",audio+text,0.392,-0.291

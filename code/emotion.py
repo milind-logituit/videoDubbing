@@ -57,8 +57,30 @@ SSML_PROSODY: dict[str, dict[str, str]] = {
     "surprised": {"pitch": "+22%", "volume": "loud",   "rate": "+10%"},
 }
 
+_PROSODY_CONFIG_PATH = Path(__file__).parent.parent / "config" / "emotion_prosody.yaml"
+
 _text_pipeline  = None
 _audio_pipeline = None
+
+
+def load_prosody_config(lang: str = "hi") -> dict[str, dict[str, str]]:
+    """Load SSML prosody params from config/emotion_prosody.yaml.
+
+    Merges language-specific overrides on top of 'default'. Falls back to
+    the hardcoded SSML_PROSODY dict if the file is missing or unreadable.
+    """
+    if not _PROSODY_CONFIG_PATH.exists():
+        return SSML_PROSODY
+    try:
+        import yaml
+        raw      = yaml.safe_load(_PROSODY_CONFIG_PATH.read_text())
+        base     = {k: dict(v) for k, v in raw.get("default", {}).items()}
+        for emo, params in raw.get(lang, {}).items():
+            base.setdefault(emo, {}).update(params)
+        return base or SSML_PROSODY
+    except Exception as exc:
+        print(f"  [warn] Could not load emotion_prosody.yaml: {exc}; using defaults")
+        return SSML_PROSODY
 
 
 def _get_text_pipeline():

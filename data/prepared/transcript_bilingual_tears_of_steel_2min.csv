@@ -1,31 +1,21 @@
-id,start,end,duration,en_text,hi_text,speaker
-0,4.16,6.28,2.12,We have main engine start.,मुख्य इंजन शुरू हो गया।,SPEAKER_00
-1,6.64,9.56,2.92,"Four, three, two, one.","चार, तीन, दो, एक।",SPEAKER_00
-2,22.74,24.28,1.54,"You're a jerk, Tom.","तुम बेकार हो, टॉम।",SPEAKER_03
-3,24.5,26.86,2.36,"Look, Celia, we have to follow our passions.","सेलिया, हमें अपना जुनून जीना होगा।",SPEAKER_03
-4,26.86,29.96,3.1,You have your robotics and I just want to be awesome in space.,"तुम्हारे पास रोबोटिक्स है, मैं बस अंतरिक्ष में कमाल करना चाहता हूँ।",SPEAKER_03
-5,30.38,34.3,3.92,Why don't you just admit that you're freaked out by my robot hand?,मान लो ना कि मेरे रोबोट हाथ से तुम डर गए हो।,SPEAKER_01
-6,34.54,35.84,1.3,I'm not freaked out by it.,मैं बिल्कुल नहीं डरा।,SPEAKER_01
-7,36.56,37.04,0.48,It's...,वो...,SPEAKER_02
-8,37.04,38.26,1.22,"All right, fine.","अच्छा, ठीक है।",SPEAKER_02
-9,38.56,39.4,0.84,I'm freaked out.,मैं डर गया।,SPEAKER_02
-10,39.52,42.42,2.9,I'm having nightmares that I'm being chased by this giant robotic claw.,सपने में एक बड़ा रोबोटिक पंजा मेरा पीछा करता है।,SPEAKER_02
-11,42.44,43.32,0.88,"Oh, whatever, Tom.","जो भी हो, टॉम।",SPEAKER_02
-12,44.1,44.84,0.74,We're done.,हम खत्म हैं।,SPEAKER_02
-13,50.14,53.0,2.86,Robot's memory synced and...,रोबोट की मेमोरी सिंक हुई और...,SPEAKER_00
-14,53.0,53.76,0.76,...locked.,...लॉक।,SPEAKER_00
-15,60.3,62.16,1.86,This is pretty freaky.,यह तो बड़ा अजीब है।,SPEAKER_01
-16,62.16,62.26,0.1,This is pretty freaky.,अजीब है।,SPEAKER_01
-17,62.26,67.26,5.0,No problem.,कोई बात नहीं।,SPEAKER_01
-18,71.16,71.66,0.5,No problem.,ठीक है।,SPEAKER_01
-19,73.58,74.94,1.36,I'm still a man.,मैं अब भी मर्द हूँ।,SPEAKER_01
-20,77.38,78.22,0.84,Do I need you?,क्या मुझे तुम चाहिए?,SPEAKER_01
-21,78.98,79.98,1.0,I'm not.,नहीं हूँ।,SPEAKER_01
-22,82.8,83.6,0.8,Sorry.,सॉरी।,SPEAKER_01
-23,84.94,84.96,0.02,There's a road.,रास्ता है।,SPEAKER_01
-24,85.98,87.2,1.22,I need you to come to me next time.,अगली बार मेरे पास आना।,SPEAKER_01
-25,87.24,87.46,0.22,Video Foibe.,वीडियो फ़ॉइब।,SPEAKER_01
-26,88.0,89.26,1.26,You move the train...,ट्रेन चलाओ...,SPEAKER_01
-27,90.96,91.92,0.96,"I had, you know...","मेरे पास था, यानी...",SPEAKER_02
-28,91.92,92.24,0.32,It might get me the track.,ट्रैक मिल सकता है।,SPEAKER_02
-31,117.56,118.54,0.98,Shouldn't you be down there?,तुम नीचे नहीं होने चाहिए?,SPEAKER_02
+id,start,end,duration,en_text,hi_text,speaker,no_speech_prob,emotion,emotion_score,emotion_dist,arousal,valence
+0,4.16,6.248,2.12,We have main engine start.,मुख्य इंजन स्टार्ट हो गया।,SPEAKER_00,0.0,neutral,0.894,{'neutral': 0.894},0.0,0.0
+1,6.64,9.495999999999999,2.92,"Four, three, two, one.","चार, तीन, दो, एक।",SPEAKER_00,0.0,neutral,0.887,{'neutral': 0.887},0.0,0.0
+2,22.74,24.279999999999998,1.54,"You're a jerk, Tom.","तुम बेकार हो, टॉम।",SPEAKER_03,0.0,angry,0.727,"{'angry': 0.727, 'disgust': 0.226}",0.627,-0.572
+3,24.5,26.842,2.36,"Look, Celia, we have to follow our passions.","देखो सेलिया, हमें अपना जुनून जीना होगा।",SPEAKER_03,0.0,neutral,0.824,"{'neutral': 0.824, 'disgust': 0.088}",0.018,-0.053
+4,26.86,29.948,3.1,You have your robotics and I just want to be awesome in space.,"तुम्हारे पास रोबोटिक्स है, मैं बस अंतरिक्ष में कमाल करना चाहता हूँ।",SPEAKER_03,0.0,neutral,0.917,{'neutral': 0.917},0.0,0.0
+5,30.38,34.294,3.92,Why don't you just admit that you're freaked out by my robot hand?,मान क्यों नहीं लेते कि मेरे रोबोट हाथ से डर गए हो तुम?,SPEAKER_01,0.0,angry,0.479,"{'angry': 0.479, 'fearful': 0.184, 'surprised': 0.161, 'neutral': 0.074, 'disgust': 0.073}",0.655,-0.407
+6,34.54,35.839999999999996,1.3,I'm not freaked out by it.,"म-मैं... नहीं, मुझे इससे कोई डर नहीं है।",SPEAKER_01,0.0,fearful,0.844,"{'fearful': 0.844, 'neutral': 0.062, 'surprised': 0.057}",0.636,-0.416
+7,36.56,37.06,0.48,It's...,वो...,SPEAKER_02,0.0,neutral,0.785,"{'neutral': 0.785, 'surprised': 0.105}",0.084,0.011
+8,37.04,38.25,1.22,"All right, fine.","अच्छा, ठीक है।",SPEAKER_02,0.0,angry,0.576,"{'angry': 0.576, 'neutral': 0.195, 'disgust': 0.173}",0.495,-0.449
+9,38.56,39.386,0.84,I'm freaked out.,डर गया हूँ मैं।,SPEAKER_02,0.0,fearful,0.902,{'fearful': 0.902},0.631,-0.451
+10,39.52,42.408,2.9,I'm having nightmares that I'm being chased by this giant robotic claw.,बुरे सपने आते हैं कि एक विशाल रोबोटिक पंजा मेरा पीछा कर रहा है।,SPEAKER_02,0.0,fearful,0.989,{'fearful': 0.989},0.692,-0.494
+11,42.44,43.291999999999994,0.88,"Oh, whatever, Tom.","ओह, जाने दो, टॉम।",SPEAKER_02,0.0,neutral,0.541,"{'neutral': 0.541, 'disgust': 0.238, 'angry': 0.107}",0.133,-0.207
+12,44.1,44.84,0.74,We're done.,"बस, बहुत हुआ। छी।",SPEAKER_02,0.0,disgust,0.375,"{'disgust': 0.375, 'neutral': 0.356, 'angry': 0.203}",0.237,-0.347
+13,50.14,52.948,2.86,Robot's memory synced and...,रोबोट की मेमोरी सिंक हुई और...,SPEAKER_00,0.0,neutral,0.75,"{'neutral': 0.75, 'surprised': 0.156}",0.125,0.016
+14,53.0,53.759,0.76,...locked.,...बंद।,SPEAKER_00,0.0,sad,0.364,"{'sad': 0.364, 'neutral': 0.362, 'surprised': 0.141, 'disgust': 0.064}",-0.056,-0.279
+15,60.3,62.150999999999996,1.86,This is pretty freaky.,यह तो बड़ा अजीब है।,SPEAKER_01,0.0,fearful,0.439,"{'fearful': 0.439, 'neutral': 0.185, 'disgust': 0.165, 'surprised': 0.141}",0.453,-0.304
+16,62.16,62.66,0.1,This is pretty freaky.,बड़ा अजीब है।,SPEAKER_01,0.0,fearful,0.439,"{'fearful': 0.439, 'neutral': 0.185, 'disgust': 0.165, 'surprised': 0.141}",0.453,-0.304
+17,62.26,62.76,2.66,This is it.,यही है वो।,SPEAKER_01,0.0,neutral,0.87,"{'neutral': 0.87, 'disgust': 0.071}",0.014,-0.043
+18,69.82,70.32,1.34,"Oh, my God.",अरे बाप रे।,SPEAKER_01,0.0,surprised,0.883,{'surprised': 0.883},0.706,0.088
+19,94.92,96.218,13.44,"Oh, my God.",अरे बाप रे।,SPEAKER_02,0.0,surprised,0.883,{'surprised': 0.883},0.706,0.088

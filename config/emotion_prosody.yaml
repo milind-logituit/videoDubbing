@@ -1,0 +1,50 @@
+default:
+  neutral:
+    pitch: +0%
+    volume: medium
+    rate: +0%
+  happy:
+    pitch: +15%
+    volume: loud
+    rate: +8%
+  angry:
+    pitch: +8%
+    volume: x-loud
+    rate: +12%
+  sad:
+    pitch: -15%
+    volume: soft
+    rate: -12%
+  fearful:
+    pitch: +12%
+    volume: soft
+    rate: +10%
+  disgust:
+    pitch: -5%
+    volume: medium
+    rate: -5%
+  surprised:
+    pitch: +22%
+    volume: loud
+    rate: +10%
+hi:
+  happy:
+    pitch: +0%
+    volume: loud
+    rate: +0%
+  angry:
+    pitch: -10%
+    volume: x-loud
+    rate: +0%
+  sad:
+    pitch: -10%
+    volume: soft
+    rate: -12%
+  fearful:
+    pitch: -10%
+    volume: soft
+    rate: -12%
+  disgust:
+    pitch: -10%
+    volume: medium
+    rate: -12%

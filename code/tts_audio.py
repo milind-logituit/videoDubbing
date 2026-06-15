@@ -117,8 +117,10 @@ def _synth_segment(text: str, path: Path, rate: str = "+0%",
                    voice: str = TTS_VOICE_FEMALE_HI,
                    emotion: str | None = None) -> None:
     """Synthesize one segment with SSML prosody (pitch + volume + rate) for emotion."""
-    from emotion import SSML_PROSODY
-    prosody = SSML_PROSODY.get(emotion or "neutral", SSML_PROSODY["neutral"])
+    from emotion import load_prosody_config
+    lang    = voice[:2]  # "hi", "ta", "en", …
+    config  = load_prosody_config(lang)
+    prosody = config.get(emotion or "neutral", config.get("neutral", {"pitch": "+0%", "volume": "medium", "rate": "+0%"}))
     if emotion and emotion != "neutral":
         content = (
             f'<prosody pitch="{prosody["pitch"]}" '

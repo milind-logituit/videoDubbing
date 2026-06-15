@@ -30,6 +30,8 @@ dependencies = [
     "mediapipe>=0.10.35",
     "gdown>=6.1.0",
     "demucs>=4.0.1",
+    "python-docx>=1.2.0",
+    "pyyaml>=6.0.3",
 ]
 
 [dependency-groups]
