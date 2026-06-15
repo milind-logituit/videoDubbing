@@ -37,8 +37,8 @@ def _find_processed_clips() -> dict[str, tuple[Path, Path, Path, Path, Path, Pat
             if _dubbed_re.search(mp4.stem) or mp4.stem == "sample_en":
                 continue
             stem = mp4.stem
-            # Find any dubbed version for this clip (hi, en, …)
-            for lang in ("hi", "en", "de"):
+            # Find any dubbed version for this clip (hi, en, ta, …)
+            for lang in ("hi", "en", "ta", "de"):
                 dubbed = RAW / f"{stem}_dubbed_{lang}.mp4"
                 if not dubbed.exists():
                     continue
@@ -90,23 +90,32 @@ st.sidebar.caption(
     "Pipeline runs on-premises — contact us to process your own content."
 )
 
+_WAV2LIP_CHECKPOINT = ROOT / "vendor" / "Wav2Lip" / "checkpoints" / "wav2lip_gan.pth"
+st.sidebar.divider()
+if _WAV2LIP_CHECKPOINT.exists():
+    st.sidebar.success("👄 Wav2Lip: available — rerun with `--lipsync` to apply")
+else:
+    st.sidebar.info("👄 Wav2Lip: checkpoint not found (optional)")
+
 st.sidebar.divider()
 st.sidebar.markdown("**Pipeline**")
 st.sidebar.code(
-    "Whisper (base)\n"
+    "Whisper (large-v3-turbo)\n"
     "→ pyannote speaker diarization\n"
     "→ wav2vec2 gender classification\n"
-    "→ Claude (isochrony constraints)\n"
+    "→ Claude (isochrony + emotion)\n"
     "→ edge-tts multi-voice\n"
-    "  ♀ hi-IN-SwaraNeural\n"
-    "  ♂ hi-IN-MadhurNeural"
+    "  Hindi ♀ hi-IN-SwaraNeural\n"
+    "  Hindi ♂ hi-IN-MadhurNeural\n"
+    "  Tamil ♀ ta-IN-PallaviNeural\n"
+    "  Tamil ♂ ta-IN-ValluvarNeural"
 )
 
 # ── Header ────────────────────────────────────────────────────────────────────
 st.title("🎬 AI Video Dubbing — v2")
 st.caption(
-    "English video → Hindi subtitles & Hindi dubbed audio  |  "
-    "Whisper ASR + Google Translate + Microsoft Neural TTS  |  "
+    "English video → Hindi / Tamil subtitles & dubbed audio  |  "
+    "Whisper ASR + Google Translate + Claude + Microsoft Neural TTS  |  "
     "Built for Eros Now / SunNxt"
 )
 
@@ -197,9 +206,14 @@ with tab2:
             st.caption("AI-dubbed audio only — mouth movements unchanged from original.")
         with _t2b:
             st.video(lipsync_src)
-            st.caption("Wav2Lip re-generates mouth movements to match the Hindi audio.")
+            st.caption("Wav2Lip re-generates mouth movements to match the dubbed audio.")
     else:
         st.video(dubbed_src)
+        if _WAV2LIP_CHECKPOINT.exists():
+            st.info(
+                "👄 **Lip sync available.** Rerun the pipeline with `--lipsync` "
+                "to generate a Wav2Lip version with re-animated mouth movements."
+            )
 
     with st.expander("⬇️  Download dubbed video"):
         st.download_button("Download dubbed MP4",
@@ -397,6 +411,67 @@ with tab5:
     else:
         m7.metric("TTS Fidelity", "N/A")
 
+    # ── MOS rubric ────────────────────────────────────────────────────────────
+    _mos_data = metrics.get("mos_rubric", {})
+    _mos_val  = _mos_data.get("mos")
+    if _mos_val is not None:
+        st.divider()
+        st.subheader("MOS Rubric (AI Quality Score)")
+        st.caption(
+            f"Claude Sonnet spot-checks {_mos_data.get('n_sampled', '?')} segments "
+            "on 5 dimensions (1–5 each), normalised to 0–100."
+        )
+        _mos_c1, _mos_c2 = st.columns([1, 2])
+        with _mos_c1:
+            _mos_fig = go.Figure(go.Indicator(
+                mode="gauge+number",
+                value=_mos_val,
+                title={"text": "Overall MOS"},
+                gauge={
+                    "axis": {"range": [0, 100]},
+                    "bar": {"color": "#7C3AED"},
+                    "steps": [
+                        {"range": [0,  50], "color": "#EF553B"},
+                        {"range": [50, 70], "color": "#FFA15A"},
+                        {"range": [70, 100], "color": "#00CC96"},
+                    ],
+                },
+                number={"suffix": "/100"},
+            ))
+            _mos_fig.update_layout(height=260, margin=dict(t=40, b=10))
+            st.plotly_chart(_mos_fig, use_container_width=True)
+        with _mos_c2:
+            _breakdown = _mos_data.get("breakdown", {})
+            if _breakdown:
+                _dim_labels = {
+                    "naturalness": "Naturalness",
+                    "fidelity":    "Fidelity",
+                    "timing":      "Timing fit",
+                    "emotion":     "Emotion register",
+                    "names":       "Proper nouns",
+                }
+                _dims  = [_dim_labels.get(k, k) for k in _breakdown]
+                _vals  = [_breakdown[k] for k in _breakdown]
+                _colors = [
+                    "#00CC96" if v >= 4 else ("#FFA15A" if v >= 3 else "#EF553B")
+                    for v in _vals
+                ]
+                _bar_fig = go.Figure(go.Bar(
+                    x=_vals, y=_dims,
+                    orientation="h",
+                    marker_color=_colors,
+                    text=[f"{v:.2f}/5" for v in _vals],
+                    textposition="outside",
+                ))
+                _bar_fig.update_layout(
+                    height=220, margin=dict(t=20, b=10, l=10, r=60),
+                    xaxis={"range": [0, 5.5], "title": "Score (1–5)"},
+                    yaxis={"title": ""},
+                )
+                st.plotly_chart(_bar_fig, use_container_width=True)
+    elif _mos_data.get("note"):
+        st.caption(f"MOS: {_mos_data['note']}")
+
     # ── Segment-level quality ─────────────────────────────────────────────────
     seg_quality = metrics.get("segment_quality", [])
     if seg_quality:
@@ -532,6 +607,6 @@ with tab6:
             "ml-IN-SobhanaNeural", "ta-IN-PallaviNeural",
             "te-IN-ShrutiNeural", "kn-IN-SapnaNeural",
         ],
-        "Status": ["✅ Live in v2"] + ["🔧 Add in v3"] * 7,
+        "Status": ["✅ Live in v2", "✅ Live in v2"] + ["🔧 Add in v3"] * 6,
     })
     st.dataframe(lang_df, use_container_width=True, hide_index=True)

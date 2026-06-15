@@ -219,6 +219,7 @@ def transcribe(audio_path: Path, source_lang: str = "en") -> dict:
 _FILLER_MAPS: dict[str, dict[str, str]] = {
     "hi": {"hmm": "हाँ", "uh": "", "um": "", "ah": "अच्छा"},
     "en": {"hmm": "yeah", "uh": "", "um": "", "ah": "ah"},
+    "ta": {"hmm": "ஆம்", "uh": "", "um": "", "ah": "ஆ"},
 }
 
 
@@ -261,7 +262,7 @@ def translate_segments(whisper_result: dict,
 _LLM_BATCH = 100
 _ASR_SKIP_THRESH = 0.70   # skip LLM refinement for segments where Whisper is unsure
 
-_LANG_NAMES = {"en": "English", "hi": "Hindi", "de": "German"}
+_LANG_NAMES = {"en": "English", "hi": "Hindi", "de": "German", "ta": "Tamil"}
 
 _REFINE_TARGET_GUIDANCE = {
     "hi": (
@@ -282,6 +283,15 @@ _REFINE_TARGET_GUIDANCE = {
         "     • Use natural broadcast English — clear, idiomatic, suitable for "
         "OTT dubbing. Avoid overly literal translations.\n"
         "     • Fillers: 'Hmm' → 'Yeah', 'Uh'/'Um' → empty string, 'Ah' → 'Ah'.\n"
+    ),
+    "ta": (
+        "     • Tamil TTS speaks at ~3.0 words/second — a 2s window fits ~6 "
+        "Tamil words maximum.\n"
+        "     • Prefer shorter, colloquial Tamil (spoken/cinematic register) over "
+        "literary or Sentamil forms. Cut subordinate clauses when the window is tight.\n"
+        "     • Use everyday vocabulary that mainstream Tamil audiences recognise: "
+        "prefer 'வீடு' over 'இல்லம்', 'பேசு' over 'சொல்', 'நான்' over 'யான்'.\n"
+        "     • Fillers: 'Hmm' → 'ஆம்', 'Uh'/'Um' → empty string, 'Ah' → 'ஆ'.\n"
     ),
 }
 
@@ -309,6 +319,21 @@ _EMOTION_GUIDANCE = {
         "       • fearful → hesitant, halting phrasing; 'I can't', 'we have to'\n"
         "       • sad     → slower cadence implied by word length; 'I miss', 'it's gone'\n"
         "       • happy   → short energetic lines; upbeat qualifiers\n"
+        "       • neutral → plain declarative; do NOT add emotion not in the source\n"
+        "     A neutral source line MUST stay neutral. Do not dramatise.\n"
+    ),
+    "ta": (
+        "  3. EMOTION (hard constraint — not optional): If an 'emotion' field is present,\n"
+        "     the rewritten Tamil MUST carry that emotional register through word choice.\n"
+        "     Use these Tamil-specific cues:\n"
+        "       • angry   → forceful verbs, exclamatory particles (ஏன்!, வேண்டாம்!, இல்லை!),\n"
+        "                    short urgent clauses, avoid soft conjunctions\n"
+        "       • fearful → tense/hesitant phrasing, words like பயம், ஆபத்து, காப்பாற்று\n"
+        "       • sad     → soft conjunctions (ஆனால், மட்டும்), reduced energy,\n"
+        "                    words like துக்கம், வருத்தம், நினைவு; avoid exclamations\n"
+        "       • happy   → upbeat vocab, வாழ்க!, ஆம்!, warm qualifiers (அருமை, சிறப்பு)\n"
+        "       • surprised → ஓ!, அடேங்கப்பா!, என்ன!, wide-eyed reactive phrasing\n"
+        "       • disgust → distancing language, words like அருவருப்பு, பயனற்றது, சீ\n"
         "       • neutral → plain declarative; do NOT add emotion not in the source\n"
         "     A neutral source line MUST stay neutral. Do not dramatise.\n"
     ),

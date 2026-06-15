@@ -21,7 +21,11 @@ TTS_VOICE_HI        = TTS_VOICE_FEMALE_HI   # default / backwards-compat
 TTS_VOICE_FEMALE_EN = "en-US-JennyNeural"
 TTS_VOICE_MALE_EN   = "en-US-GuyNeural"
 TTS_VOICE_EN        = TTS_VOICE_FEMALE_EN
-_TTS_DEFAULT_VOICE  = {"hi": TTS_VOICE_FEMALE_HI, "en": TTS_VOICE_FEMALE_EN}
+_TTS_DEFAULT_VOICE  = {
+    "hi": TTS_VOICE_FEMALE_HI,
+    "en": TTS_VOICE_FEMALE_EN,
+    "ta": "ta-IN-PallaviNeural",
+}
 
 # Ordered pools for per-speaker voice assignment. Speakers are sorted by first
 # utterance then assigned cyclically — first male speaker gets pool[0], second
@@ -44,6 +48,10 @@ VOICE_POOL: dict[str, dict[str, list[str]]] = {
             "en-US-SaraNeural",
             "en-US-NancyNeural",
         ],
+    },
+    "ta": {
+        "male":   ["ta-IN-ValluvarNeural"],
+        "female": ["ta-IN-PallaviNeural"],
     },
 }
 
