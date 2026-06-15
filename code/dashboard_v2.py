@@ -274,6 +274,25 @@ with tab4:
                 st.markdown("🇮🇳 **हिंदी**")
                 st.markdown(f"> {row['hi_text']}")
 
+    def _emotion_row_style(row):
+        arc = row.get("arc_flagged", False)
+        if arc:
+            colour = "#FEF9C3"
+        else:
+            emo = row.get("emotion", "neutral")
+            colour = {
+                "angry": "#FEE2E2", "fearful": "#FEE2E2", "disgust": "#FEE2E2",
+                "sad": "#DBEAFE",
+                "happy": "#DCFCE7", "surprised": "#DCFCE7",
+            }.get(emo, "")
+        return [f"background-color: {colour}" if colour else "" for _ in row]
+
+    st.dataframe(
+        transcript.style.apply(_emotion_row_style, axis=1),
+        use_container_width=True,
+        hide_index=True,
+    )
+
     st.divider()
     st.download_button(
         "⬇️  Download bilingual transcript (CSV)",

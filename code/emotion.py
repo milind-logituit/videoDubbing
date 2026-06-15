@@ -8,6 +8,9 @@ trained on film/broadcast audio is available.
 
 Audio SER helpers (_classify_audio_segment, _fuse_emotion_dists, _compute_va) are
 retained for score_tts_emotion_fidelity and future use.
+
+Note: call smooth_emotion_arc() after Stage 2.5 (classify_segment_emotions) and
+before Stage 4b to flag per-speaker one-off emotion outliers for dashboard highlighting.
 """
 import math
 import tempfile
@@ -211,6 +214,42 @@ def classify_segment_emotions(audio_path: Path,
         out.append({**seg, "emotion": emotion, "emotion_score": score,
                     "emotion_dist": dist, "arousal": arousal, "valence": valence})
     return out
+
+
+def smooth_emotion_arc(segments: list[dict], window: int = 5) -> list[dict]:
+    """Flag per-speaker emotion outliers without overriding them.
+
+    Groups segments by speaker, then within each group applies a centred majority-vote
+    window to detect one-off emotions that differ from the surrounding context.
+    Segments that are outliers get arc_flagged=True; all other fields are left untouched.
+    """
+    half = window // 2
+
+    by_speaker: dict[str, list[int]] = {}
+    for idx, seg in enumerate(segments):
+        key = seg.get("speaker", "__anon__")
+        by_speaker.setdefault(key, []).append(idx)
+
+    for speaker_indices in by_speaker.values():
+        # not enough context to make a reliable judgement
+        if len(speaker_indices) < window:
+            continue
+
+        for pos in range(half, len(speaker_indices) - half):
+            window_idxs = speaker_indices[pos - half: pos + half + 1]
+            emotions = [segments[i]["emotion"] for i in window_idxs]
+            centre_emotion = emotions[half]
+
+            # majority vote; ties resolved arbitrarily — centre must be strictly dominant
+            counts: dict[str, int] = {}
+            for e in emotions:
+                counts[e] = counts.get(e, 0) + 1
+            dominant = max(counts, key=lambda e: counts[e])
+
+            if centre_emotion != dominant:
+                segments[speaker_indices[pos]]["arc_flagged"] = True
+
+    return segments
 
 
 def _back_translate(text: str, source_lang: str, target_lang: str = "en") -> str:
