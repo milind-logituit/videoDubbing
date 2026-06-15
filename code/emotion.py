@@ -1,12 +1,13 @@
-"""Stage 2.5 — Per-segment emotion classification using fused text+audio SER.
+"""Stage 2.5 — Per-segment emotion classification using text-based DistilRoBERTa.
 
-Text model (j-hartmann DistilRoBERTa): 7 classes, high precision on meaning.
-Audio model (superb wav2vec2-base-superb-er): 4 classes (ang/hap/neu/sad),
-captures prosodic signal the text model misses.
+Text-based SER avoids the vocal-projection false-positive that audio models produce
+on broadcast/film speech (energetic delivery ≠ angry). superb/wav2vec2-base-superb-er
+was evaluated and rejected: trained on acted speech (IEMOCAP), it misfires on broadcast
+content and degrades emotion_register across all test clips. Revisit when a model
+trained on film/broadcast audio is available.
 
-Fusion: 0.7 text + 0.3 audio. Audio-only classes are absent from the merge;
-text-only classes (disgust, fearful, surprised) keep their text weight and the
-combined distribution is renormalized. Falls back to text-only if audio fails.
+Audio SER helpers (_classify_audio_segment, _fuse_emotion_dists, _compute_va) are
+retained for score_tts_emotion_fidelity and future use.
 """
 import math
 import tempfile
@@ -81,6 +82,7 @@ def _get_audio_pipeline():
 _TEXT_WEIGHT  = 0.7
 _AUDIO_WEIGHT = 0.3
 _MIN_AUDIO_DURATION_S = 0.5   # audio SER unreliable below this
+_TEXT_CONFIDENCE_GATE = 0.6   # only fuse audio when text top-1 score is below this
 
 
 def _classify_audio_segment(
@@ -158,80 +160,34 @@ def _va_similarity(emo1: str, emo2: str) -> float:
 
 def classify_segment_emotions(audio_path: Path,
                                segments: list[dict]) -> list[dict]:
-    """Add emotion fields to each segment using fused text+audio SER.
+    """Add emotion fields to each segment using text SER (j-hartmann DistilRoBERTa).
 
-    Adds: emotion, emotion_score, emotion_dist, emotion_source, arousal, valence.
-    Falls back to text-only if audio model or source audio cannot be loaded.
+    Adds: emotion, emotion_score, emotion_dist, arousal, valence.
+    arousal/valence are derived from the Russell circumplex weighted by emotion_dist.
     """
-    print(f"  Loading text emotion model ({_MODEL_ID}) …")
-    text_pipe = _get_text_pipeline()
-
-    # Try to load audio pipeline and source audio for fusion
-    src_audio  = None
-    audio_pipe = None
-    try:
-        from pydub import AudioSegment as _AS
-        print(f"  Loading audio emotion model ({_AUDIO_MODEL_ID}) …")
-        audio_pipe = _get_audio_pipeline()
-        src_audio  = _AS.from_file(str(audio_path)).set_channels(1).set_frame_rate(16000)
-    except Exception as exc:
-        print(f"  [warn] Audio SER unavailable, using text-only: {exc}")
-
+    print(f"  Loading emotion model ({_MODEL_ID}) …")
+    pipe = _get_text_pipeline()
     out: list[dict] = []
-    n_audio = 0
     for seg in segments:
         text = str(seg.get("en_text") or "").strip()
         if not text:
             out.append({**seg, "emotion": "neutral", "emotion_score": 1.0,
-                        "emotion_dist": {"neutral": 1.0},
-                        "emotion_source": "text", "arousal": 0.0, "valence": 0.0})
+                        "emotion_dist": {"neutral": 1.0}, "arousal": 0.0, "valence": 0.0})
             continue
-
-        # Text SER — include probs ≥ 2% so fusion has enough signal
         try:
-            preds     = text_pipe(text, truncation=True, max_length=512, top_k=None)
-            text_dist = {_LABEL_MAP.get(p["label"], "neutral"): float(p["score"])
-                         for p in preds if p["score"] >= 0.02}
+            preds = pipe(text, truncation=True, max_length=512, top_k=None)
+            top   = max(preds, key=lambda x: x["score"])
+            emotion = _LABEL_MAP.get(top["label"], "neutral")
+            score   = round(float(top["score"]), 3)
+            dist    = {
+                _LABEL_MAP.get(p["label"], "neutral"): round(float(p["score"]), 3)
+                for p in preds if p["score"] >= 0.05
+            }
         except Exception:
-            text_dist = {"neutral": 1.0}
-
-        # Audio SER — slice source audio by Whisper timestamps
-        audio_dist: dict[str, float] = {}
-        if src_audio is not None and audio_pipe is not None:
-            audio_dist = _classify_audio_segment(
-                src_audio,
-                float(seg.get("start", 0)),
-                float(seg.get("end",   0)),
-                audio_pipe,
-            )
-
-        # Fuse or use text-only
-        if audio_dist:
-            dist           = _fuse_emotion_dists(text_dist, audio_dist)
-            emotion_source = "audio+text"
-            n_audio       += 1
-        else:
-            dist           = {k: round(v, 3) for k, v in text_dist.items()}
-            emotion_source = "text"
-
-        dist = {k: v for k, v in dist.items() if v >= 0.05}
-        if not dist:
-            dist = {"neutral": 1.0}
-
-        top_emo   = max(dist, key=dist.__getitem__)
-        top_score = round(dist[top_emo], 3)
+            emotion, score, dist = "neutral", 1.0, {"neutral": 1.0}
         valence, arousal = _compute_va(dist)
-
-        out.append({**seg,
-                    "emotion":        top_emo,
-                    "emotion_score":  top_score,
-                    "emotion_dist":   dist,
-                    "emotion_source": emotion_source,
-                    "arousal":        arousal,
-                    "valence":        valence})
-
-    print(f"  Fused audio+text: {n_audio}/{len(out)} segments  "
-          f"(text-only: {len(out) - n_audio})")
+        out.append({**seg, "emotion": emotion, "emotion_score": score,
+                    "emotion_dist": dist, "arousal": arousal, "valence": valence})
     return out
 
 
