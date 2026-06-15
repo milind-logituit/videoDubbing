@@ -255,6 +255,109 @@ def smooth_emotion_arc(segments: list[dict], window: int = 5) -> list[dict]:
     return segments
 
 
+def classify_face_emotions(video_path: Path, segments: list[dict]) -> list[dict]:
+    """Detect per-segment face emotion from video frames using MediaPipe FaceMesh.
+
+    For each segment, samples frames at ~2 fps, maps landmark geometry to a
+    valence proxy (mouth curve) and arousal proxy (brow raise), then maps
+    (valence, arousal) to the nearest Russell-circumplex emotion. Fuses with
+    existing text SER emotion at 0.6/0.4 (text/face) weight in VA space.
+
+    Skips silently if mediapipe is not installed or video cannot be opened.
+    Requires: mediapipe, opencv-python
+    """
+    try:
+        import cv2
+        import mediapipe as mp
+    except ImportError:
+        print("  [warn] mediapipe/cv2 not installed — skipping face emotion")
+        return segments
+
+    mp_face = mp.solutions.face_mesh
+    cap = cv2.VideoCapture(str(video_path))
+    if not cap.isOpened():
+        print(f"  [warn] Could not open video for face emotion: {video_path}")
+        return segments
+
+    fps = cap.get(cv2.CAP_PROP_FPS) or 25.0
+    # ~2 fps gives enough signal without processing every frame
+    sample_every = max(1, int(fps / 2))
+
+    frames: list[tuple[float, object]] = []
+    frame_idx = 0
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        if frame_idx % sample_every == 0:
+            frames.append((frame_idx / fps, frame))
+        frame_idx += 1
+    cap.release()
+
+    print(f"  Face emotion: {len(frames)} sampled frames from {video_path.name}")
+
+    _MOUTH_LEFT, _MOUTH_RIGHT = 61, 291
+    _BROW_LEFT,  _BROW_RIGHT  = 70, 300
+    _NOSE_TIP = 1
+
+    def _frame_va(landmarks) -> tuple[float, float]:
+        pts = {i: (landmarks[i].x, landmarks[i].y) for i in
+               [_MOUTH_LEFT, _MOUTH_RIGHT, _BROW_LEFT, _BROW_RIGHT, _NOSE_TIP]}
+        mouth_mid_y = (pts[_MOUTH_LEFT][1] + pts[_MOUTH_RIGHT][1]) / 2
+        nose_y = pts[_NOSE_TIP][1]
+        # mouth below nose → frown (negative valence); above → smile (positive)
+        valence = max(-1.0, min(1.0, float(nose_y - mouth_mid_y) * 5.0))
+        brow_y = (pts[_BROW_LEFT][1] + pts[_BROW_RIGHT][1]) / 2
+        # raised brows (smaller y in image coords) relative to nose → high arousal
+        arousal = max(-1.0, min(1.0, float(nose_y - brow_y) * 4.0))
+        return valence, arousal
+
+    def _va_to_emotion(valence: float, arousal: float) -> str:
+        best, best_dist = "neutral", float("inf")
+        for emo, (v, a) in _VALENCE_AROUSAL.items():
+            d = (valence - v) ** 2 + (arousal - a) ** 2
+            if d < best_dist:
+                best_dist = d
+                best = emo
+        return best
+
+    with mp_face.FaceMesh(static_image_mode=True, max_num_faces=1,
+                           refine_landmarks=False, min_detection_confidence=0.4) as fm:
+        out = []
+        for seg in segments:
+            seg_frames = [(ts, f) for ts, f in frames
+                          if seg["start"] <= ts < seg["end"]]
+            if not seg_frames:
+                out.append(seg)
+                continue
+
+            vas = []
+            for _, frame in seg_frames:
+                rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+                res = fm.process(rgb)
+                if res.multi_face_landmarks:
+                    lms = res.multi_face_landmarks[0].landmark
+                    vas.append(_frame_va(lms))
+
+            if not vas:
+                out.append(seg)
+                continue
+
+            avg_v = sum(v for v, _ in vas) / len(vas)
+            avg_a = sum(a for _, a in vas) / len(vas)
+            face_emo = _va_to_emotion(avg_v, avg_a)
+
+            text_emo = seg.get("emotion", "neutral")
+            t_v, t_a = _VALENCE_AROUSAL.get(text_emo, (0.0, 0.0))
+            fused_v = 0.6 * t_v + 0.4 * avg_v
+            fused_a = 0.6 * t_a + 0.4 * avg_a
+            fused = _va_to_emotion(fused_v, fused_a)
+
+            out.append({**seg, "emotion": fused, "face_emotion": face_emo,
+                        "face_valence": round(avg_v, 3), "face_arousal": round(avg_a, 3)})
+        return out
+
+
 def _back_translate(text: str, source_lang: str, target_lang: str = "en") -> str:
     """Translate text back to English for emotion classification.
 

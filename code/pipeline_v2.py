@@ -10,6 +10,9 @@ Outputs:
 
 Run: uv run python code/pipeline_v2.py
 """
+import os
+os.environ.setdefault("MallocStackLogging", "0")  # suppress macOS malloc noise in subprocesses
+
 import argparse
 import asyncio
 import json
@@ -31,7 +34,8 @@ _sys.path.insert(0, str(Path(__file__).parent))
 from eval_lipsync import compute_lipsync_score
 from apply_lipsync import apply_wav2lip
 from emotion import (classify_segment_emotions, smooth_emotion_arc,
-                     score_emotion_consistency, score_tts_emotion_fidelity)
+                     score_emotion_consistency, score_tts_emotion_fidelity,
+                     classify_face_emotions)
 
 # Re-exported from sub-modules so tests pulling from this module still work
 from diarize import (                                         # noqa: E402
@@ -923,6 +927,12 @@ def run_pipeline(video_path: Path, args, *, has_ref: bool = False) -> dict:
     if arc_flagged:
         print(f"  Arc smoother flagged {arc_flagged} outlier segment(s)")
 
+    if args.face_emotion:
+        print("\nStage 2.6 — Face emotion detection (MediaPipe) …")
+        segments = classify_face_emotions(video_path, segments)
+        face_count = sum(1 for s in segments if s.get("face_emotion"))
+        print(f"  Face emotion detected on {face_count}/{len(segments)} segments")
+
     print("\nStage 4c — Emotion register repair …")
     segments = repair_emotion_register(segments, skip=args.no_llm,
                                        source_lang=source_lang, target_lang=target_lang)
@@ -1075,6 +1085,8 @@ if __name__ == "__main__":
                         default=_FEMALE_CONFIDENCE_THRESH,
                         help="Min female probability to assign female voice "
                              f"(default {_FEMALE_CONFIDENCE_THRESH}).")
+    parser.add_argument("--face-emotion", action="store_true",
+                        help="Run MediaPipe face emotion detection and fuse with text SER (Stage 2.6, adds ~45s/clip).")
     parser.add_argument("--lipsync", action="store_true",
                         help="Run Wav2Lip (Stage 7b) to re-generate mouth movements.")
     parser.add_argument("--source-lang", type=str, default="en",
