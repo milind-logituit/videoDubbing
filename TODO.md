@@ -11,10 +11,11 @@ Spec: `docs/emotion_matching_spec.docx`
 **Target:** avg `emotion_register` ≥ 4.0 (current ~3.1)
 
 - [x] **Expose `arousal` and `valence` per segment** — eebfc8b (derived from text SER circumplex, passed to Stage 4b)
-- [ ] **Fuse audio SER into `classify_segment_emotions()`**
-  - Evaluated `superb/wav2vec2-base-superb-er`: degraded emotion_register and timing on 2/3 clips (trained on acted speech / IEMOCAP, misfires on broadcast content)
-  - Both ungated (0.3 weight) and confidence-gated (text < 0.6) variants tested — neither beat text-only baseline
-  - **Blocked:** needs a model trained on film/broadcast audio (e.g. `audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim` or similar) before this can help
+- [x] **Fuse audio SER into `classify_segment_emotions()`** — done 2026-06-16
+  - Switched from `superb/wav2vec2-base-superb-er` (IEMOCAP-trained, misfired on broadcast) to `audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim` (MSP-PODCAST-trained, broadcast/film)
+  - Audeering outputs continuous [arousal, dominance, valence]; mapped to Russell circumplex via `_va_to_dist()` → fused at 0.65 text / 0.35 audio using shared VA space
+  - `use_audio_ser=True` by default; falls back to text-only gracefully on model-load or audio failure
+  - 11 new unit tests covering `_va_to_dist`, text-only path, audio fusion, and fallback — all 159 tests passing
 
 ### Emotion-controlled TTS calibration
 **Target:** TTS fidelity soft score ≥ 75% (current ~62%)
@@ -23,10 +24,10 @@ Spec: `docs/emotion_matching_spec.docx`
   - `load_prosody_config(lang)` in `emotion.py` loads `config/emotion_prosody.yaml` (`default` block + optional per-lang overrides); falls back to hardcoded `SSML_PROSODY` if missing/unreadable
   - `tts_audio.py` derives `lang` from `voice[:2]` and pulls prosody via the loader; `pyyaml>=6.0.3` added to `pyproject.toml`
 
-- [~] **Calibrate prosody params against MOS rubric** — harness built 2026-06-15, calibration run pending
-  - `code/calibrate_prosody.py` grid-searches pitch × rate per non-neutral emotion, scores via `score_tts_emotion_fidelity`, writes winners to `emotion_prosody.yaml`
-  - First run on `tears_of_steel_2min` (hi) confirmed working but slow (~35–45 min for the full 7×5 grid); **next run: narrow to 4×3 grid (~15 min)** then commit the calibrated YAML
-  - Owner: QA + ML | Target: Week 3
+- [x] **Calibrate prosody params against MOS rubric** — done 2026-06-15
+  - 3×3 grid (pitch × rate) per emotion on `tears_of_steel_2min` (hi); winners written to `config/emotion_prosody.yaml` under `hi:` block
+  - MOS: 83.2 → **85.2** (+2.0); TTS fidelity scorer unreliable (wav2vec2 misfires on broadcast) — wider grid deferred until better model available
+  - Do not expand to 5×7 grid until `audeering/wav2vec2-large-robust` or equivalent is available as scorer
 
 ---
 

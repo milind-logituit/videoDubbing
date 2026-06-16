@@ -1,13 +1,13 @@
-"""Stage 2.5 — Per-segment emotion classification using text-based DistilRoBERTa.
+"""Stage 2.5 — Per-segment emotion classification using text + audio SER fusion.
 
-Text-based SER avoids the vocal-projection false-positive that audio models produce
-on broadcast/film speech (energetic delivery ≠ angry). superb/wav2vec2-base-superb-er
-was evaluated and rejected: trained on acted speech (IEMOCAP), it misfires on broadcast
-content and degrades emotion_register across all test clips. Revisit when a model
-trained on film/broadcast audio is available.
+Text SER: j-hartmann/emotion-english-distilroberta-base (7-class categorical).
+Audio SER: audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim (VA regression,
+trained on MSP-PODCAST broadcast/film speech — avoids the IEMOCAP acted-speech
+misfire that made superb/wav2vec2-base-superb-er degrade emotion_register).
 
-Audio SER helpers (_classify_audio_segment, _fuse_emotion_dists, _compute_va) are
-retained for score_tts_emotion_fidelity and future use.
+Fusion: text 0.65 / audio 0.35 via shared Russell circumplex VA space.
+classify_segment_emotions() fuses both modalities when audio_path is valid.
+score_tts_emotion_fidelity() retains superb model as the fidelity-check scorer.
 
 Note: call smooth_emotion_arc() after Stage 2.5 (classify_segment_emotions) and
 before Stage 4b to flag per-speaker one-off emotion outliers for dashboard highlighting.
@@ -18,6 +18,7 @@ from pathlib import Path
 
 _MODEL_ID = "j-hartmann/emotion-english-distilroberta-base"
 _AUDIO_MODEL_ID = "superb/wav2vec2-base-superb-er"
+_AUDEERING_MODEL_ID = "audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim"
 
 # Model outputs: anger, disgust, fear, joy, neutral, sadness, surprise
 _LABEL_MAP: dict[str, str] = {
@@ -62,8 +63,10 @@ SSML_PROSODY: dict[str, dict[str, str]] = {
 
 _PROSODY_CONFIG_PATH = Path(__file__).parent.parent / "config" / "emotion_prosody.yaml"
 
-_text_pipeline  = None
-_audio_pipeline = None
+_text_pipeline      = None
+_audio_pipeline     = None
+_audeering_model    = None
+_audeering_processor = None
 
 
 def load_prosody_config(lang: str = "hi") -> dict[str, dict[str, str]]:
@@ -104,10 +107,80 @@ def _get_audio_pipeline():
     return _audio_pipeline
 
 
-_TEXT_WEIGHT  = 0.7
+def _get_audeering_model():
+    """Lazy-load audeering VA regression model (broadcast/film trained)."""
+    global _audeering_model, _audeering_processor
+    if _audeering_model is None:
+        from transformers import AutoModelForSequenceClassification, Wav2Vec2Processor
+        _audeering_processor = Wav2Vec2Processor.from_pretrained(_AUDEERING_MODEL_ID)
+        _audeering_model = AutoModelForSequenceClassification.from_pretrained(
+            _AUDEERING_MODEL_ID
+        )
+        _audeering_model.eval()
+    return _audeering_model, _audeering_processor
+
+
+def _va_to_dist(valence: float, arousal: float) -> dict[str, float]:
+    """Convert continuous (valence, arousal) to a soft emotion probability distribution.
+
+    Uses inverse squared distance from each emotion's Russell circumplex coordinates.
+    Closest emotion gets the most probability mass.
+    """
+    weights: dict[str, float] = {}
+    for emo, (v, a) in _VALENCE_AROUSAL.items():
+        dist_sq = (valence - v) ** 2 + (arousal - a) ** 2
+        weights[emo] = 1.0 / (dist_sq + 1e-6)
+    total = sum(weights.values())
+    return {emo: round(w / total, 3) for emo, w in weights.items()}
+
+
+def _classify_audio_segment_audeering(
+    audio,   # pydub.AudioSegment pre-loaded at 16 kHz mono
+    start_s: float,
+    end_s: float,
+    model,
+    processor,
+) -> dict[str, float]:
+    """Run audeering VA regression on an audio slice.
+
+    Audeering output: [arousal, dominance, valence] in [0, 1] after sigmoid.
+    Maps to [-1, 1] VA space then to a soft emotion distribution.
+    Returns {} on short segments or any runtime error.
+    """
+    import numpy as np
+    import torch
+
+    start_ms = int(start_s * 1000)
+    end_ms   = int(end_s   * 1000)
+    chunk    = audio[start_ms:end_ms]
+    if len(chunk) < int(_MIN_AUDIO_DURATION_S * 1000):
+        return {}
+    try:
+        # Convert pydub AudioSegment to numpy without writing a temp file
+        samples = np.array(chunk.get_array_of_samples()).astype(np.float32) / (2 ** 15)
+        inputs = processor(
+            samples, sampling_rate=16_000, return_tensors="pt", padding=True
+        )
+        with torch.no_grad():
+            logits = model(**inputs).logits
+        probs = torch.sigmoid(logits).squeeze().cpu().numpy()
+        # audeering: index 0 = arousal, 1 = dominance, 2 = valence (all in [0, 1])
+        arousal_raw = float(probs[0])
+        valence_raw = float(probs[2])
+        # map [0, 1] → [-1, 1] to align with _VALENCE_AROUSAL space
+        valence = (valence_raw - 0.5) * 2.0
+        arousal = (arousal_raw - 0.5) * 2.0
+        return _va_to_dist(valence, arousal)
+    except Exception:
+        return {}
+
+
+_TEXT_WEIGHT  = 0.7     # used by score_tts_emotion_fidelity / legacy superb path
 _AUDIO_WEIGHT = 0.3
-_MIN_AUDIO_DURATION_S = 0.5   # audio SER unreliable below this
-_TEXT_CONFIDENCE_GATE = 0.6   # only fuse audio when text top-1 score is below this
+_MIN_AUDIO_DURATION_S  = 0.5   # audio SER unreliable below this
+_TEXT_CONFIDENCE_GATE  = 0.6   # legacy confidence gate for superb model
+_AUDEERING_TEXT_WEIGHT  = 0.65  # audeering is better — give audio slightly more weight
+_AUDEERING_AUDIO_WEIGHT = 0.35
 
 
 def _classify_audio_segment(
@@ -184,14 +257,33 @@ def _va_similarity(emo1: str, emo2: str) -> float:
 
 
 def classify_segment_emotions(audio_path: Path,
-                               segments: list[dict]) -> list[dict]:
-    """Add emotion fields to each segment using text SER (j-hartmann DistilRoBERTa).
+                               segments: list[dict],
+                               use_audio_ser: bool = True) -> list[dict]:
+    """Add emotion fields to each segment using text SER fused with audio SER.
+
+    Text SER: j-hartmann/emotion-english-distilroberta-base (always on).
+    Audio SER: audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim (fused at
+    _AUDEERING_TEXT_WEIGHT/_AUDEERING_AUDIO_WEIGHT when audio_path exists and
+    use_audio_ser=True).
 
     Adds: emotion, emotion_score, emotion_dist, arousal, valence.
-    arousal/valence are derived from the Russell circumplex weighted by emotion_dist.
     """
-    print(f"  Loading emotion model ({_MODEL_ID}) …")
+    print(f"  Loading text emotion model ({_MODEL_ID}) …")
     pipe = _get_text_pipeline()
+
+    audio       = None
+    aud_model   = None
+    aud_proc    = None
+    if use_audio_ser and audio_path.exists():
+        try:
+            from pydub import AudioSegment as _AS
+            audio = _AS.from_file(str(audio_path)).set_channels(1).set_frame_rate(16_000)
+            print(f"  Loading audio emotion model ({_AUDEERING_MODEL_ID}) …")
+            aud_model, aud_proc = _get_audeering_model()
+        except Exception as exc:
+            print(f"  [warn] Audio SER setup failed: {exc}; using text-only")
+            audio = None
+
     out: list[dict] = []
     for seg in segments:
         text = str(seg.get("en_text") or "").strip()
@@ -200,16 +292,34 @@ def classify_segment_emotions(audio_path: Path,
                         "emotion_dist": {"neutral": 1.0}, "arousal": 0.0, "valence": 0.0})
             continue
         try:
-            preds = pipe(text, truncation=True, max_length=512, top_k=None)
-            top   = max(preds, key=lambda x: x["score"])
+            preds   = pipe(text, truncation=True, max_length=512, top_k=None)
+            top     = max(preds, key=lambda x: x["score"])
             emotion = _LABEL_MAP.get(top["label"], "neutral")
             score   = round(float(top["score"]), 3)
-            dist    = {
+            dist: dict[str, float] = {
                 _LABEL_MAP.get(p["label"], "neutral"): round(float(p["score"]), 3)
                 for p in preds if p["score"] >= 0.05
             }
         except Exception:
             emotion, score, dist = "neutral", 1.0, {"neutral": 1.0}
+
+        if audio is not None and aud_model is not None:
+            audio_dist = _classify_audio_segment_audeering(
+                audio, float(seg.get("start", 0)), float(seg.get("end", 0)),
+                aud_model, aud_proc,
+            )
+            if audio_dist:
+                all_emotions = set(dist) | set(audio_dist)
+                fused: dict[str, float] = {}
+                for emo in all_emotions:
+                    fused[emo] = (dist.get(emo, 0.0) * _AUDEERING_TEXT_WEIGHT
+                                  + audio_dist.get(emo, 0.0) * _AUDEERING_AUDIO_WEIGHT)
+                total = sum(fused.values())
+                if total > 0:
+                    dist = {k: round(v / total, 3) for k, v in fused.items()}
+                emotion = max(dist, key=lambda k: dist[k])
+                score   = dist[emotion]
+
         valence, arousal = _compute_va(dist)
         out.append({**seg, "emotion": emotion, "emotion_score": score,
                     "emotion_dist": dist, "arousal": arousal, "valence": valence})

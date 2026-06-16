@@ -1,7 +1,11 @@
-"""Unit tests for emotion.py — smooth_emotion_arc and load_prosody_config."""
+"""Unit tests for emotion.py — smooth_emotion_arc, load_prosody_config, _va_to_dist,
+classify_segment_emotions (text-only and audio-fused paths)."""
 import importlib.util
 import sys
 from pathlib import Path
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 _spec = importlib.util.spec_from_file_location(
     "emotion", Path(__file__).parent.parent / "code" / "emotion.py"
@@ -10,9 +14,12 @@ _mod = importlib.util.module_from_spec(_spec)  # type: ignore[arg-type]
 sys.modules["emotion"] = _mod
 _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
 
-smooth_emotion_arc  = _mod.smooth_emotion_arc
-load_prosody_config = _mod.load_prosody_config
-SSML_PROSODY        = _mod.SSML_PROSODY
+smooth_emotion_arc         = _mod.smooth_emotion_arc
+load_prosody_config        = _mod.load_prosody_config
+SSML_PROSODY               = _mod.SSML_PROSODY
+_va_to_dist                = _mod._va_to_dist
+classify_segment_emotions  = _mod.classify_segment_emotions
+_VALENCE_AROUSAL           = _mod._VALENCE_AROUSAL
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -189,3 +196,158 @@ def test_empty_yaml_falls_back(tmp_path, monkeypatch):
     monkeypatch.setattr(_mod, "_PROSODY_CONFIG_PATH", cfg)
     result = load_prosody_config("hi")
     assert result == SSML_PROSODY
+
+
+# ── _va_to_dist ───────────────────────────────────────────────────────────────
+
+def test_va_to_dist_sums_to_one():
+    dist = _va_to_dist(0.0, 0.0)
+    assert abs(sum(dist.values()) - 1.0) < 0.01
+
+
+def test_va_to_dist_covers_all_emotions():
+    dist = _va_to_dist(0.5, 0.5)
+    assert set(dist.keys()) == set(_VALENCE_AROUSAL.keys())
+
+
+def test_va_to_dist_exact_match_dominates():
+    # neutral is at (0.0, 0.0) — query exactly there should give neutral most mass
+    v, a = _VALENCE_AROUSAL["neutral"]
+    dist = _va_to_dist(v, a)
+    assert dist["neutral"] == max(dist.values())
+
+
+def test_va_to_dist_happy_coords_dominate_happy():
+    v, a = _VALENCE_AROUSAL["happy"]
+    dist = _va_to_dist(v, a)
+    assert dist["happy"] == max(dist.values())
+
+
+def test_va_to_dist_no_negative_probs():
+    dist = _va_to_dist(-1.0, -1.0)
+    assert all(p >= 0.0 for p in dist.values())
+
+
+# ── classify_segment_emotions — text-only path ────────────────────────────────
+
+def _fake_text_pipe_classify(preds_list: list[dict]):
+    """Return a pipeline callable yielding preds_list for any input."""
+    return lambda text, **kwargs: preds_list
+
+
+def _text_seg(seg_id: int, en_text: str) -> dict:
+    return {"id": seg_id, "start": float(seg_id), "end": float(seg_id + 1),
+            "en_text": en_text, "speaker": "SP0"}
+
+
+def test_classify_text_only_empty_text(tmp_path):
+    """Empty en_text produces neutral with score 1.0."""
+    seg = {**_text_seg(0, ""), "en_text": ""}
+    with patch.object(_mod, "_get_text_pipeline",
+                      return_value=_fake_text_pipe_classify([{"label": "joy", "score": 0.9}])):
+        result = classify_segment_emotions(tmp_path / "no_audio.wav", [seg],
+                                           use_audio_ser=False)
+    assert result[0]["emotion"] == "neutral"
+    assert result[0]["emotion_score"] == 1.0
+
+
+def test_classify_text_only_happy(tmp_path):
+    segs = [_text_seg(0, "I am so happy today!")]
+    preds = [{"label": "joy", "score": 0.85}, {"label": "neutral", "score": 0.10},
+             {"label": "anger", "score": 0.05}]
+    with patch.object(_mod, "_get_text_pipeline",
+                      return_value=_fake_text_pipe_classify(preds)):
+        result = classify_segment_emotions(tmp_path / "no_audio.wav", segs,
+                                           use_audio_ser=False)
+    assert result[0]["emotion"] == "happy"
+    assert result[0]["emotion_score"] == pytest.approx(0.85, abs=0.01)
+    assert "arousal" in result[0]
+    assert "valence" in result[0]
+
+
+def test_classify_text_only_propagates_existing_fields(tmp_path):
+    segs = [{"id": 0, "start": 0.0, "end": 1.0, "en_text": "hello",
+             "hi_text": "नमस्ते", "speaker": "SP0"}]
+    preds = [{"label": "neutral", "score": 0.9}]
+    with patch.object(_mod, "_get_text_pipeline",
+                      return_value=_fake_text_pipe_classify(preds)):
+        result = classify_segment_emotions(tmp_path / "no_audio.wav", segs,
+                                           use_audio_ser=False)
+    assert result[0]["hi_text"] == "नमस्ते"
+
+
+# ── classify_segment_emotions — audio-fused path ─────────────────────────────
+
+def test_classify_fuses_audio_when_available(tmp_path):
+    """When audio SER returns a distribution, fused emotion may differ from text-only."""
+    audio_file = tmp_path / "src.wav"
+    audio_file.write_bytes(b"RIFF")
+
+    segs = [_text_seg(0, "I am sad")]
+    text_preds = [{"label": "sadness", "score": 0.8}, {"label": "neutral", "score": 0.2}]
+
+    # audio SER returns strong angry signal — fused result should shift toward angry
+    fake_audio_dist = {"angry": 0.9, "neutral": 0.1}
+
+    fake_audio_obj = MagicMock()
+    fake_audio_obj.set_channels.return_value = fake_audio_obj
+    fake_audio_obj.set_frame_rate.return_value = fake_audio_obj
+
+    with (
+        patch.object(_mod, "_get_text_pipeline",
+                     return_value=_fake_text_pipe_classify(text_preds)),
+        patch("pydub.AudioSegment.from_file", return_value=fake_audio_obj),
+        patch.object(_mod, "_get_audeering_model",
+                     return_value=(MagicMock(), MagicMock())),
+        patch.object(_mod, "_classify_audio_segment_audeering",
+                     return_value=fake_audio_dist),
+    ):
+        result = classify_segment_emotions(audio_file, segs, use_audio_ser=True)
+
+    # fused distribution: sad gets 0.65*0.8=0.52, angry gets 0.35*0.9=0.315 —
+    # sad still wins, but angry mass is present
+    fused_dist = result[0]["emotion_dist"]
+    assert fused_dist.get("angry", 0.0) > 0.0
+
+
+def test_classify_audio_ser_failure_falls_back_to_text(tmp_path):
+    """If audio setup raises, text-only result is returned without crash."""
+    audio_file = tmp_path / "src.wav"
+    audio_file.write_bytes(b"RIFF")
+
+    segs = [_text_seg(0, "I am so happy!")]
+    preds = [{"label": "joy", "score": 0.9}]
+
+    with (
+        patch.object(_mod, "_get_text_pipeline",
+                     return_value=_fake_text_pipe_classify(preds)),
+        patch("pydub.AudioSegment.from_file", side_effect=RuntimeError("load fail")),
+    ):
+        result = classify_segment_emotions(audio_file, segs, use_audio_ser=True)
+
+    assert result[0]["emotion"] == "happy"
+
+
+def test_classify_audio_ser_empty_dist_uses_text(tmp_path):
+    """If audeering returns {}, the text-only distribution is kept unchanged."""
+    audio_file = tmp_path / "src.wav"
+    audio_file.write_bytes(b"RIFF")
+
+    segs = [_text_seg(0, "I am neutral")]
+    preds = [{"label": "neutral", "score": 0.95}]
+
+    fake_audio_obj = MagicMock()
+    fake_audio_obj.set_channels.return_value = fake_audio_obj
+    fake_audio_obj.set_frame_rate.return_value = fake_audio_obj
+
+    with (
+        patch.object(_mod, "_get_text_pipeline",
+                     return_value=_fake_text_pipe_classify(preds)),
+        patch("pydub.AudioSegment.from_file", return_value=fake_audio_obj),
+        patch.object(_mod, "_get_audeering_model",
+                     return_value=(MagicMock(), MagicMock())),
+        patch.object(_mod, "_classify_audio_segment_audeering", return_value={}),
+    ):
+        result = classify_segment_emotions(audio_file, segs, use_audio_ser=True)
+
+    assert result[0]["emotion"] == "neutral"
