@@ -284,7 +284,8 @@ with tab4:
                 "angry": "#FEE2E2", "fearful": "#FEE2E2", "disgust": "#FEE2E2",
                 "sad": "#DBEAFE",
                 "happy": "#DCFCE7", "surprised": "#DCFCE7",
-            }.get(emo, "")
+                "neutral": "#F3F4F6",
+            }.get(emo, "#F3F4F6")
         return [f"background-color: {colour}" if colour else "" for _ in row]
 
     st.dataframe(

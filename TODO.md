@@ -36,21 +36,21 @@ Spec: `docs/emotion_matching_spec.docx`
 ### Emotion arc continuity
 **Target:** Repair rate ≤ 8% (current ~15%)
 
-- [ ] **Add `emotion_arc` smoothing pass before Stage 4b**
-  - For each speaker, scan consecutive segments; if a single segment's emotion is an outlier within a run of 5+, flag it rather than override
-  - Write `arc_flagged: true` into segment dict; surface in dashboard transcript view as yellow highlight
-  - File: new function `smooth_emotion_arc()` in `emotion.py`
+- [x] **Add `emotion_arc` smoothing pass before Stage 4b** — done (prior session)
+  - `smooth_emotion_arc()` in `emotion.py`; wired at `pipeline_v2.py:925`
+  - Writes `arc_flagged: true` into segment dict; surfaced as yellow highlight in dashboard tab 4
 
-- [ ] **Colour-band emotion in dashboard bilingual transcript (tab 4)**
-  - Red = angry/fearful/disgust, Blue = sad, Green = happy/surprised, Grey = neutral
-  - One-line CSS injection per row based on `emotion` column in transcript CSV
+- [x] **Colour-band emotion in dashboard bilingual transcript (tab 4)** — done 2026-06-16
+  - Red = angry/fearful/disgust (`#FEE2E2`), Blue = sad (`#DBEAFE`), Green = happy/surprised (`#DCFCE7`), Grey = neutral (`#F3F4F6`)
+  - Yellow (`#FEF9C3`) for `arc_flagged` rows (overrides emotion colour)
+  - Implemented via `_emotion_row_style()` in `dashboard_v2.py`
 
 ### Regression test gate
 
-- [ ] **Add `tests/test_emotion_regression.py`**
-  - Full pipeline run on `test_clips/tears_of_steel_2min.mp4` (with LLM, with emotion, no diarize for speed)
-  - Assert `avg_emotion_register ≥ 3.8` and `tts_fidelity_soft_score ≥ 65%`
-  - Mark as `pytest.mark.slow`; run in CI on any PR touching `emotion.py`, `pipeline_v2.py`, or LLM prompts
+- [x] **Add `tests/test_emotion_regression.py`** — done (prior session)
+  - Full pipeline run on `test_clips/tears_of_steel_2min.mp4` (with LLM, with emotion, no diarize)
+  - Asserts `emotion.avg_soft_score ≥ 80%`, `tts_fidelity.avg_soft_score ≥ 60%`, `mos_rubric.mos ≥ 80`
+  - Marked `pytest.mark.slow`
 
 ---
 
