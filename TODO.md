@@ -31,7 +31,10 @@ Spec: `docs/emotion_matching_spec.docx`
 - [x] **Expand calibration to 5×7 prosody grid** — done 2026-06-16
   - `audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim` now in `score_tts_emotion_fidelity()` — gate cleared
   - `_PITCH_VARIANTS` 3→5, `_RATE_VARIANTS` 3→7 (35 combos/emotion); max segments per emotion 3→5
-  - Rerun: `uv run python code/calibrate_prosody.py --clip test_clips/tears_of_steel_2min.mp4`
+  - **Calibration result: inconclusive** — all emotions converge to pitch=-15%/rate=-20%; scores 7–35% vs 74.7% on full-clip
+  - Root cause: short TTS clips (2–5s) give audeering too little signal; perceived emotion driven by speech content not prosody → all combos tie
+  - YAML `hi:` block reverted; hand-crafted `default:` params better than calibrated output
+  - Next: calibrate against full-pipeline output rather than isolated TTS snippets
 
 ---
 

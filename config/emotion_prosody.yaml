@@ -27,24 +27,3 @@ default:
     pitch: +22%
     volume: loud
     rate: +10%
-hi:
-  happy:
-    pitch: +0%
-    volume: loud
-    rate: +0%
-  angry:
-    pitch: -10%
-    volume: x-loud
-    rate: +0%
-  sad:
-    pitch: -10%
-    volume: soft
-    rate: -12%
-  fearful:
-    pitch: -10%
-    volume: soft
-    rate: -12%
-  disgust:
-    pitch: -10%
-    volume: medium
-    rate: -12%
