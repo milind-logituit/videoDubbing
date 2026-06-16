@@ -47,10 +47,10 @@ Spec: `docs/emotion_matching_spec.docx`
 
 ### Regression test gate
 
-- [x] **Add `tests/test_emotion_regression.py`** — done (prior session)
+- [x] **Add `tests/test_emotion_regression.py`** — done; gate passed 2026-06-16
   - Full pipeline run on `test_clips/tears_of_steel_2min.mp4` (with LLM, with emotion, no diarize)
-  - Asserts `emotion.avg_soft_score ≥ 80%`, `tts_fidelity.avg_soft_score ≥ 60%`, `mos_rubric.mos ≥ 80`
-  - Marked `pytest.mark.slow`
+  - **Results:** `emotion.avg_soft_score` 90.6% (≥80 ✅) · `tts_fidelity` 74.7% (≥60 ✅) · `MOS` 82.8 (≥80 ✅)
+  - Marked `pytest.mark.slow`; run with `uv run pytest -m slow`
 
 ---
 
