@@ -20,6 +20,8 @@ SSML_PROSODY               = _mod.SSML_PROSODY
 _va_to_dist                = _mod._va_to_dist
 classify_segment_emotions  = _mod.classify_segment_emotions
 _VALENCE_AROUSAL           = _mod._VALENCE_AROUSAL
+load_persona_map           = _mod.load_persona_map
+apply_persona_offsets      = _mod.apply_persona_offsets
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -351,3 +353,95 @@ def test_classify_audio_ser_empty_dist_uses_text(tmp_path):
         result = classify_segment_emotions(audio_file, segs, use_audio_ser=True)
 
     assert result[0]["emotion"] == "neutral"
+
+
+# ── load_persona_map ──────────────────────────────────────────────────────────
+
+def test_load_persona_map_missing_file(tmp_path):
+    result = load_persona_map(tmp_path / "nonexistent.json")
+    assert result == {}
+
+
+def test_load_persona_map_valid(tmp_path):
+    cfg = tmp_path / "persona_map.json"
+    cfg.write_text('{"SPEAKER_00": {"valence_offset": -0.2, "arousal_offset": 0.1}}')
+    result = load_persona_map(cfg)
+    assert result == {"SPEAKER_00": {"valence_offset": -0.2, "arousal_offset": 0.1}}
+
+
+def test_load_persona_map_malformed_json(tmp_path):
+    cfg = tmp_path / "persona_map.json"
+    cfg.write_text("{bad json")
+    result = load_persona_map(cfg)
+    assert result == {}
+
+
+def test_load_persona_map_missing_offsets_default_to_zero(tmp_path):
+    cfg = tmp_path / "persona_map.json"
+    cfg.write_text('{"SP0": {}}')
+    result = load_persona_map(cfg)
+    assert result["SP0"]["valence_offset"] == 0.0
+    assert result["SP0"]["arousal_offset"] == 0.0
+
+
+# ── apply_persona_offsets ─────────────────────────────────────────────────────
+
+def _emo_seg(seg_id: int, speaker: str, emotion: str = "neutral",
+             valence: float = 0.0, arousal: float = 0.0) -> dict:
+    return {"id": seg_id, "start": float(seg_id), "end": float(seg_id + 1),
+            "speaker": speaker, "emotion": emotion, "valence": valence, "arousal": arousal,
+            "emotion_score": 0.9, "emotion_dist": {emotion: 0.9}}
+
+
+def test_apply_persona_no_matching_speaker():
+    segs = [_emo_seg(0, "SPEAKER_00")]
+    result = apply_persona_offsets(segs, {"SPEAKER_01": {"valence_offset": 0.5,
+                                                          "arousal_offset": 0.5}})
+    assert result[0]["emotion"] == "neutral"
+    assert "persona_adjusted" not in result[0]
+
+
+def test_apply_persona_marks_adjusted():
+    segs = [_emo_seg(0, "SPEAKER_00", valence=0.0, arousal=0.0)]
+    persona = {"SPEAKER_00": {"valence_offset": 0.5, "arousal_offset": 0.3}}
+    result = apply_persona_offsets(segs, persona)
+    assert result[0]["persona_adjusted"] is True
+
+
+def test_apply_persona_shifts_valence_arousal():
+    segs = [_emo_seg(0, "SP0", valence=0.1, arousal=0.1)]
+    persona = {"SP0": {"valence_offset": 0.5, "arousal_offset": 0.4}}
+    result = apply_persona_offsets(segs, persona)
+    assert result[0]["valence"] == pytest.approx(0.6, abs=0.01)
+    assert result[0]["arousal"] == pytest.approx(0.5, abs=0.01)
+
+
+def test_apply_persona_clamps_to_minus_one_one():
+    segs = [_emo_seg(0, "SP0", valence=0.9, arousal=-0.9)]
+    persona = {"SP0": {"valence_offset": 0.5, "arousal_offset": -0.5}}
+    result = apply_persona_offsets(segs, persona)
+    assert result[0]["valence"] <= 1.0
+    assert result[0]["arousal"] >= -1.0
+
+
+def test_apply_persona_re_derives_emotion():
+    # neutral (0,0) + large positive VA offset → should shift toward happy
+    segs = [_emo_seg(0, "SP0", emotion="neutral", valence=0.0, arousal=0.0)]
+    persona = {"SP0": {"valence_offset": 0.8, "arousal_offset": 0.6}}
+    result = apply_persona_offsets(segs, persona)
+    assert result[0]["emotion"] == "happy"
+
+
+def test_apply_persona_empty_map_returns_unchanged():
+    segs = [_emo_seg(0, "SP0", emotion="sad", valence=-0.7, arousal=-0.5)]
+    result = apply_persona_offsets(segs, {})
+    assert result[0]["emotion"] == "sad"
+    assert "persona_adjusted" not in result[0]
+
+
+def test_apply_persona_no_speaker_field_skipped():
+    seg = {"id": 0, "start": 0.0, "end": 1.0, "emotion": "neutral",
+           "valence": 0.0, "arousal": 0.0}
+    result = apply_persona_offsets([seg], {"SPEAKER_00": {"valence_offset": 0.5,
+                                                           "arousal_offset": 0.5}})
+    assert "persona_adjusted" not in result[0]

@@ -466,6 +466,65 @@ def classify_face_emotions(video_path: Path, segments: list[dict]) -> list[dict]
         return out
 
 
+def load_persona_map(path: Path) -> dict[str, dict[str, float]]:
+    """Load optional per-speaker valence/arousal offsets from a JSON file.
+
+    Expected format::
+
+        {
+          "SPEAKER_00": {"valence_offset": -0.2, "arousal_offset":  0.1},
+          "SPEAKER_01": {"valence_offset":  0.3, "arousal_offset": -0.1}
+        }
+
+    Returns {} if the file does not exist or cannot be parsed.
+    """
+    if not path.exists():
+        return {}
+    try:
+        import json
+        raw = json.loads(path.read_text())
+        validated: dict[str, dict[str, float]] = {}
+        for speaker, offsets in raw.items():
+            v = float(offsets.get("valence_offset", 0.0))
+            a = float(offsets.get("arousal_offset", 0.0))
+            validated[speaker] = {"valence_offset": v, "arousal_offset": a}
+        return validated
+    except Exception as exc:
+        print(f"  [warn] Could not load persona_map {path.name}: {exc}")
+        return {}
+
+
+def apply_persona_offsets(segments: list[dict],
+                           persona_map: dict[str, dict[str, float]]) -> list[dict]:
+    """Shift each segment's (valence, arousal) by per-speaker offsets and re-derive emotion.
+
+    Offsets are clamped so the result stays within [-1, 1]. The new emotion is the
+    argmax of _va_to_dist() on the shifted coordinates. Adjusted segments gain
+    persona_adjusted=True so the dashboard can surface them.
+    """
+    out: list[dict] = []
+    for seg in segments:
+        speaker = seg.get("speaker", "")
+        if not speaker or speaker not in persona_map:
+            out.append(seg)
+            continue
+        offsets  = persona_map[speaker]
+        new_v    = max(-1.0, min(1.0, float(seg.get("valence", 0.0))
+                                  + offsets["valence_offset"]))
+        new_a    = max(-1.0, min(1.0, float(seg.get("arousal", 0.0))
+                                  + offsets["arousal_offset"]))
+        dist     = _va_to_dist(new_v, new_a)
+        new_emo  = max(dist, key=lambda k: dist[k])
+        out.append({**seg,
+                    "valence":          round(new_v, 3),
+                    "arousal":          round(new_a, 3),
+                    "emotion":          new_emo,
+                    "emotion_score":    dist[new_emo],
+                    "emotion_dist":     dist,
+                    "persona_adjusted": True})
+    return out
+
+
 def _back_translate(text: str, source_lang: str, target_lang: str = "en") -> str:
     """Translate text back to English for emotion classification.
 

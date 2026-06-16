@@ -35,7 +35,7 @@ from eval_lipsync import compute_lipsync_score
 from apply_lipsync import apply_wav2lip
 from emotion import (classify_segment_emotions, smooth_emotion_arc,
                      score_emotion_consistency, score_tts_emotion_fidelity,
-                     classify_face_emotions)
+                     classify_face_emotions, load_persona_map, apply_persona_offsets)
 
 # Re-exported from sub-modules so tests pulling from this module still work
 from diarize import (                                         # noqa: E402
@@ -932,6 +932,13 @@ def run_pipeline(video_path: Path, args, *, has_ref: bool = False) -> dict:
         segments = classify_face_emotions(video_path, segments)
         face_count = sum(1 for s in segments if s.get("face_emotion"))
         print(f"  Face emotion detected on {face_count}/{len(segments)} segments")
+
+    persona_map = load_persona_map(video_path.parent / "persona_map.json")
+    if persona_map:
+        print(f"\nStage 2.7 — Persona map ({len(persona_map)} speaker(s)) …")
+        segments = apply_persona_offsets(segments, persona_map)
+        adj = sum(1 for s in segments if s.get("persona_adjusted"))
+        print(f"  Adjusted {adj}/{len(segments)} segments")
 
     print("\nStage 4c — Emotion register repair …")
     segments = repair_emotion_register(segments, skip=args.no_llm,

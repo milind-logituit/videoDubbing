@@ -1,0 +1,8 @@
+{
+  "_comment": "Copy to the same directory as your input video and rename to persona_map.json.",
+  "_comment2": "Speaker IDs come from pyannote diarization (e.g. SPEAKER_00, SPEAKER_01).",
+  "_comment3": "Offsets are added to the Russell-circumplex valence and arousal for every segment",
+  "_comment4": "belonging to that speaker. Values clamped to [-1, 1] after addition.",
+  "SPEAKER_00": {"valence_offset": -0.2, "arousal_offset":  0.1},
+  "SPEAKER_01": {"valence_offset":  0.3, "arousal_offset": -0.1}
+}

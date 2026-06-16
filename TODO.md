@@ -56,20 +56,17 @@ Spec: `docs/emotion_matching_spec.docx`
 
 ## P2 — v3.1
 
-- [ ] **Per-speaker persona map (`persona_map.json`)**
-  - After diarization, load optional `persona_map.json` for valence/arousal offsets per speaker
-  - Apply offsets before passing emotion to Stage 4b and SSML prosody layer
-  - Initially hand-authored; eventually auto-extracted from first 60s of each speaker's audio
+- [x] **Per-speaker persona map (`persona_map.json`)** — done 2026-06-16
+  - `load_persona_map(path)` + `apply_persona_offsets(segments, map)` in `emotion.py`
+  - Wired as Stage 2.7 in `pipeline_v2.py` (after face emotion, before repair); loads `persona_map.json` from the input video's directory
+  - Format: `{"SPEAKER_00": {"valence_offset": -0.2, "arousal_offset": 0.1}, …}`; example in `config/persona_map_example.json`
+  - Adjusted segments get `persona_adjusted: True`; 11 new tests — 170 total passing
 
-- [ ] **ElevenLabs TTS provider gate**
-  - Add `--tts-provider=elevenlabs` flag
-  - Build provider abstraction in `tts_audio.py` so edge-tts vs ElevenLabs is a config switch
-  - Blocks on pricing negotiation ($0.30/1K chars); BD dependency
+- [ ] **ElevenLabs TTS provider gate** — blocked (see below)
 
-- [ ] **Face emotion detection (`--face-emotion` flag)**
-  - MediaPipe FaceMesh → per-frame AU scores → aggregate over segment
-  - Fuse with audio+text at 0.6 / 0.2 / 0.2
-  - Opt-in only (adds ~45s/clip on CPU)
+- [x] **Face emotion detection (`--face-emotion` flag)** — done (prior session)
+  - `classify_face_emotions()` in `emotion.py`; wired as Stage 2.6 in `pipeline_v2.py`
+  - MediaPipe FaceMesh → VA proxy → fused with text SER at 0.6/0.4; opt-in via `--face-emotion`
 
 ---
 
@@ -82,6 +79,9 @@ Spec: `docs/emotion_matching_spec.docx`
 - [ ] **ElevenLabs Emotion API access** — needed for P2 TTS upgrade
   - Owner: BD
   - Target: Week 4
+
+- [ ] **ElevenLabs TTS provider gate** — waiting on BD pricing ($0.30/1K chars) + API access
+  - Add `--tts-provider=elevenlabs` flag; provider abstraction in `tts_audio.py`
 
 ---
 
