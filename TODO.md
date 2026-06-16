@@ -27,7 +27,11 @@ Spec: `docs/emotion_matching_spec.docx`
 - [x] **Calibrate prosody params against MOS rubric** — done 2026-06-15
   - 3×3 grid (pitch × rate) per emotion on `tears_of_steel_2min` (hi); winners written to `config/emotion_prosody.yaml` under `hi:` block
   - MOS: 83.2 → **85.2** (+2.0); TTS fidelity scorer unreliable (wav2vec2 misfires on broadcast) — wider grid deferred until better model available
-  - Do not expand to 5×7 grid until `audeering/wav2vec2-large-robust` or equivalent is available as scorer
+
+- [x] **Expand calibration to 5×7 prosody grid** — done 2026-06-16
+  - `audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim` now in `score_tts_emotion_fidelity()` — gate cleared
+  - `_PITCH_VARIANTS` 3→5, `_RATE_VARIANTS` 3→7 (35 combos/emotion); max segments per emotion 3→5
+  - Rerun: `uv run python code/calibrate_prosody.py --clip test_clips/tears_of_steel_2min.mp4`
 
 ---
 

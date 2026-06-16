@@ -32,9 +32,9 @@ ROOT      = Path(__file__).parent.parent
 PREPARED  = ROOT / "data/prepared"
 CONFIG    = ROOT / "config" / "emotion_prosody.yaml"
 
-# Grid to search — 3×3 = 9 combos per emotion (~5-8 min total vs 35 for 7×5)
-_PITCH_VARIANTS = ["-10%", "+0%", "+15%"]
-_RATE_VARIANTS  = ["-12%", "+0%", "+12%"]
+# Grid to search — 5×7 = 35 combos per emotion (audeering scorer reliable on broadcast)
+_PITCH_VARIANTS = ["-15%", "-7%", "+0%", "+10%", "+20%"]
+_RATE_VARIANTS  = ["-20%", "-14%", "-7%", "+0%", "+7%", "+14%", "+20%"]
 _VOLUME_FIXED   = {
     "neutral":   "medium",
     "happy":     "loud",
@@ -84,7 +84,7 @@ def calibrate(clip_path: Path, lang: str = "hi", dry_run: bool = False) -> None:
     voice = _TTS_DEFAULT_VOICE.get(lang, "hi-IN-SwaraNeural")
 
     print(f"\nCalibrating prosody for lang={lang} on {stem}")
-    print(f"Voice: {voice}  |  Grid: {len(_PITCH_VARIANTS)} pitch × {len(_RATE_VARIANTS)} rate per emotion\n")
+    print(f"Voice: {voice}  |  Grid: {len(_PITCH_VARIANTS)}×{len(_RATE_VARIANTS)} = {len(_PITCH_VARIANTS)*len(_RATE_VARIANTS)} combos per emotion\n")
 
     current_config = load_prosody_config(lang)
     best_params: dict[str, dict[str, str]] = {}
@@ -95,8 +95,8 @@ def calibrate(clip_path: Path, lang: str = "hi", dry_run: bool = False) -> None:
             print(f"  [{emotion}] no segments in transcript — skipping")
             continue
 
-        # Use up to 3 representative segments for speed
-        segs = segs[:3]
+        # Use up to 5 representative segments (audeering is reliable — more averaging is better)
+        segs = segs[:5]
         volume = _VOLUME_FIXED.get(emotion, "medium")
         current = current_config.get(emotion, SSML_PROSODY.get(emotion, {}))
         print(f"  [{emotion}] {len(segs)} segment(s)  current: pitch={current.get('pitch')} rate={current.get('rate')}")

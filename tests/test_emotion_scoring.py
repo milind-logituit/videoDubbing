@@ -160,21 +160,22 @@ def test_fidelity_returns_avg_score(tmp_path: Path):
     audio_file = tmp_path / "dubbed.wav"
     audio_file.write_bytes(b"RIFF")
 
-    fake_pipe = MagicMock(return_value=[{"label": "neu", "score": 0.9}])
-
-    fake_chunk = MagicMock()
-    fake_chunk.__len__ = MagicMock(return_value=1000)
-    fake_chunk.export = MagicMock()
+    fake_model = MagicMock()
+    fake_processor = MagicMock()
 
     fake_audio = MagicMock()
     fake_audio.set_channels.return_value = fake_audio
     fake_audio.set_frame_rate.return_value = fake_audio
-    fake_audio.__getitem__ = MagicMock(return_value=fake_chunk)
+
+    # Return neutral-dominant distribution so perceived==intended→similarity==1.0
+    neutral_dist = {"neutral": 0.9, "happy": 0.02, "angry": 0.02,
+                    "sad": 0.02, "fearful": 0.02, "disgust": 0.01, "surprised": 0.01}
 
     segments = [{"id": 0, "start": 0.0, "end": 1.0, "emotion": "neutral"}]
 
     with (
-        patch.object(_mod, "_get_audio_pipeline", return_value=fake_pipe),
+        patch.object(_mod, "_get_audeering_model", return_value=(fake_model, fake_processor)),
+        patch.object(_mod, "_classify_audio_segment_audeering", return_value=neutral_dist),
         patch("pydub.AudioSegment.from_file", return_value=fake_audio),
     ):
         result = score_tts_emotion_fidelity(audio_file, segments)

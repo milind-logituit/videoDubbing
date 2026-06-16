@@ -7,7 +7,7 @@ misfire that made superb/wav2vec2-base-superb-er degrade emotion_register).
 
 Fusion: text 0.65 / audio 0.35 via shared Russell circumplex VA space.
 classify_segment_emotions() fuses both modalities when audio_path is valid.
-score_tts_emotion_fidelity() retains superb model as the fidelity-check scorer.
+score_tts_emotion_fidelity() uses audeering VA regression (broadcast/film-trained).
 
 Note: call smooth_emotion_arc() after Stage 2.5 (classify_segment_emotions) and
 before Stage 4b to flag per-speaker one-off emotion outliers for dashboard highlighting.
@@ -111,9 +111,9 @@ def _get_audeering_model():
     """Lazy-load audeering VA regression model (broadcast/film trained)."""
     global _audeering_model, _audeering_processor
     if _audeering_model is None:
-        from transformers import AutoModelForSequenceClassification, Wav2Vec2Processor
+        from transformers import Wav2Vec2ForSequenceClassification, Wav2Vec2Processor
         _audeering_processor = Wav2Vec2Processor.from_pretrained(_AUDEERING_MODEL_ID)
-        _audeering_model = AutoModelForSequenceClassification.from_pretrained(
+        _audeering_model = Wav2Vec2ForSequenceClassification.from_pretrained(
             _AUDEERING_MODEL_ID
         )
         _audeering_model.eval()
@@ -599,8 +599,9 @@ def score_tts_emotion_fidelity(dubbed_audio_path: Path,
                                 segments: list[dict]) -> dict:
     """Check whether the synthesised dubbed audio SOUNDS as intended.
 
-    Slices the dubbed mp3 by segment timestamps, runs wav2vec2 audio SER on each
-    slice, compares perceived audio emotion against the intended emotion stored in
+    Slices the dubbed audio by segment timestamps, runs audeering VA regression
+    on each slice (broadcast/film-trained — replaces superb IEMOCAP model),
+    compares perceived VA-derived emotion against the intended emotion in
     segments[*]["emotion"]. Returns avg_soft_score in [0, 100].
     """
     if not dubbed_audio_path.exists():
@@ -611,9 +612,9 @@ def score_tts_emotion_fidelity(dubbed_audio_path: Path,
     except ImportError:
         return {"note": "pydub not installed"}
 
-    print(f"  Loading audio emotion model ({_AUDIO_MODEL_ID}) …")
+    print(f"  Loading audio emotion model ({_AUDEERING_MODEL_ID}) …")
     try:
-        audio_pipe = _get_audio_pipeline()
+        aud_model, aud_proc = _get_audeering_model()
     except Exception as exc:
         return {"note": f"audio model load failed: {exc}"}
 
@@ -625,21 +626,19 @@ def score_tts_emotion_fidelity(dubbed_audio_path: Path,
     records, soft_total, n = [], 0.0, 0
     for seg in segments:
         intended = seg.get("emotion", "neutral")
-        start_ms  = int(float(seg.get("start", 0)) * 1000)
-        end_ms    = int(float(seg.get("end",   0)) * 1000)
-        if end_ms <= start_ms:
+        start_s  = float(seg.get("start", 0))
+        end_s    = float(seg.get("end",   0))
+        if end_s <= start_s:
             continue
-        chunk = audio[start_ms:end_ms]
-        if len(chunk) < 100:   # skip sub-100ms slivers
+        if (end_s - start_s) * 1000 < 100:   # skip sub-100ms slivers
             continue
-        try:
-            with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
-                chunk.export(tmp.name, format="wav")
-                preds = audio_pipe(tmp.name)
-            top   = max(preds, key=lambda x: x["score"])
-            perceived = _LABEL_MAP.get(top["label"], "neutral")
+        audio_dist = _classify_audio_segment_audeering(
+            audio, start_s, end_s, aud_model, aud_proc
+        )
+        if audio_dist:
+            perceived  = max(audio_dist, key=lambda k: audio_dist[k])
             similarity = _va_similarity(intended, perceived)
-        except Exception:
+        else:
             perceived, similarity = "neutral", _va_similarity(intended, "neutral")
 
         soft_total += similarity
