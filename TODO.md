@@ -49,7 +49,8 @@ Spec: `docs/emotion_matching_spec.docx`
 
 - [x] **Add `tests/test_emotion_regression.py`** — done; gate passed 2026-06-16
   - Full pipeline run on `test_clips/tears_of_steel_2min.mp4` (with LLM, with emotion, no diarize)
-  - **Results:** `emotion.avg_soft_score` 90.6% (≥80 ✅) · `tts_fidelity` 74.7% (≥60 ✅) · `MOS` 82.8 (≥80 ✅)
+  - **Results:** `avg_emotion_register` 4.00/5 (gate ≥3.8 ✅, target ≥4.0 ✅) · `tts_fidelity` 74.7% (gate ≥65% ✅, target ≥75% ⚠️ just below)
+  - Thresholds aligned to `docs/emotion_matching_spec.docx`; prior test was checking `emotion.avg_soft_score` (wrong metric)
   - Marked `pytest.mark.slow`; run with `uv run pytest -m slow`
 
 ---
