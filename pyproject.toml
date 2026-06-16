@@ -40,5 +40,10 @@ dev = [
     "ruff>=0.15.16",
 ]
 
+[tool.pytest.ini_options]
+markers = [
+    "slow: full pipeline run requiring network access and real models (deselect with -m 'not slow')",
+]
+
 [tool.ruff]
 exclude = ["vendor/"]
