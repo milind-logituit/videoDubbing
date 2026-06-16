@@ -68,6 +68,55 @@ _audio_pipeline     = None
 _audeering_model    = None
 _audeering_processor = None
 
+# ---------------------------------------------------------------------------
+# Audeering custom model — must be at module level so from_pretrained works.
+# Transformers 5.x removed all_tied_weights_keys from PreTrainedModel; we
+# declare it explicitly on the subclass.
+# ---------------------------------------------------------------------------
+try:
+    import torch
+    import torch.nn as nn
+    from transformers import AutoConfig as _AutoConfig
+    from transformers.models.wav2vec2.modeling_wav2vec2 import (
+        Wav2Vec2Model as _Wav2Vec2Model,
+        Wav2Vec2PreTrainedModel as _Wav2Vec2PreTrainedModel,
+    )
+
+    class _RegressionHead(nn.Module):
+        def __init__(self, config: _AutoConfig) -> None:
+            super().__init__()
+            self.dense    = nn.Linear(config.hidden_size, config.hidden_size)
+            self.dropout  = nn.Dropout(config.final_dropout)
+            self.out_proj = nn.Linear(config.hidden_size, config.num_labels)
+
+        def forward(self, features: "torch.Tensor") -> "torch.Tensor":
+            x = self.dropout(features)
+            x = self.dense(x)
+            x = torch.tanh(x)
+            x = self.dropout(x)
+            return self.out_proj(x)
+
+    class _AudeeringEmotionModel(_Wav2Vec2PreTrainedModel):
+        # transformers 5.x changed all_tied_weights_keys from list to dict;
+        # mark_tied_weights_as_initialized calls .keys() on it.
+        all_tied_weights_keys: dict[str, str] = {}
+        _tied_weights_keys:    list[str]      = []
+
+        def __init__(self, config: _AutoConfig) -> None:
+            super().__init__(config)
+            self.wav2vec2   = _Wav2Vec2Model(config)
+            self.classifier = _RegressionHead(config)
+            self.init_weights()
+
+        def forward(self, input_values: "torch.Tensor") -> "torch.Tensor":
+            hidden = self.wav2vec2(input_values).last_hidden_state
+            hidden = torch.mean(hidden, dim=1)
+            return self.classifier(hidden)
+
+    _AUDEERING_MODEL_CLASS_AVAILABLE = True
+except Exception:
+    _AUDEERING_MODEL_CLASS_AVAILABLE = False
+
 
 def load_prosody_config(lang: str = "hi") -> dict[str, dict[str, str]]:
     """Load SSML prosody params from config/emotion_prosody.yaml.
@@ -111,11 +160,12 @@ def _get_audeering_model():
     """Lazy-load audeering VA regression model (broadcast/film trained)."""
     global _audeering_model, _audeering_processor
     if _audeering_model is None:
-        from transformers import Wav2Vec2ForSequenceClassification, Wav2Vec2Processor
+        if not _AUDEERING_MODEL_CLASS_AVAILABLE:
+            raise RuntimeError("audeering model class failed to initialise at import time")
+        from transformers import Wav2Vec2Processor
+        print(f"  Loading audio emotion model ({_AUDEERING_MODEL_ID}) …")
         _audeering_processor = Wav2Vec2Processor.from_pretrained(_AUDEERING_MODEL_ID)
-        _audeering_model = Wav2Vec2ForSequenceClassification.from_pretrained(
-            _AUDEERING_MODEL_ID
-        )
+        _audeering_model = _AudeeringEmotionModel.from_pretrained(_AUDEERING_MODEL_ID)
         _audeering_model.eval()
     return _audeering_model, _audeering_processor
 
@@ -143,8 +193,10 @@ def _classify_audio_segment_audeering(
 ) -> dict[str, float]:
     """Run audeering VA regression on an audio slice.
 
-    Audeering output: [arousal, dominance, valence] in [0, 1] after sigmoid.
-    Maps to [-1, 1] VA space then to a soft emotion distribution.
+    Model outputs [arousal, dominance, valence] as continuous regression values
+    (approx. [-1, 1]) via _AudeeringEmotionModel.forward(input_values).
+    Values map directly into _VALENCE_AROUSAL [-1, 1] space — no sigmoid or
+    rescaling needed.
     Returns {} on short segments or any runtime error.
     """
     import numpy as np
@@ -156,20 +208,13 @@ def _classify_audio_segment_audeering(
     if len(chunk) < int(_MIN_AUDIO_DURATION_S * 1000):
         return {}
     try:
-        # Convert pydub AudioSegment to numpy without writing a temp file
         samples = np.array(chunk.get_array_of_samples()).astype(np.float32) / (2 ** 15)
-        inputs = processor(
-            samples, sampling_rate=16_000, return_tensors="pt", padding=True
-        )
+        inputs  = processor(samples, sampling_rate=16_000, return_tensors="pt", padding=True)
         with torch.no_grad():
-            logits = model(**inputs).logits
-        probs = torch.sigmoid(logits).squeeze().cpu().numpy()
-        # audeering: index 0 = arousal, 1 = dominance, 2 = valence (all in [0, 1])
-        arousal_raw = float(probs[0])
-        valence_raw = float(probs[2])
-        # map [0, 1] → [-1, 1] to align with _VALENCE_AROUSAL space
-        valence = (valence_raw - 0.5) * 2.0
-        arousal = (arousal_raw - 0.5) * 2.0
+            values = model(inputs.input_values).squeeze().cpu().numpy()
+        # audeering: index 0 = arousal, 1 = dominance, 2 = valence
+        arousal = float(values[0])
+        valence = float(values[2])
         return _va_to_dist(valence, arousal)
     except Exception:
         return {}
@@ -612,7 +657,6 @@ def score_tts_emotion_fidelity(dubbed_audio_path: Path,
     except ImportError:
         return {"note": "pydub not installed"}
 
-    print(f"  Loading audio emotion model ({_AUDEERING_MODEL_ID}) …")
     try:
         aud_model, aud_proc = _get_audeering_model()
     except Exception as exc:
