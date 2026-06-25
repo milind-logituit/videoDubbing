@@ -102,9 +102,8 @@ def _synthesize_with_params(
         dubbed_audio = synthesize_hindi_audio(
             patched_segs,
             stem=f"{stem}_probe",
-            lang=lang,
+            target_lang=lang,
             force=True,
-            out_dir=tmp_dir,
         )
     finally:
         # Always restore original config
