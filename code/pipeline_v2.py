@@ -609,8 +609,13 @@ def repair_emotion_register(segments: list[dict], *,
                              skip: bool = False,
                              source_lang: str = "en",
                              target_lang: str = "hi",
-                             threshold: int = 3) -> list[dict]:
-    """Stage 4c — re-refine segments where Haiku grades emotion_register < threshold."""
+                             threshold: int = 4) -> list[dict]:
+    """Stage 4c — re-refine segments where Haiku grades emotion_register < threshold.
+
+    Default raised from 3 to 4 so segments scoring exactly 3/5 are repaired.
+    The spec target is avg_emotion_register ≥ 4.0; leaving er=3 segments unrepaired
+    pulls the average below target on clips with several near-miss segments.
+    """
     from metrics import grade_translations
 
     emotional = [s for s in segments
@@ -750,6 +755,58 @@ def generate_srt(segments: list[dict]) -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 # Stage 7 — Create dubbed video
 # ─────────────────────────────────────────────────────────────────────────────
+
+def apply_loudnorm(
+    input_path: Path,
+    target_lufs: float = -27.0,
+    true_peak: float = -1.5,
+    lra: float = 11.0,
+    force: bool = False,
+) -> Path:
+    """Normalise audio loudness to Netflix standard (−27 LKFS ±2 LU, TP −1.5 dBTP).
+
+    Two-pass loudnorm: pass 1 measures, pass 2 applies with linear gain so the
+    video track is never re-encoded.  Output is written alongside the input as
+    <stem>_norm<suffix>.
+    """
+    out_path = input_path.with_stem(input_path.stem + "_norm")
+    if out_path.exists() and not force:
+        print(f"  Loudnorm output already exists: {out_path.name}")
+        return out_path
+
+    filter_str = f"loudnorm=I={target_lufs}:TP={true_peak}:LRA={lra}:print_format=json"
+
+    # Pass 1 — measure
+    r1 = subprocess.run(
+        ["ffmpeg", "-y", "-i", str(input_path), "-af", filter_str,
+         "-vn", "-f", "null", "/dev/null"],
+        capture_output=True, text=True,
+    )
+    # loudnorm prints JSON to stderr
+    import json as _json
+    import re as _re
+    m = _re.search(r"\{[^{}]+\}", r1.stderr, _re.DOTALL)
+    if not m:
+        raise RuntimeError(f"loudnorm pass 1 failed to produce JSON:\n{r1.stderr[-500:]}")
+    meas = _json.loads(m.group())
+
+    # Pass 2 — apply with measured values (linear=true for accurate gain)
+    filter2 = (
+        f"loudnorm=I={target_lufs}:TP={true_peak}:LRA={lra}"
+        f":measured_I={meas['input_i']}"
+        f":measured_TP={meas['input_tp']}"
+        f":measured_LRA={meas['input_lra']}"
+        f":measured_thresh={meas['input_thresh']}"
+        f":offset={meas['target_offset']}"
+        f":linear=true"
+    )
+    subprocess.run(
+        ["ffmpeg", "-y", "-i", str(input_path),
+         "-af", filter2, "-c:v", "copy", str(out_path)],
+        check=True, capture_output=True,
+    )
+    print(f"  Loudnorm applied (target {target_lufs} LUFS): {out_path.name}")
+    return out_path
 
 def create_dubbed_video(
     video_path: Path,
@@ -968,6 +1025,12 @@ def run_pipeline(video_path: Path, args, *, has_ref: bool = False) -> dict:
     dubbed_video = create_dubbed_video(video_path, hindi_audio, segments=segments,
                                        target_lang=target_lang,
                                        no_vocals_path=no_vocals_path)
+
+    print("\nStage 7c — LUFS normalisation (−27 LKFS, Netflix standard) …")
+    try:
+        dubbed_video = apply_loudnorm(dubbed_video, force=args.force)
+    except Exception as e:
+        print(f"  [warn] Loudnorm failed, using unnormalised video: {e}")
 
     if args.lipsync:
         print("\nStage 7b — Wav2Lip lip-sync …")
