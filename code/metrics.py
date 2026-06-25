@@ -209,8 +209,60 @@ def compute_segment_isochrony(segments: list[dict], seg_dir: Path) -> list[dict]
     return results
 
 
+_GRADE_BATCH_SIZE = 20
+_GRADE_TOKENS_PER_SEGMENT = 120  # ~80 tokens output + 40 headroom per segment
+
+
+def _parse_grade_response(raw: str) -> list[dict]:
+    """Strip markdown fences and parse JSON; raises ValueError on failure."""
+    text = raw.strip()
+    if text.startswith("```"):
+        text = text.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
+    result = json.loads(text)
+    if not isinstance(result, list):
+        raise ValueError(f"Expected JSON array, got {type(result).__name__}")
+    return result
+
+
+def _grade_batch(client: anthropic.Anthropic, batch: list[dict]) -> list[dict]:
+    """Grade one batch; retries once with explicit repair prompt on parse failure."""
+    max_tokens = max(512, len(batch) * _GRADE_TOKENS_PER_SEGMENT)
+    content = json.dumps(batch, ensure_ascii=False)
+
+    msg = client.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=max_tokens,
+        system=_GRADE_SYSTEM,
+        messages=[{"role": "user", "content": content}],
+    )
+    raw = msg.content[0].text
+    try:
+        return _parse_grade_response(raw)
+    except Exception as exc:
+        print(f"  [warn] grade batch parse failed ({exc}), retrying …")
+        retry = client.messages.create(
+            model="claude-haiku-4-5-20251001",
+            max_tokens=max_tokens,
+            system=_GRADE_SYSTEM,
+            messages=[
+                {"role": "user", "content": content},
+                {"role": "assistant", "content": raw},
+                {"role": "user", "content": "Return ONLY the JSON array, no markdown, no explanation."},
+            ],
+        )
+        try:
+            return _parse_grade_response(retry.content[0].text)
+        except Exception as exc2:
+            print(f"  [warn] grade batch retry also failed ({exc2}), skipping batch.")
+            return []
+
+
 def grade_translations(segments: list[dict]) -> list[dict]:
-    """Call Claude Haiku to rate fidelity / fluency / fit per segment."""
+    """Call Claude Haiku to rate fidelity / fluency / fit per segment.
+
+    Batches into groups of _GRADE_BATCH_SIZE to avoid max_tokens truncation
+    on long clips.
+    """
     payload = [
         {
             "id": int(seg["id"]),
@@ -224,40 +276,14 @@ def grade_translations(segments: list[dict]) -> list[dict]:
     ]
     if not payload:
         return []
+
     client = anthropic.Anthropic()
-    msg = client.messages.create(
-        model="claude-haiku-4-5",
-        max_tokens=1024,
-        system=_GRADE_SYSTEM,
-        messages=[{"role": "user",
-                   "content": json.dumps(payload, ensure_ascii=False)}],
-    )
-    raw = msg.content[0].text.strip()
-    if raw.startswith("```"):
-        raw = raw.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
-    try:
-        return json.loads(raw)
-    except Exception as exc:
-        print(f"  [warn] grade_translations parse failed ({exc}), retrying …")
-        retry = client.messages.create(
-            model="claude-haiku-4-5",
-            max_tokens=1024,
-            messages=[
-                {"role": "user", "content": json.dumps(payload, ensure_ascii=False)},
-                {"role": "assistant", "content": raw},
-                {"role": "user",
-                 "content": "Return ONLY the JSON array, no markdown, no explanation."},
-            ],
-            system=_GRADE_SYSTEM,
-        )
-        raw2 = retry.content[0].text.strip()
-        if raw2.startswith("```"):
-            raw2 = raw2.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
-        try:
-            return json.loads(raw2)
-        except Exception as exc2:
-            print(f"  [warn] grade_translations retry also failed ({exc2}), skipping.")
-            return []
+    results: list[dict] = []
+    for i in range(0, len(payload), _GRADE_BATCH_SIZE):
+        batch = payload[i : i + _GRADE_BATCH_SIZE]
+        print(f"  Grading segments {i + 1}–{i + len(batch)} of {len(payload)} …")
+        results.extend(_grade_batch(client, batch))
+    return results
 
 
 def _merge_segment_quality(
