@@ -13,7 +13,10 @@
   },
   "tts": {
     "voice": "hi-IN-SwaraNeural",
-    "voice_map": {}
+    "voice_map": {
+      "SPEAKER_00": "hi-IN-MadhurNeural",
+      "SPEAKER_01": "hi-IN-SwaraNeural"
+    }
   },
   "alignment": {
     "source_duration_s": 120.0,
@@ -26,10 +29,10 @@
     {
       "id": 0,
       "start": 28.58,
-      "end": 29.98,
-      "en_duration_s": 1.4,
+      "end": 29.971999999999998,
+      "en_duration_s": 1.39,
       "tts_duration_s": 1.39,
-      "isochrony_ratio": 0.993,
+      "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 5,
       "fluency": 5
@@ -37,53 +40,54 @@
     {
       "id": 1,
       "start": 41.84,
-      "end": 46.98,
-      "en_duration_s": 5.14,
+      "end": 46.974000000000004,
+      "en_duration_s": 5.13,
       "tts_duration_s": 5.13,
-      "isochrony_ratio": 0.998,
+      "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 5,
       "fluency": 5,
-      "emotion_register": 5
+      "emotion_register": 4,
+      "note": "Exclamation marks convey urgency well, but could use slightly more vocal desperation cues in delivery to fully match 'fearful' emotion."
     },
     {
       "id": 2,
       "start": 70.82,
-      "end": 89.86,
-      "en_duration_s": 19.04,
-      "tts_duration_s": 13.97,
-      "isochrony_ratio": 0.734,
-      "fit": 3,
-      "fidelity": 3,
-      "fluency": 4,
+      "end": 84.57199999999999,
+      "en_duration_s": 13.75,
+      "tts_duration_s": 13.75,
+      "isochrony_ratio": 1.0,
+      "fit": 5,
+      "fidelity": 4,
+      "fluency": 5,
       "emotion_register": 5,
-      "note": "Adds 'बचाओ' (save me) which deviates from source text but enhances fearful emotion effectively"
+      "note": "Ellipses and repetition effectively convey breathless fear and hesitation, matching the emotional arc of extended duration."
     },
     {
       "id": 3,
       "start": 95.62,
-      "end": 119.74,
-      "en_duration_s": 24.12,
-      "tts_duration_s": 13.94,
-      "isochrony_ratio": 0.578,
-      "fit": 3,
+      "end": 109.684,
+      "en_duration_s": 14.06,
+      "tts_duration_s": 14.06,
+      "isochrony_ratio": 1.0,
+      "fit": 5,
       "fidelity": 3,
       "fluency": 4,
       "emotion_register": 5,
-      "note": "Adds 'खतरा है' (there's danger) which deviates from source but powerfully reinforces fearful register"
+      "note": "Addition of 'खतरा है' (there is danger) deviates from source text but strongly reinforces fearful emotion. Trade-off between fidelity and emotional authenticity."
     }
   ],
   "text_bleu": {
-    "bleu": 19.64,
-    "back_translated": "You don't... no... no, no, no! No... no... save, no, no! No... no... there is danger, no, no!",
+    "bleu": 1.23,
+    "back_translated": "Not you! No! No! No! No! No... no... no... just no... no... no... no... there is danger... no... no...",
     "n_segments": 4
   },
   "back_translation": {
-    "tgt_transcript_chars": 255,
-    "back_translated": "Tum yeh ye toh dom Baba wasn't volumes of it that person Prosody pitch plus twelve percent volume soft rate plus ten percent no no no save no no prosody Prosody pitch plus twelve percent volume soft rate plus ten percent no no no danger no no prosody",
-    "bleu": 1.35,
-    "hi_transcript_chars": 255,
-    "back_translated_en": "Tum yeh ye toh dom Baba wasn't volumes of it that person Prosody pitch plus twelve percent volume soft rate plus ten percent no no no save no no prosody Prosody pitch plus twelve percent volume soft rate plus ten percent no no no danger no no prosody"
+    "tgt_transcript_chars": 262,
+    "back_translated": "Tum Prosody Pitch Las Bar Percent Volume Soft Rate Las Dus Percent No No No No No No Prasudi Prosody Pitch 10% Volume, Soft Rate 12% No No, No, Just No, No Prosody Prosody Pitch 10% Volume, Soft Rate 12% No No, Khatra Hai No, No Prosody",
+    "bleu": 2.46,
+    "hi_transcript_chars": 262,
+    "back_translated_en": "Tum Prosody Pitch Las Bar Percent Volume Soft Rate Las Dus Percent No No No No No No Prasudi Prosody Pitch 10% Volume, Soft Rate 12% No No, No, Just No, No Prosody Prosody Pitch 10% Volume, Soft Rate 12% No No, Khatra Hai No, No Prosody"
   },
   "lipsync": {
     "sync_score": 0.495,
@@ -94,8 +98,8 @@
     "wav2lip_applied": false
   },
   "emotion": {
-    "match_pct": 100.0,
-    "avg_soft_score": 100.0,
+    "match_pct": 50.0,
+    "avg_soft_score": 87.5,
     "n_segments": 4,
     "segments": [
       {
@@ -112,29 +116,29 @@
         "id": 1,
         "source_emotion": "fearful",
         "source_score": 0.425,
-        "dubbed_emotion": "fearful",
-        "dubbed_score": 0.633,
-        "dubbed_back_en": "No... no... no, no, no!",
-        "match": true,
-        "va_similarity": 1.0
+        "dubbed_emotion": "angry",
+        "dubbed_score": 0.44,
+        "dubbed_back_en": "No! No! No! No! No!",
+        "match": false,
+        "va_similarity": 0.929
       },
       {
         "id": 2,
         "source_emotion": "fearful",
         "source_score": 0.425,
-        "dubbed_emotion": "fearful",
-        "dubbed_score": 0.499,
-        "dubbed_back_en": "No... no... save, no, no!",
-        "match": true,
-        "va_similarity": 1.0
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.397,
+        "dubbed_back_en": "No... no... no... just no... no...",
+        "match": false,
+        "va_similarity": 0.57
       },
       {
         "id": 3,
         "source_emotion": "fearful",
         "source_score": 0.425,
         "dubbed_emotion": "fearful",
-        "dubbed_score": 0.902,
-        "dubbed_back_en": "No... no... there is danger, no, no!",
+        "dubbed_score": 0.754,
+        "dubbed_back_en": "No... no... there is danger... no... no...",
         "match": true,
         "va_similarity": 1.0
       }
@@ -169,5 +173,50 @@
         }
       ]
     }
+  },
+  "mos_rubric": {
+    "mos": 88.0,
+    "n_sampled": 4,
+    "breakdown": {
+      "naturalness": 4.0,
+      "fidelity": 4.25,
+      "timing": 4.75,
+      "emotion": 4.0,
+      "names": 5.0
+    },
+    "per_segment": [
+      {
+        "id": 0,
+        "naturalness": 5,
+        "fidelity": 5,
+        "timing": 5,
+        "emotion": 3,
+        "names": 5
+      },
+      {
+        "id": 1,
+        "naturalness": 4,
+        "fidelity": 5,
+        "timing": 4,
+        "emotion": 5,
+        "names": 5
+      },
+      {
+        "id": 2,
+        "naturalness": 4,
+        "fidelity": 4,
+        "timing": 5,
+        "emotion": 4,
+        "names": 5
+      },
+      {
+        "id": 3,
+        "naturalness": 3,
+        "fidelity": 3,
+        "timing": 5,
+        "emotion": 4,
+        "names": 5
+      }
+    ]
   }
 }

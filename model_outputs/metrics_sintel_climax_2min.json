@@ -8,28 +8,30 @@
   "translation": {
     "model": "Google Translate (en→hi)",
     "bleu": null,
-    "n_segments": 27,
+    "n_segments": 20,
     "note": "N/A — no reference text for this clip"
   },
   "tts": {
     "voice": "hi-IN-SwaraNeural",
-    "voice_map": {}
+    "voice_map": {
+      "SPEAKER_00": "hi-IN-SwaraNeural"
+    }
   },
   "alignment": {
     "source_duration_s": 123.0,
     "dubbed_duration_s": 123.0,
     "duration_ratio": 1.0,
     "en_chars_per_sec": 3.2,
-    "hi_chars_per_sec": 4.3
+    "hi_chars_per_sec": 4.5
   },
   "segment_quality": [
     {
       "id": 0,
       "start": 0.0,
-      "end": 6.38,
-      "en_duration_s": 6.38,
+      "end": 6.072,
+      "en_duration_s": 6.07,
       "tts_duration_s": 6.07,
-      "isochrony_ratio": 0.951,
+      "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 4,
       "fluency": 4
@@ -37,44 +39,43 @@
     {
       "id": 1,
       "start": 9.0,
-      "end": 14.6,
-      "en_duration_s": 5.6,
+      "end": 12.96,
+      "en_duration_s": 3.96,
       "tts_duration_s": 3.96,
-      "isochrony_ratio": 0.707,
-      "fit": 3,
+      "isochrony_ratio": 1.0,
+      "fit": 5,
       "fidelity": 4,
       "fluency": 4
     },
     {
       "id": 2,
       "start": 16.0,
-      "end": 21.96,
-      "en_duration_s": 5.96,
+      "end": 20.536,
+      "en_duration_s": 4.54,
       "tts_duration_s": 4.54,
-      "isochrony_ratio": 0.762,
-      "fit": 3,
+      "isochrony_ratio": 1.0,
+      "fit": 5,
       "fidelity": 4,
       "fluency": 4
     },
     {
       "id": 3,
       "start": 21.96,
-      "end": 27.8,
-      "en_duration_s": 5.84,
+      "end": 26.784,
+      "en_duration_s": 4.82,
       "tts_duration_s": 4.82,
-      "isochrony_ratio": 0.825,
+      "isochrony_ratio": 1.0,
       "fit": 5,
-      "fidelity": 3,
-      "fluency": 3,
-      "note": "Incomplete translation; 'all that you hold dear' partially captured"
+      "fidelity": 4,
+      "fluency": 4
     },
     {
       "id": 4,
       "start": 27.8,
-      "end": 33.36,
-      "en_duration_s": 5.56,
+      "end": 33.343,
+      "en_duration_s": 5.54,
       "tts_duration_s": 5.54,
-      "isochrony_ratio": 0.996,
+      "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 4,
       "fluency": 4,
@@ -83,74 +84,74 @@
     {
       "id": 5,
       "start": 34.7,
-      "end": 39.76,
-      "en_duration_s": 5.06,
+      "end": 39.749,
+      "en_duration_s": 5.05,
       "tts_duration_s": 5.05,
-      "isochrony_ratio": 0.998,
+      "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 5,
       "fluency": 5,
-      "emotion_register": 4
+      "emotion_register": 5
     },
     {
       "id": 6,
       "start": 41.8,
-      "end": 49.9,
-      "en_duration_s": 8.1,
+      "end": 49.72,
+      "en_duration_s": 7.92,
       "tts_duration_s": 7.92,
-      "isochrony_ratio": 0.978,
+      "isochrony_ratio": 1.0,
       "fit": 5,
-      "fidelity": 4,
-      "fluency": 4,
+      "fidelity": 5,
+      "fluency": 5,
       "emotion_register": 5
     },
     {
       "id": 7,
       "start": 50.8,
-      "end": 54.32,
+      "end": 54.317,
       "en_duration_s": 3.52,
       "tts_duration_s": 3.52,
       "isochrony_ratio": 1.0,
       "fit": 5,
-      "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 4
+      "fidelity": 4,
+      "fluency": 4,
+      "emotion_register": 3,
+      "note": "The phrasing is somewhat neutral; 'surprised' register could be stronger with more emphatic phrasing"
     },
     {
       "id": 8,
       "start": 61.88,
-      "end": 68.12,
-      "en_duration_s": 6.24,
+      "end": 65.888,
+      "en_duration_s": 4.01,
       "tts_duration_s": 4.01,
-      "isochrony_ratio": 0.643,
-      "fit": 3,
+      "isochrony_ratio": 1.0,
+      "fit": 5,
       "fidelity": 4,
       "fluency": 4
     },
     {
       "id": 9,
       "start": 68.8,
-      "end": 75.22,
-      "en_duration_s": 6.42,
+      "end": 72.688,
+      "en_duration_s": 3.89,
       "tts_duration_s": 3.89,
-      "isochrony_ratio": 0.606,
-      "fit": 3,
+      "isochrony_ratio": 1.0,
+      "fit": 5,
       "fidelity": 4,
-      "fluency": 3,
-      "note": "Slightly awkward phrasing; 'दूर कहीं से' feels disconnected"
+      "fluency": 4
     },
     {
       "id": 10,
       "start": 75.22,
-      "end": 80.96,
-      "en_duration_s": 5.74,
+      "end": 80.945,
+      "en_duration_s": 5.72,
       "tts_duration_s": 5.72,
-      "isochrony_ratio": 0.997,
+      "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 3,
       "fluency": 3,
       "emotion_register": 2,
-      "note": "'शानदार सच्चाई' (splendid truth) doesn't match 'very truth'; happy emotion diluted by word choice"
+      "note": "'वाह!' feels misplaced and awkward; happy emotion register poorly matched"
     },
     {
       "id": 11,
@@ -166,19 +167,19 @@
     {
       "id": 12,
       "start": 85.84,
-      "end": 92.18,
-      "en_duration_s": 6.34,
+      "end": 92.162,
+      "en_duration_s": 6.32,
       "tts_duration_s": 6.32,
-      "isochrony_ratio": 0.997,
+      "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 5,
       "fluency": 5,
-      "emotion_register": 4
+      "emotion_register": 5
     },
     {
       "id": 13,
       "start": 92.18,
-      "end": 92.84,
+      "end": 92.83900000000001,
       "en_duration_s": 0.66,
       "tts_duration_s": 0.66,
       "isochrony_ratio": 1.0,
@@ -190,168 +191,87 @@
     {
       "id": 14,
       "start": 93.58,
-      "end": 102.4,
-      "en_duration_s": 8.82,
+      "end": 102.22,
+      "en_duration_s": 8.64,
       "tts_duration_s": 8.64,
-      "isochrony_ratio": 0.98,
+      "isochrony_ratio": 1.0,
       "fit": 5,
-      "fidelity": 4,
-      "fluency": 4,
+      "fidelity": 5,
+      "fluency": 5,
       "emotion_register": 5
     },
     {
       "id": 15,
       "start": 102.4,
-      "end": 106.4,
-      "en_duration_s": 4.0,
+      "end": 106.38600000000001,
+      "en_duration_s": 3.99,
       "tts_duration_s": 3.99,
-      "isochrony_ratio": 0.998,
+      "isochrony_ratio": 1.0,
       "fit": 5,
-      "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 4
+      "fidelity": 4,
+      "fluency": 4,
+      "emotion_register": 3,
+      "note": "Neutral phrasing; 'surprised' emotion not well conveyed"
     },
     {
       "id": 16,
       "start": 106.92,
-      "end": 112.48,
-      "en_duration_s": 5.56,
+      "end": 112.46300000000001,
+      "en_duration_s": 5.54,
       "tts_duration_s": 5.54,
-      "isochrony_ratio": 0.996,
-      "fit": 5,
-      "fidelity": 4,
-      "fluency": 4,
-      "emotion_register": 4
-    },
-    {
-      "id": 17,
-      "start": 113.58,
-      "end": 114.66,
-      "en_duration_s": 1.08,
-      "tts_duration_s": 1.08,
       "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 5,
       "fluency": 5,
-      "emotion_register": 3
-    },
-    {
-      "id": 18,
-      "start": 114.66,
-      "end": 115.32,
-      "en_duration_s": 0.66,
-      "tts_duration_s": 0.66,
-      "isochrony_ratio": 1.0,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 3
-    },
-    {
-      "id": 19,
-      "start": 115.32,
-      "end": 117.48,
-      "en_duration_s": 2.16,
-      "tts_duration_s": 2.15,
-      "isochrony_ratio": 0.995,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 4
-    },
-    {
-      "id": 20,
-      "start": 117.76,
-      "end": 118.04,
-      "en_duration_s": 0.28,
-      "tts_duration_s": 0.28,
-      "isochrony_ratio": 1.0,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5,
-      "emotion_register": 3
-    },
-    {
-      "id": 21,
-      "start": 118.04,
-      "end": 118.06,
-      "en_duration_s": 0.02,
-      "tts_duration_s": 0.02,
-      "isochrony_ratio": 1.0,
-      "fit": 5,
-      "fidelity": 4,
-      "fluency": 4,
       "emotion_register": 5
     },
     {
-      "id": 22,
-      "start": 118.06,
-      "end": 119.2,
-      "en_duration_s": 1.14,
-      "tts_duration_s": 1.13,
-      "isochrony_ratio": 0.991,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 23,
-      "start": 119.2,
-      "end": 119.26,
-      "en_duration_s": 0.06,
-      "tts_duration_s": 0.06,
-      "isochrony_ratio": 1.0,
-      "fit": 5,
-      "fidelity": 4,
-      "fluency": 4,
-      "emotion_register": 3
-    },
-    {
-      "id": 24,
-      "start": 119.26,
-      "end": 119.56,
-      "en_duration_s": 0.3,
-      "tts_duration_s": 0.29,
-      "isochrony_ratio": 0.967,
-      "fit": 5,
-      "fidelity": 5,
-      "fluency": 5
-    },
-    {
-      "id": 25,
-      "start": 120.42,
-      "end": 120.7,
-      "en_duration_s": 0.28,
-      "tts_duration_s": 0.28,
+      "id": 17,
+      "start": 112.48,
+      "end": 114.71900000000001,
+      "en_duration_s": 2.24,
+      "tts_duration_s": 2.24,
       "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 5,
       "fluency": 5,
-      "emotion_register": 3
+      "emotion_register": 5
     },
     {
-      "id": 27,
-      "start": 120.7,
-      "end": 122.56,
-      "en_duration_s": 1.86,
-      "tts_duration_s": 1.85,
-      "isochrony_ratio": 0.995,
+      "id": 19,
+      "start": 114.74,
+      "end": 121.48,
+      "en_duration_s": 6.74,
+      "tts_duration_s": 6.74,
+      "isochrony_ratio": 1.0,
+      "fit": 5,
+      "fidelity": 5,
+      "fluency": 5,
+      "emotion_register": 5
+    },
+    {
+      "id": 20,
+      "start": 121.48,
+      "end": 122.77600000000001,
+      "en_duration_s": 1.3,
+      "tts_duration_s": 1.3,
+      "isochrony_ratio": 1.0,
       "fit": 5,
       "fidelity": 5,
       "fluency": 5
     }
   ],
   "text_bleu": {
-    "bleu": 16.64,
-    "back_translated": "I see, can you tell the difference between love and pride? I have been waiting for so long for someone to wake me up, someone to be mine. When you are near, and the one you love, are you afraid of what you will get? As the morning comes after breaking the night, I will always keep wandering in search of the home that I found in your eyes. I will keep listening to the sound of the drum that calls me, from somewhere far away my blooming youth and the glorious truth are showing me what I have become. Just as the morning comes after breaking the night. As the morning comes breaking the darkness of the night, I will always keep on wandering in search of the home that I found in your eyes. Your voice sustained me all through the night. Night, night, night, night. Creepy night 11 year old you met day and night thank you.",
-    "n_segments": 27
+    "bleu": 20.14,
+    "back_translated": "I see, can you tell the difference between love and pride? I've been waiting so long For someone to wake me up, Someone I can call mine So when you're near, All that you hold dear Are you afraid of what you'll find? As the morning comes after breaking the night, I will be lost forever in the longing for the home that I found in your eyes. I will keep listening to the sound of the drum that calls me, my blooming youth from far away and this is the truth, wow! The one who shows what I have become, just as the morning comes after breaking the night, when the morning comes after breaking the night, I will be lost forever in the longing for the home that I found in your eyes, your voice held me the whole night, I will be lost forever, I will be lost forever, thank you.",
+    "n_segments": 20
   },
   "back_translation": {
-    "tgt_transcript_chars": 723,
-    "back_translated": "I see, can you tell the difference between love and pride? I was waiting for so long. Someone should wake me up, someone should be my own. When you are near and who is dear to you. Is it yours, are you afraid of what you will get, Prosuri. Prosuri, pfich, p abortion, folding on рндит, st on bhara, I will always wander in search of that house, prosuri. I will keep listening to the sound of the drum that calls me from somewhere far away and shows me what I have become. Like Subha comes after ripping the raga. Prosody Pitch 15% I will always keep wandering in search of that home. Prosody Shukriya Prasod Cheeth Prashiaremaya Yeh Jo Shukriya",
-    "bleu": 5.08,
-    "hi_transcript_chars": 723,
-    "back_translated_en": "I see, can you tell the difference between love and pride? I was waiting for so long. Someone should wake me up, someone should be my own. When you are near and who is dear to you. Is it yours, are you afraid of what you will get, Prosuri. Prosuri, pfich, p abortion, folding on рндит, st on bhara, I will always wander in search of that house, prosuri. I will keep listening to the sound of the drum that calls me from somewhere far away and shows me what I have become. Like Subha comes after ripping the raga. Prosody Pitch 15% I will always keep wandering in search of that home. Prosody Shukriya Prasod Cheeth Prashiaremaya Yeh Jo Shukriya"
+    "tgt_transcript_chars": 822,
+    "back_translated": "I see, can you tell the difference between love and pride? I was waiting for so long. Someone should wake me up, someone should be my own. When you are near and who is dear to you. Prosody pitch, gyara pitch, gyara fasush? I will keep listening to the sound of the drum that calls me from far away Prosody Pic Plus 15% Vol Loud Rate Plus 8% My blossoming youth and glorious truth Prosody is showing me what I have become Prosody Pitch Flus 12% Vol Loud Rate Prosody Prosody Pitch Flus 12% Vol Vol Soft Rate 12% I will always wander in search of that home Prosody Prosody pitch, plus 12%, volume soft rate, plus 10%, your voice took care of me the whole night, Prosody. Prosody pitch, 10%, volume soft rate, 12%, I'll be lost forever, Prosody. Thanks.",
+    "bleu": 4.08,
+    "hi_transcript_chars": 822,
+    "back_translated_en": "I see, can you tell the difference between love and pride? I was waiting for so long. Someone should wake me up, someone should be my own. When you are near and who is dear to you. Prosody pitch, gyara pitch, gyara fasush? I will keep listening to the sound of the drum that calls me from far away Prosody Pic Plus 15% Vol Loud Rate Plus 8% My blossoming youth and glorious truth Prosody is showing me what I have become Prosody Pitch Flus 12% Vol Loud Rate Prosody Prosody Pitch Flus 12% Vol Vol Soft Rate 12% I will always wander in search of that home Prosody Prosody pitch, plus 12%, volume soft rate, plus 10%, your voice took care of me the whole night, Prosody. Prosody pitch, 10%, volume soft rate, 12%, I'll be lost forever, Prosody. Thanks."
   },
   "lipsync": {
     "sync_score": 0.508,
@@ -362,9 +282,9 @@
     "wav2lip_applied": false
   },
   "emotion": {
-    "match_pct": 55.6,
-    "avg_soft_score": 79.6,
-    "n_segments": 27,
+    "match_pct": 75.0,
+    "avg_soft_score": 89.8,
+    "n_segments": 20,
     "segments": [
       {
         "id": 0,
@@ -391,8 +311,8 @@
         "source_emotion": "neutral",
         "source_score": 0.535,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.636,
-        "dubbed_back_en": "Someone should wake me up, someone should be mine",
+        "dubbed_score": 0.879,
+        "dubbed_back_en": "For someone to wake me up, someone I can call mine",
         "match": true,
         "va_similarity": 1.0
       },
@@ -400,19 +320,19 @@
         "id": 3,
         "source_emotion": "neutral",
         "source_score": 0.937,
-        "dubbed_emotion": "happy",
-        "dubbed_score": 0.945,
-        "dubbed_back_en": "When you are near, and who is dear to you",
-        "match": false,
-        "va_similarity": 0.5
+        "dubbed_emotion": "neutral",
+        "dubbed_score": 0.828,
+        "dubbed_back_en": "So when you're near, whatever you love",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 4,
         "source_emotion": "fearful",
         "source_score": 0.954,
         "dubbed_emotion": "fearful",
-        "dubbed_score": 0.963,
-        "dubbed_back_en": "Are you afraid of what you will get?",
+        "dubbed_score": 0.947,
+        "dubbed_back_en": "Are you afraid of what you'll find?",
         "match": true,
         "va_similarity": 1.0
       },
@@ -421,8 +341,8 @@
         "source_emotion": "fearful",
         "source_score": 0.579,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.401,
-        "dubbed_back_en": "As morning breaks through the night",
+        "dubbed_score": 0.435,
+        "dubbed_back_en": "As the morning breaks through the night",
         "match": false,
         "va_similarity": 0.57
       },
@@ -430,11 +350,11 @@
         "id": 6,
         "source_emotion": "sad",
         "source_score": 0.984,
-        "dubbed_emotion": "fearful",
-        "dubbed_score": 0.482,
-        "dubbed_back_en": "I will always wander in search of that home",
-        "match": false,
-        "va_similarity": 0.392
+        "dubbed_emotion": "sad",
+        "dubbed_score": 0.978,
+        "dubbed_back_en": "I will be lost forever in longing for that house",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 7,
@@ -461,8 +381,8 @@
         "source_emotion": "neutral",
         "source_score": 0.411,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.827,
-        "dubbed_back_en": "Whoever calls me, from somewhere far away",
+        "dubbed_score": 0.54,
+        "dubbed_back_en": "Who calls me, from far away",
         "match": true,
         "va_similarity": 1.0
       },
@@ -470,19 +390,19 @@
         "id": 10,
         "source_emotion": "happy",
         "source_score": 0.8,
-        "dubbed_emotion": "happy",
-        "dubbed_score": 0.981,
-        "dubbed_back_en": "My blooming youth and wonderful truth",
-        "match": true,
-        "va_similarity": 1.0
+        "dubbed_emotion": "surprised",
+        "dubbed_score": 0.904,
+        "dubbed_back_en": "My blooming youth and this is the truth, wow!",
+        "match": false,
+        "va_similarity": 0.636
       },
       {
         "id": 11,
         "source_emotion": "neutral",
         "source_score": 0.315,
         "dubbed_emotion": "surprised",
-        "dubbed_score": 0.303,
-        "dubbed_back_en": "Showing me what I have become",
+        "dubbed_score": 0.816,
+        "dubbed_back_en": "Who shows what I have become",
         "match": false,
         "va_similarity": 0.597
       },
@@ -491,8 +411,8 @@
         "source_emotion": "fearful",
         "source_score": 0.579,
         "dubbed_emotion": "neutral",
-        "dubbed_score": 0.401,
-        "dubbed_back_en": "As morning breaks through the night",
+        "dubbed_score": 0.435,
+        "dubbed_back_en": "As the morning breaks through the night",
         "match": false,
         "va_similarity": 0.57
       },
@@ -501,8 +421,8 @@
         "source_emotion": "fearful",
         "source_score": 0.579,
         "dubbed_emotion": "fearful",
-        "dubbed_score": 0.776,
-        "dubbed_back_en": "As the morning breaks through the darkness of the night",
+        "dubbed_score": 0.406,
+        "dubbed_back_en": "When morning breaks the night",
         "match": true,
         "va_similarity": 1.0
       },
@@ -510,11 +430,11 @@
         "id": 14,
         "source_emotion": "sad",
         "source_score": 0.984,
-        "dubbed_emotion": "fearful",
-        "dubbed_score": 0.482,
-        "dubbed_back_en": "I will always wander in search of that home",
-        "match": false,
-        "va_similarity": 0.392
+        "dubbed_emotion": "sad",
+        "dubbed_score": 0.978,
+        "dubbed_back_en": "I will be lost forever in longing for that house",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 15,
@@ -538,96 +458,26 @@
       },
       {
         "id": 17,
-        "source_emotion": "fearful",
-        "source_score": 0.718,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.403,
-        "dubbed_back_en": "Night",
-        "match": false,
-        "va_similarity": 0.57
-      },
-      {
-        "id": 18,
-        "source_emotion": "fearful",
-        "source_score": 0.718,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.403,
-        "dubbed_back_en": "Night",
-        "match": false,
-        "va_similarity": 0.57
+        "source_emotion": "sad",
+        "source_score": 0.914,
+        "dubbed_emotion": "sad",
+        "dubbed_score": 0.992,
+        "dubbed_back_en": "i will be lost forever",
+        "match": true,
+        "va_similarity": 1.0
       },
       {
         "id": 19,
-        "source_emotion": "fearful",
-        "source_score": 0.718,
-        "dubbed_emotion": "fearful",
-        "dubbed_score": 0.769,
-        "dubbed_back_en": "that night",
+        "source_emotion": "sad",
+        "source_score": 0.914,
+        "dubbed_emotion": "sad",
+        "dubbed_score": 0.954,
+        "dubbed_back_en": "I will be lost forever",
         "match": true,
         "va_similarity": 1.0
       },
       {
         "id": 20,
-        "source_emotion": "fearful",
-        "source_score": 0.718,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.403,
-        "dubbed_back_en": "Night",
-        "match": false,
-        "va_similarity": 0.57
-      },
-      {
-        "id": 21,
-        "source_emotion": "fearful",
-        "source_score": 0.718,
-        "dubbed_emotion": "fearful",
-        "dubbed_score": 0.977,
-        "dubbed_back_en": "that dreadful night",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 22,
-        "source_emotion": "neutral",
-        "source_score": 0.563,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.734,
-        "dubbed_back_en": "११ साल का",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 23,
-        "source_emotion": "surprised",
-        "source_score": 0.7,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.703,
-        "dubbed_back_en": "you met",
-        "match": false,
-        "va_similarity": 0.597
-      },
-      {
-        "id": 24,
-        "source_emotion": "neutral",
-        "source_score": 0.579,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.683,
-        "dubbed_back_en": "in the day",
-        "match": true,
-        "va_similarity": 1.0
-      },
-      {
-        "id": 25,
-        "source_emotion": "fearful",
-        "source_score": 0.718,
-        "dubbed_emotion": "neutral",
-        "dubbed_score": 0.403,
-        "dubbed_back_en": "Night",
-        "match": false,
-        "va_similarity": 0.57
-      },
-      {
-        "id": 27,
         "source_emotion": "neutral",
         "source_score": 0.666,
         "dubbed_emotion": "neutral",
@@ -638,26 +488,26 @@
       }
     ],
     "tts_fidelity": {
-      "avg_soft_score": 75.1,
-      "n_segments": 25,
+      "avg_soft_score": 57.9,
+      "n_segments": 20,
       "segments": [
         {
           "id": 0,
           "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
+          "perceived": "angry",
+          "va_similarity": 0.5
         },
         {
           "id": 1,
           "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
+          "perceived": "angry",
+          "va_similarity": 0.5
         },
         {
           "id": 2,
           "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
+          "perceived": "angry",
+          "va_similarity": 0.5
         },
         {
           "id": 3,
@@ -692,14 +542,14 @@
         {
           "id": 8,
           "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
+          "perceived": "angry",
+          "va_similarity": 0.5
         },
         {
           "id": 9,
           "intended": "neutral",
-          "perceived": "neutral",
-          "va_similarity": 1.0
+          "perceived": "angry",
+          "va_similarity": 0.5
         },
         {
           "id": 10,
@@ -745,53 +595,116 @@
         },
         {
           "id": 17,
-          "intended": "fearful",
-          "perceived": "sad",
-          "va_similarity": 0.392
-        },
-        {
-          "id": 18,
-          "intended": "fearful",
+          "intended": "sad",
           "perceived": "angry",
-          "va_similarity": 0.929
+          "va_similarity": 0.348
         },
         {
           "id": 19,
-          "intended": "fearful",
-          "perceived": "angry",
-          "va_similarity": 0.929
+          "intended": "sad",
+          "perceived": "happy",
+          "va_similarity": 0.07
         },
         {
           "id": 20,
-          "intended": "fearful",
-          "perceived": "angry",
-          "va_similarity": 0.929
-        },
-        {
-          "id": 22,
           "intended": "neutral",
           "perceived": "neutral",
           "va_similarity": 1.0
-        },
-        {
-          "id": 24,
-          "intended": "neutral",
-          "perceived": "happy",
-          "va_similarity": 0.5
-        },
-        {
-          "id": 25,
-          "intended": "fearful",
-          "perceived": "angry",
-          "va_similarity": 0.929
-        },
-        {
-          "id": 27,
-          "intended": "neutral",
-          "perceived": "angry",
-          "va_similarity": 0.5
         }
       ]
     }
+  },
+  "mos_rubric": {
+    "mos": 84.8,
+    "n_sampled": 10,
+    "breakdown": {
+      "naturalness": 4.1,
+      "fidelity": 4.4,
+      "timing": 4.0,
+      "emotion": 3.7,
+      "names": 5.0
+    },
+    "per_segment": [
+      {
+        "id": 0,
+        "naturalness": 4,
+        "fidelity": 5,
+        "timing": 4,
+        "emotion": 4,
+        "names": 5
+      },
+      {
+        "id": 2,
+        "naturalness": 4,
+        "fidelity": 4,
+        "timing": 4,
+        "emotion": 4,
+        "names": 5
+      },
+      {
+        "id": 4,
+        "naturalness": 5,
+        "fidelity": 5,
+        "timing": 5,
+        "emotion": 4,
+        "names": 5
+      },
+      {
+        "id": 6,
+        "naturalness": 4,
+        "fidelity": 4,
+        "timing": 4,
+        "emotion": 4,
+        "names": 5
+      },
+      {
+        "id": 8,
+        "naturalness": 4,
+        "fidelity": 5,
+        "timing": 4,
+        "emotion": 4,
+        "names": 5
+      },
+      {
+        "id": 10,
+        "naturalness": 2,
+        "fidelity": 3,
+        "timing": 3,
+        "emotion": 2,
+        "names": 5
+      },
+      {
+        "id": 12,
+        "naturalness": 5,
+        "fidelity": 5,
+        "timing": 4,
+        "emotion": 3,
+        "names": 5
+      },
+      {
+        "id": 14,
+        "naturalness": 4,
+        "fidelity": 4,
+        "timing": 5,
+        "emotion": 4,
+        "names": 5
+      },
+      {
+        "id": 16,
+        "naturalness": 5,
+        "fidelity": 5,
+        "timing": 4,
+        "emotion": 4,
+        "names": 5
+      },
+      {
+        "id": 19,
+        "naturalness": 4,
+        "fidelity": 4,
+        "timing": 3,
+        "emotion": 4,
+        "names": 5
+      }
+    ]
   }
 }

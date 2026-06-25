@@ -1,5 +1,5 @@
-id,start,end,duration,en_text,hi_text,emotion,emotion_score,emotion_dist
-0,28.58,29.98,1.4,You,तुम,neutral,0.934,{'neutral': 0.934}
-1,41.84,46.98,5.14,"No, no, no, no, no","नहीं... नहीं... नहीं, नहीं, नहीं!",fearful,0.425,"{'fearful': 0.425, 'disgust': 0.207, 'neutral': 0.206, 'angry': 0.072, 'sad': 0.07}"
-2,70.82,89.86,19.04,"No, no, no, no, no","नहीं... नहीं... बचाओ, नहीं, नहीं!",fearful,0.425,"{'fearful': 0.425, 'disgust': 0.207, 'neutral': 0.206, 'angry': 0.072, 'sad': 0.07}"
-3,95.62,119.74,24.12,"No, no, no, no, no","नहीं... नहीं... खतरा है, नहीं, नहीं!",fearful,0.425,"{'fearful': 0.425, 'disgust': 0.207, 'neutral': 0.206, 'angry': 0.072, 'sad': 0.07}"
+id,start,end,duration,en_text,hi_text,speaker,no_speech_prob,emotion,emotion_score,emotion_dist,arousal,valence,arc_flagged
+0,28.58,29.971999999999998,1.4,You,तुम,SPEAKER_00,0.0,neutral,0.934,{'neutral': 0.934},0.0,0.0,False
+1,41.84,46.974000000000004,5.14,"No, no, no, no, no",नहीं! नहीं! नहीं! नहीं! नहीं!,SPEAKER_01,0.0,fearful,0.425,"{'fearful': 0.425, 'disgust': 0.207, 'neutral': 0.206, 'angry': 0.072, 'sad': 0.07}",0.361,-0.429,False
+2,70.82,84.57199999999999,19.04,"No, no, no, no, no",नहीं... नहीं... नहीं... बस नहीं... नहीं...,SPEAKER_00,0.0,fearful,0.425,"{'fearful': 0.425, 'disgust': 0.207, 'neutral': 0.206, 'angry': 0.072, 'sad': 0.07}",0.361,-0.429,False
+3,95.62,109.684,24.12,"No, no, no, no, no",नहीं... नहीं... खतरा है... नहीं... नहीं...,SPEAKER_00,0.0,fearful,0.425,"{'fearful': 0.425, 'disgust': 0.207, 'neutral': 0.206, 'angry': 0.072, 'sad': 0.07}",0.361,-0.429,False
