@@ -1,0 +1,737 @@
+[
+  {
+    "emotion": "sad",
+    "pitch": "-15%",
+    "rate": "-20%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "-15%",
+    "rate": "-14%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "-15%",
+    "rate": "-7%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "-15%",
+    "rate": "+0%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "-15%",
+    "rate": "+7%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "-15%",
+    "rate": "+14%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "-15%",
+    "rate": "+20%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "-7%",
+    "rate": "-20%",
+    "volume": "soft",
+    "score": 23.7
+  },
+  {
+    "emotion": "sad",
+    "pitch": "-7%",
+    "rate": "-14%",
+    "volume": "soft",
+    "score": 23.7
+  },
+  {
+    "emotion": "sad",
+    "pitch": "-7%",
+    "rate": "-7%",
+    "volume": "soft",
+    "score": 23.7
+  },
+  {
+    "emotion": "sad",
+    "pitch": "-7%",
+    "rate": "+0%",
+    "volume": "soft",
+    "score": 23.7
+  },
+  {
+    "emotion": "sad",
+    "pitch": "-7%",
+    "rate": "+7%",
+    "volume": "soft",
+    "score": 23.7
+  },
+  {
+    "emotion": "sad",
+    "pitch": "-7%",
+    "rate": "+14%",
+    "volume": "soft",
+    "score": 23.7
+  },
+  {
+    "emotion": "sad",
+    "pitch": "-7%",
+    "rate": "+20%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+0%",
+    "rate": "-20%",
+    "volume": "soft",
+    "score": 23.7
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+0%",
+    "rate": "-14%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+0%",
+    "rate": "-7%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+0%",
+    "rate": "+0%",
+    "volume": "soft",
+    "score": 23.7
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+0%",
+    "rate": "+7%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+0%",
+    "rate": "+14%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+0%",
+    "rate": "+20%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+10%",
+    "rate": "-20%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+10%",
+    "rate": "-14%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+10%",
+    "rate": "-7%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+10%",
+    "rate": "+0%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+10%",
+    "rate": "+7%",
+    "volume": "soft",
+    "score": 23.7
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+10%",
+    "rate": "+14%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+10%",
+    "rate": "+20%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+20%",
+    "rate": "-20%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+20%",
+    "rate": "-14%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+20%",
+    "rate": "-7%",
+    "volume": "soft",
+    "score": 23.7
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+20%",
+    "rate": "+0%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+20%",
+    "rate": "+7%",
+    "volume": "soft",
+    "score": 23.7
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+20%",
+    "rate": "+14%",
+    "volume": "soft",
+    "score": 23.7
+  },
+  {
+    "emotion": "sad",
+    "pitch": "+20%",
+    "rate": "+20%",
+    "volume": "soft",
+    "score": 7.0
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "-15%",
+    "rate": "-20%",
+    "volume": "soft",
+    "score": 58.0
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "-15%",
+    "rate": "-14%",
+    "volume": "soft",
+    "score": 58.0
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "-15%",
+    "rate": "-7%",
+    "volume": "soft",
+    "score": 46.4
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "-15%",
+    "rate": "+0%",
+    "volume": "soft",
+    "score": 58.0
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "-15%",
+    "rate": "+7%",
+    "volume": "soft",
+    "score": 52.2
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "-15%",
+    "rate": "+14%",
+    "volume": "soft",
+    "score": 52.2
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "-15%",
+    "rate": "+20%",
+    "volume": "soft",
+    "score": 46.4
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "-7%",
+    "rate": "-20%",
+    "volume": "soft",
+    "score": 52.2
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "-7%",
+    "rate": "-14%",
+    "volume": "soft",
+    "score": 63.8
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "-7%",
+    "rate": "-7%",
+    "volume": "soft",
+    "score": 63.8
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "-7%",
+    "rate": "+0%",
+    "volume": "soft",
+    "score": 69.6
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "-7%",
+    "rate": "+7%",
+    "volume": "soft",
+    "score": 63.8
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "-7%",
+    "rate": "+14%",
+    "volume": "soft",
+    "score": 69.6
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "-7%",
+    "rate": "+20%",
+    "volume": "soft",
+    "score": 63.8
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+0%",
+    "rate": "-20%",
+    "volume": "soft",
+    "score": 69.6
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+0%",
+    "rate": "-14%",
+    "volume": "soft",
+    "score": 58.0
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+0%",
+    "rate": "-7%",
+    "volume": "soft",
+    "score": 63.8
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+0%",
+    "rate": "+0%",
+    "volume": "soft",
+    "score": 69.6
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+0%",
+    "rate": "+7%",
+    "volume": "soft",
+    "score": 58.0
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+0%",
+    "rate": "+14%",
+    "volume": "soft",
+    "score": 58.0
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+0%",
+    "rate": "+20%",
+    "volume": "soft",
+    "score": 58.0
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+10%",
+    "rate": "-20%",
+    "volume": "soft",
+    "score": 58.0
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+10%",
+    "rate": "-14%",
+    "volume": "soft",
+    "score": 63.8
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+10%",
+    "rate": "-7%",
+    "volume": "soft",
+    "score": 58.0
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+10%",
+    "rate": "+0%",
+    "volume": "soft",
+    "score": 52.2
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+10%",
+    "rate": "+7%",
+    "volume": "soft",
+    "score": 58.0
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+10%",
+    "rate": "+14%",
+    "volume": "soft",
+    "score": 58.0
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+10%",
+    "rate": "+20%",
+    "volume": "soft",
+    "score": 52.2
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+20%",
+    "rate": "-20%",
+    "volume": "soft",
+    "score": 63.8
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+20%",
+    "rate": "-14%",
+    "volume": "soft",
+    "score": 63.8
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+20%",
+    "rate": "-7%",
+    "volume": "soft",
+    "score": 63.8
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+20%",
+    "rate": "+0%",
+    "volume": "soft",
+    "score": 63.8
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+20%",
+    "rate": "+7%",
+    "volume": "soft",
+    "score": 58.0
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+20%",
+    "rate": "+14%",
+    "volume": "soft",
+    "score": 63.8
+  },
+  {
+    "emotion": "fearful",
+    "pitch": "+20%",
+    "rate": "+20%",
+    "volume": "soft",
+    "score": 52.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "-15%",
+    "rate": "-20%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "-15%",
+    "rate": "-14%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "-15%",
+    "rate": "-7%",
+    "volume": "medium",
+    "score": 53.9
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "-15%",
+    "rate": "+0%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "-15%",
+    "rate": "+7%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "-15%",
+    "rate": "+14%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "-15%",
+    "rate": "+20%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "-7%",
+    "rate": "-20%",
+    "volume": "medium",
+    "score": 53.9
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "-7%",
+    "rate": "-14%",
+    "volume": "medium",
+    "score": 53.9
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "-7%",
+    "rate": "-7%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "-7%",
+    "rate": "+0%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "-7%",
+    "rate": "+7%",
+    "volume": "medium",
+    "score": 53.9
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "-7%",
+    "rate": "+14%",
+    "volume": "medium",
+    "score": 53.9
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "-7%",
+    "rate": "+20%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+0%",
+    "rate": "-20%",
+    "volume": "medium",
+    "score": 53.9
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+0%",
+    "rate": "-14%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+0%",
+    "rate": "-7%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+0%",
+    "rate": "+0%",
+    "volume": "medium",
+    "score": 53.9
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+0%",
+    "rate": "+7%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+0%",
+    "rate": "+14%",
+    "volume": "medium",
+    "score": 53.9
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+0%",
+    "rate": "+20%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+10%",
+    "rate": "-20%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+10%",
+    "rate": "-14%",
+    "volume": "medium",
+    "score": 53.9
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+10%",
+    "rate": "-7%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+10%",
+    "rate": "+0%",
+    "volume": "medium",
+    "score": 53.9
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+10%",
+    "rate": "+7%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+10%",
+    "rate": "+14%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+10%",
+    "rate": "+20%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+20%",
+    "rate": "-20%",
+    "volume": "medium",
+    "score": 53.9
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+20%",
+    "rate": "-14%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+20%",
+    "rate": "-7%",
+    "volume": "medium",
+    "score": 53.9
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+20%",
+    "rate": "+0%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+20%",
+    "rate": "+7%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+20%",
+    "rate": "+14%",
+    "volume": "medium",
+    "score": 27.2
+  },
+  {
+    "emotion": "disgust",
+    "pitch": "+20%",
+    "rate": "+20%",
+    "volume": "medium",
+    "score": 27.2
+  }
+]

@@ -32,9 +32,10 @@ Spec: `docs/emotion_matching_spec.docx`
   - `audeering/wav2vec2-large-robust-12-ft-emotion-msp-dim` now in `score_tts_emotion_fidelity()` — gate cleared
   - `_PITCH_VARIANTS` 3→5, `_RATE_VARIANTS` 3→7 (35 combos/emotion); max segments per emotion 3→5
   - **Calibration result: inconclusive** — all emotions converge to pitch=-15%/rate=-20%; scores 7–35% vs 74.7% on full-clip
-  - Root cause: short TTS clips (2–5s) give audeering too little signal; perceived emotion driven by speech content not prosody → all combos tie
-  - YAML `hi:` block reverted; hand-crafted `default:` params better than calibrated output
-  - Next: calibrate against full-pipeline output rather than isolated TTS snippets
+  - Root cause (confirmed 2026-06-26): audeering predicts "surprised"/"happy" for 18/20 segments regardless of intended emotion; speech content dominates over prosody in VA prediction
+  - Fixed per-segment cache bug in `calibrate_prosody.py` (scores now vary across combos); but calibrated params made tts_fidelity WORSE (65.7%) than default hand-crafted params (74.7%)
+  - YAML `hi:` block reverted to defaults; calibration approach (vary pitch/rate → score with audeering) cannot reliably push above 75% because audeering is content-sensitive not prosody-sensitive
+  - To clear 75% reliably: need ElevenLabs (more expressive emotion control, blocked on BD) OR a different TTS fidelity scorer that isolates prosody from content
 
 ---
 

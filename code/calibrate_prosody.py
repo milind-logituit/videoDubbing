@@ -24,6 +24,7 @@ from __future__ import annotations
 import argparse
 import itertools
 import json
+import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -118,6 +119,29 @@ def _score(dubbed_audio: Path, segs: list[dict]) -> float:
     return float(result.get("avg_soft_score") or 0.0)
 
 
+def _score_from_segment_files(seg_dir: Path, segs: list[dict]) -> float:
+    """Score per-segment effective audio files directly (start=0, end=duration).
+
+    Avoids timestamp-slicing the assembled audio, giving audeering a clean
+    contiguous signal per segment instead of a slice from a sparse file.
+    """
+    from pydub import AudioSegment as _AS
+
+    eff_files = sorted(seg_dir.glob("seg_*_effective.mp3"))
+    if not eff_files:
+        return 0.0
+
+    scores: list[float] = []
+    for f, seg in zip(eff_files, segs):
+        duration_s = len(_AS.from_file(str(f))) / 1000.0
+        if duration_s < 0.1:
+            continue
+        result = score_tts_emotion_fidelity(f, [{**seg, "start": 0.0, "end": duration_s}])
+        scores.append(float(result.get("avg_soft_score") or 0.0))
+
+    return round(sum(scores) / len(scores), 2) if scores else 0.0
+
+
 def calibrate(
     clip_path: Path,
     lang: str = "hi",
@@ -174,13 +198,20 @@ def calibrate(
             best_score = -1.0
             best_combo = (current.get("pitch", "+0%"), current.get("rate", "+0%"))
             tried = 0
+            probe_seg_dir = PREPARED / f"{lang}_segments_{stem}_probe"
 
             for pitch, rate in itertools.product(_PITCH_VARIANTS, _RATE_VARIANTS):
+                # Clear per-segment cache so each combo gets fresh synthesis.
+                # force=True on synthesize_hindi_audio skips the final output check
+                # but NOT the per-segment files — without this rmtree every combo
+                # reuses combo-1's audio and scores identically.
+                if probe_seg_dir.exists():
+                    shutil.rmtree(probe_seg_dir)
                 try:
-                    dubbed = _synthesize_with_params(
+                    _synthesize_with_params(
                         segs, stem, lang, pitch, volume, rate, tmp_dir
                     )
-                    score = _score(dubbed, segs)
+                    score = _score_from_segment_files(probe_seg_dir, segs)
                 except Exception as exc:
                     print(f"    [warn] pitch={pitch} rate={rate} failed: {exc}")
                     score = 0.0
@@ -197,6 +228,10 @@ def calibrate(
 
                 print(f"    pitch={pitch:5s} rate={rate:5s}  score={score:.1f}%"
                       f"  {'← best' if (pitch, rate) == best_combo else ''}")
+
+            # Clean up probe segment files for this emotion before moving on.
+            if probe_seg_dir.exists():
+                shutil.rmtree(probe_seg_dir)
 
             best_params[emotion] = {
                 "pitch":  best_combo[0],
