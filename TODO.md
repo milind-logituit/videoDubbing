@@ -38,7 +38,8 @@ Spec: `docs/emotion_matching_spec.docx`
   - To clear 75% reliably: need ElevenLabs (more expressive emotion control, blocked on BD) OR a different TTS fidelity scorer that isolates prosody from content
   - emotion2vec+ Large (`iic/emotion2vec_plus_large`) evaluated 2026-06-26 — scored 67.6% (worse: biases toward "angry" while audeering biases toward "surprised", which inadvertently scores neutral segments better)
   - Direct VA comparison tried 2026-06-26 — bypassed argmax step, compared intended VA directly to audeering raw (valence, arousal). Scored 56.0% (worse: audeering outputs cluster in high-arousal/positive-valence region ~(0.4, 0.85) regardless of intended emotion — different normalization from `_VALENCE_AROUSAL` [-1, 1] space; argmax step correctly normalizes to our canonical space)
-  - Next option if ElevenLabs remains blocked: Praat/parselmouth prosody-only scorer measuring F0, energy, rate vs. expected ranges per emotion — immune to content-dominance bias
+  - Praat/parselmouth prosody-only scorer tried 2026-06-26 (`score_tts_prosody_fidelity` in emotion.py) — scored 39.5%. Root cause: natural sentence-level F0 variance (±15-22%, driven by intonation) is larger than SSML pitch offsets (8-22%). Azure TTS does apply SSML pitch (surprised=289 Hz vs neutral=254 Hz baseline), but the content-dependent variance (~25 Hz std) swamps the signal. Would require paired neutral/emotional recordings of identical text to isolate SSML contribution.
+  - **All local scorer alternatives exhausted.** 74.7% is the practical ceiling for audeering + Azure Hindi TTS. To exceed 75%: need ElevenLabs TTS (blocked on BD) or paired neutral reference audio to enable Praat-based differential scoring.
 
 ---
 

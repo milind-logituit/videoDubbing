@@ -707,3 +707,129 @@ def score_tts_emotion_fidelity(dubbed_audio_path: Path,
         "n_segments":     n,
         "segments":       records,
     }
+
+
+def _parse_pitch_pct(pitch_str: str) -> float:
+    return float(pitch_str.rstrip("%")) / 100.0
+
+
+def _volume_to_db(volume: str) -> float:
+    return {"x-loud": 8.0, "loud": 4.0, "medium": 0.0, "soft": -4.0, "x-soft": -8.0}.get(
+        volume, 0.0
+    )
+
+
+def score_tts_prosody_fidelity(dubbed_audio_path: Path, segments: list[dict]) -> dict:
+    """Prosody-only TTS fidelity scorer using Praat (via parselmouth).
+
+    Extracts F0 (pitch) and intensity per segment and checks whether the audio
+    matches the expected SSML prosody offsets for each intended emotion.
+    Immune to content-dominance bias — measures acoustic signal, not emotion
+    classification.
+
+    Returns avg_soft_score in [0, 100].
+    """
+    try:
+        import parselmouth
+        import numpy as np
+    except ImportError:
+        return {"note": "praat-parselmouth not installed; run: uv add praat-parselmouth"}
+
+    if not dubbed_audio_path.exists():
+        return {"note": f"dubbed audio not found: {dubbed_audio_path.name}"}
+
+    try:
+        snd = parselmouth.Sound(str(dubbed_audio_path))
+    except Exception as exc:
+        return {"note": f"parselmouth load failed: {exc}"}
+
+    import numpy as np  # noqa: F811 — re-import guards against conditional above
+
+    # --- extract per-segment features ---
+    raw: list[dict | None] = []
+    for seg in segments:
+        start_s = float(seg.get("start", 0))
+        end_s   = float(seg.get("end",   0))
+        if end_s - start_s < 0.1:
+            raw.append(None)
+            continue
+        try:
+            sub = snd.extract_part(from_time=start_s, to_time=end_s, preserve_times=False)
+            pitch_obj = sub.to_pitch()
+            f0_vals   = pitch_obj.selected_array["frequency"]
+            f0_voiced = f0_vals[f0_vals > 0]
+            f0_mean   = float(np.mean(f0_voiced)) if len(f0_voiced) > 0 else None
+
+            intensity_obj    = sub.to_intensity()
+            intensity_mean   = (
+                float(np.mean(intensity_obj.values)) if intensity_obj.values.size > 0 else None
+            )
+            raw.append({"f0": f0_mean, "intensity": intensity_mean})
+        except Exception:
+            raw.append(None)
+
+    # --- neutral baseline (median of neutral-labelled segments) ---
+    neutral_f0s = [
+        r["f0"] for r, seg in zip(raw, segments)
+        if r and r["f0"] is not None and seg.get("emotion", "neutral") == "neutral"
+    ]
+    neutral_db = [
+        r["intensity"] for r, seg in zip(raw, segments)
+        if r and r["intensity"] is not None and seg.get("emotion", "neutral") == "neutral"
+    ]
+    # fall back to all-segment median
+    all_f0s = [r["f0"] for r in raw if r and r["f0"] is not None]
+    all_db  = [r["intensity"] for r in raw if r and r["intensity"] is not None]
+
+    base_f0 = float(np.median(neutral_f0s or all_f0s)) if (neutral_f0s or all_f0s) else None
+    base_db = float(np.median(neutral_db  or all_db))  if (neutral_db  or all_db)  else None
+
+    # --- score each segment ---
+    prosody_cfg  = load_prosody_config("hi")
+    records: list[dict] = []
+    soft_total, n = 0.0, 0
+
+    for feat, seg in zip(raw, segments):
+        if feat is None:
+            continue
+        intended    = seg.get("emotion", "neutral")
+        seg_prosody = prosody_cfg.get(intended, prosody_cfg.get("neutral", {}))
+
+        # F0 score — penalise deviation from expected pitch ratio
+        expected_pitch_ratio = 1.0 + _parse_pitch_pct(seg_prosody.get("pitch", "+0%"))
+        if feat["f0"] is not None and base_f0 is not None and base_f0 > 0:
+            actual_ratio = feat["f0"] / base_f0
+            f0_dev       = abs(actual_ratio - expected_pitch_ratio)
+            f0_score     = max(0.0, 1.0 - f0_dev / 0.20)   # 20% tolerance → 0
+        else:
+            f0_score = 0.5
+
+        # Intensity score — penalise deviation from expected dB offset
+        expected_db  = _volume_to_db(seg_prosody.get("volume", "medium"))
+        if feat["intensity"] is not None and base_db is not None:
+            actual_db_offset  = feat["intensity"] - base_db
+            intensity_dev     = abs(actual_db_offset - expected_db)
+            intensity_score   = max(0.0, 1.0 - intensity_dev / 8.0)   # 8 dB tolerance → 0
+        else:
+            intensity_score = 0.5
+
+        similarity = round(0.65 * f0_score + 0.35 * intensity_score, 3)
+        soft_total += similarity
+        n          += 1
+        records.append({
+            "id":              seg.get("id"),
+            "intended":        intended,
+            "f0_hz":           round(feat["f0"], 1) if feat["f0"] else None,
+            "intensity_db":    round(feat["intensity"], 1) if feat["intensity"] else None,
+            "f0_score":        round(f0_score, 3),
+            "intensity_score": round(intensity_score, 3),
+            "va_similarity":   similarity,
+        })
+
+    return {
+        "avg_soft_score":        round(soft_total / n * 100, 1) if n else None,
+        "n_segments":            n,
+        "baseline_f0_hz":        round(base_f0, 1) if base_f0 else None,
+        "baseline_intensity_db": round(base_db, 1)  if base_db  else None,
+        "segments":              records,
+    }
