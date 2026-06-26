@@ -63,9 +63,9 @@ SSML_PROSODY: dict[str, dict[str, str]] = {
 
 _PROSODY_CONFIG_PATH = Path(__file__).parent.parent / "config" / "emotion_prosody.yaml"
 
-_text_pipeline      = None
-_audio_pipeline     = None
-_audeering_model    = None
+_text_pipeline       = None
+_audio_pipeline      = None
+_audeering_model     = None
 _audeering_processor = None
 
 # ---------------------------------------------------------------------------
@@ -168,6 +168,7 @@ def _get_audeering_model():
         _audeering_model = _AudeeringEmotionModel.from_pretrained(_AUDEERING_MODEL_ID)
         _audeering_model.eval()
     return _audeering_model, _audeering_processor
+
 
 
 def _va_to_dist(valence: float, arousal: float) -> dict[str, float]:
@@ -648,6 +649,12 @@ def score_tts_emotion_fidelity(dubbed_audio_path: Path,
     on each slice (broadcast/film-trained — replaces superb IEMOCAP model),
     compares perceived VA-derived emotion against the intended emotion in
     segments[*]["emotion"]. Returns avg_soft_score in [0, 100].
+
+    Note: emotion2vec+ Large was evaluated as an alternative (2026-06-26) but
+    scored lower (67.6%) vs audeering (74.7%) on Hindi TTS because emotion2vec
+    is biased toward "angry" while audeering is biased toward "surprised" — the
+    latter is VA-closer to neutral, inadvertently giving better scores for neutral
+    segments. Both models have content-dominance issues on synthetic speech.
     """
     if not dubbed_audio_path.exists():
         return {"note": f"dubbed audio not found: {dubbed_audio_path.name}"}
@@ -676,6 +683,7 @@ def score_tts_emotion_fidelity(dubbed_audio_path: Path,
             continue
         if (end_s - start_s) * 1000 < 100:   # skip sub-100ms slivers
             continue
+
         audio_dist = _classify_audio_segment_audeering(
             audio, start_s, end_s, aud_model, aud_proc
         )

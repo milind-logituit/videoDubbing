@@ -36,6 +36,9 @@ Spec: `docs/emotion_matching_spec.docx`
   - Fixed per-segment cache bug in `calibrate_prosody.py` (scores now vary across combos); but calibrated params made tts_fidelity WORSE (65.7%) than default hand-crafted params (74.7%)
   - YAML `hi:` block reverted to defaults; calibration approach (vary pitch/rate → score with audeering) cannot reliably push above 75% because audeering is content-sensitive not prosody-sensitive
   - To clear 75% reliably: need ElevenLabs (more expressive emotion control, blocked on BD) OR a different TTS fidelity scorer that isolates prosody from content
+  - emotion2vec+ Large (`iic/emotion2vec_plus_large`) evaluated 2026-06-26 — scored 67.6% (worse: biases toward "angry" while audeering biases toward "surprised", which inadvertently scores neutral segments better)
+  - Direct VA comparison tried 2026-06-26 — bypassed argmax step, compared intended VA directly to audeering raw (valence, arousal). Scored 56.0% (worse: audeering outputs cluster in high-arousal/positive-valence region ~(0.4, 0.85) regardless of intended emotion — different normalization from `_VALENCE_AROUSAL` [-1, 1] space; argmax step correctly normalizes to our canonical space)
+  - Next option if ElevenLabs remains blocked: Praat/parselmouth prosody-only scorer measuring F0, energy, rate vs. expected ranges per emotion — immune to content-dominance bias
 
 ---
 
