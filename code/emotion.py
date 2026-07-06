@@ -833,3 +833,147 @@ def score_tts_prosody_fidelity(dubbed_audio_path: Path, segments: list[dict]) ->
         "baseline_intensity_db": round(base_db, 1)  if base_db  else None,
         "segments":              records,
     }
+
+
+def _seg_contour(snd, start_s: float, end_s: float, n_points: int = 100):
+    """Extract z-normalised (F0, intensity) contours for one time slice.
+
+    Returns (f0_contour, energy_contour, voiced_frac) where each contour is a
+    length-`n_points` numpy array or None. F0 is interpolated across unvoiced
+    gaps so the *shape* survives resampling; both contours are z-normalised so
+    absolute pitch/loudness (speaker- and language-dependent) drops out and only
+    the emotional *dynamics* remain.
+    """
+    import numpy as np
+
+    if end_s - start_s < 0.12:
+        return None, None, 0.0
+    try:
+        sub = snd.extract_part(from_time=start_s, to_time=end_s, preserve_times=False)
+    except Exception:
+        return None, None, 0.0
+
+    def _znorm_resample(vals):
+        vals = np.asarray(vals, dtype=np.float64)
+        if vals.size < 4:
+            return None
+        std = vals.std()
+        if std < 1e-6:
+            return None
+        idx = np.linspace(0, len(vals) - 1, n_points)
+        res = np.interp(idx, np.arange(len(vals)), vals)
+        return (res - res.mean()) / (res.std() + 1e-9)
+
+    # --- F0: voiced frames, linearly interpolated across unvoiced gaps ---
+    try:
+        f0 = sub.to_pitch().selected_array["frequency"].astype(np.float64)
+    except Exception:
+        return None, None, 0.0
+    voiced = f0 > 0
+    voiced_frac = float(voiced.mean()) if f0.size else 0.0
+    if voiced.sum() >= 4:
+        xp = np.flatnonzero(voiced)
+        f0_filled = np.interp(np.arange(len(f0)), xp, f0[xp])
+        f0_contour = _znorm_resample(f0_filled)
+    else:
+        f0_contour = None
+
+    # --- intensity (energy envelope) ---
+    try:
+        inten = sub.to_intensity().values
+        energy_contour = _znorm_resample(inten.ravel()) if inten.size else None
+    except Exception:
+        energy_contour = None
+
+    return f0_contour, energy_contour, voiced_frac
+
+
+def score_tts_prosody_transfer(source_audio_path: Path,
+                               dubbed_audio_path: Path,
+                               segments: list[dict]) -> dict:
+    """Prosody-*transfer* fidelity: does the dubbed delivery track the original
+    performance's emotional dynamics?
+
+    For each aligned segment, extracts z-normalised F0 and energy contours from
+    both the source (original-language vocals) and the dubbed audio, then
+    correlates their *shapes*. High score = the dub rises, falls, and emphasises
+    where the original actor did — the emotion carried in the source performance
+    survives into the dub.
+
+    Unlike `score_tts_emotion_fidelity` (content-sensitive SER argmax) and
+    `score_tts_prosody_fidelity` (SSML-offset match, swamped by content
+    variance), this scorer references the *actual source performance*, so it is
+    immune to both failure modes. Requires the source and dubbed audio to share
+    segment timestamps (true when TTS is fit to the source segment windows).
+
+    Returns avg_soft_score in [0, 100]; F0 weighted 0.6, energy 0.4.
+    """
+    try:
+        import parselmouth
+        import numpy as np
+    except ImportError:
+        return {"note": "praat-parselmouth not installed; run: uv add praat-parselmouth"}
+
+    src_path = Path(source_audio_path)
+    dub_path = Path(dubbed_audio_path)
+    if not src_path.exists():
+        return {"note": f"source audio not found: {src_path.name}"}
+    if not dub_path.exists():
+        return {"note": f"dubbed audio not found: {dub_path.name}"}
+
+    try:
+        src_snd = parselmouth.Sound(str(src_path))
+        dub_snd = parselmouth.Sound(str(dub_path))
+    except Exception as exc:
+        return {"note": f"parselmouth load failed: {exc}"}
+
+    def _shape_r(a, b):
+        if a is None or b is None:
+            return None
+        r = float(np.corrcoef(a, b)[0, 1])
+        return r if np.isfinite(r) else None
+
+    records, soft_total, n = [], 0.0, 0
+    for seg in segments:
+        start_s = float(seg.get("start", 0))
+        end_s   = float(seg.get("end",   0))
+        if end_s <= start_s:
+            continue
+
+        s_f0, s_en, s_voiced = _seg_contour(src_snd, start_s, end_s)
+        d_f0, d_en, _        = _seg_contour(dub_snd, start_s, end_s)
+
+        # Segments with almost no voiced source speech (music/silence) carry no
+        # prosody to transfer — skip so they neither help nor hurt the average.
+        if s_voiced < 0.10:
+            continue
+
+        f0_r  = _shape_r(s_f0, d_f0)
+        en_r  = _shape_r(s_en, d_en)
+        if f0_r is None and en_r is None:
+            continue
+
+        # Map correlation [-1, 1] → [0, 1]; fall back to the available channel.
+        f0_score = (f0_r + 1) / 2 if f0_r is not None else None
+        en_score = (en_r + 1) / 2 if en_r is not None else None
+        if f0_score is not None and en_score is not None:
+            similarity = 0.6 * f0_score + 0.4 * en_score
+        else:
+            similarity = f0_score if f0_score is not None else en_score
+
+        similarity = round(similarity, 3)
+        soft_total += similarity
+        n          += 1
+        records.append({
+            "id":              seg.get("id"),
+            "emotion":         seg.get("emotion", "neutral"),
+            "f0_shape_r":      round(f0_r, 3) if f0_r is not None else None,
+            "energy_shape_r":  round(en_r, 3) if en_r is not None else None,
+            "transfer_score":  similarity,
+        })
+
+    return {
+        "avg_soft_score": round(soft_total / n * 100, 1) if n else None,
+        "n_segments":     n,
+        "segments":       records,
+    }

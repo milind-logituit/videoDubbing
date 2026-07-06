@@ -13,3 +13,6 @@ data/prepared/*.wav
 data/prepared/*.ducked.wav
 data/prepared/*.diarization.json
 data/prepared/hi_segments_*/
+
+# Secrets
+.env

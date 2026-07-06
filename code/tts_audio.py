@@ -349,3 +349,38 @@ def get_effective_seg_durations(
         if files:
             durations[seg["id"]] = len(AudioSegment.from_mp3(str(files[0]))) / 1000.0
     return durations
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Stage 3.5 helpers — voice pool assignment
+# ─────────────────────────────────────────────────────────────────────────────
+
+def _assign_voice_pool(
+    genders: dict[str, str],
+    segments: list[dict],
+    target_lang: str,
+) -> dict[str, str]:
+    """Assign a distinct voice from VOICE_POOL to each speaker.
+
+    Speakers are sorted by first utterance so assignment is stable across runs.
+    When the pool has only one voice (e.g. Hindi male), all same-gender speakers
+    share it — but the mechanism is ready for expansion.
+    """
+    pool = VOICE_POOL.get(target_lang, VOICE_POOL["hi"])
+
+    def _first_start(sp: str) -> float:
+        for s in segments:
+            if s.get("speaker") == sp:
+                return float(s.get("start", 0))
+        return 0.0
+
+    counters: dict[str, int] = {"male": 0, "female": 0}
+    result: dict[str, str] = {}
+    for sp in sorted(genders, key=_first_start):
+        gender = genders[sp]
+        voice_list = pool.get(gender, pool.get("male", []))
+        if not voice_list:
+            continue
+        result[sp] = voice_list[counters[gender] % len(voice_list)]
+        counters[gender] += 1
+    return result

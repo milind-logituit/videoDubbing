@@ -1,8 +1,11 @@
 """Tests for score_emotion_consistency and score_tts_emotion_fidelity in emotion.py."""
 import importlib.util
 import sys
+import wave
 from pathlib import Path
 from unittest.mock import MagicMock, patch
+
+import numpy as np
 
 _spec = importlib.util.spec_from_file_location(
     "emotion", Path(__file__).parent.parent / "code" / "emotion.py"
@@ -11,9 +14,29 @@ _mod = importlib.util.module_from_spec(_spec)  # type: ignore[arg-type]
 sys.modules["emotion"] = _mod
 _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
 
-score_emotion_consistency  = _mod.score_emotion_consistency
-score_tts_emotion_fidelity = _mod.score_tts_emotion_fidelity
-_va_similarity             = _mod._va_similarity
+score_emotion_consistency   = _mod.score_emotion_consistency
+score_tts_emotion_fidelity  = _mod.score_tts_emotion_fidelity
+score_tts_prosody_transfer  = _mod.score_tts_prosody_transfer
+_va_similarity              = _mod._va_similarity
+
+
+def _write_glide_wav(path: Path, f0_start: float, f0_end: float,
+                     dur_s: float = 1.2, sr: int = 16000) -> None:
+    """Write a mono WAV whose pitch glides linearly from f0_start→f0_end Hz.
+
+    A rising glide and a falling glide have anti-correlated F0 contours, which
+    lets us assert on prosody-transfer direction deterministically.
+    """
+    t = np.linspace(0, dur_s, int(sr * dur_s), endpoint=False)
+    f0 = np.linspace(f0_start, f0_end, t.size)
+    phase = 2 * np.pi * np.cumsum(f0) / sr
+    sig = 0.6 * np.sin(phase)
+    pcm = (sig * 32767).astype("<i2")
+    with wave.open(str(path), "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(sr)
+        w.writeframes(pcm.tobytes())
 
 
 # ── helpers ───────────────────────────────────────────────────────────────────
@@ -205,3 +228,67 @@ def test_fidelity_skips_zero_duration(tmp_path: Path):
         result = score_tts_emotion_fidelity(audio_file, segments)
 
     assert result["n_segments"] == 0
+
+
+# ── score_tts_prosody_transfer ────────────────────────────────────────────────
+
+def test_prosody_transfer_missing_source(tmp_path: Path):
+    dub = tmp_path / "dub.wav"
+    _write_glide_wav(dub, 120, 200)
+    result = score_tts_prosody_transfer(tmp_path / "nope.wav", dub, [])
+    assert "source audio not found" in result["note"]
+
+
+def test_prosody_transfer_missing_dub(tmp_path: Path):
+    src = tmp_path / "src.wav"
+    _write_glide_wav(src, 120, 200)
+    result = score_tts_prosody_transfer(src, tmp_path / "nope.wav", [])
+    assert "dubbed audio not found" in result["note"]
+
+
+def test_prosody_transfer_matching_contour_scores_high(tmp_path: Path):
+    # Source and dub both glide up over the same window → contours correlate → high.
+    src = tmp_path / "src.wav"
+    dub = tmp_path / "dub.wav"
+    _write_glide_wav(src, 120, 240)
+    _write_glide_wav(dub, 130, 250)  # different absolute pitch, same shape
+
+    segments = [{"id": 0, "start": 0.05, "end": 1.15, "emotion": "happy"}]
+    result = score_tts_prosody_transfer(src, dub, segments)
+
+    assert result["n_segments"] == 1
+    assert result["avg_soft_score"] > 75.0
+    assert result["segments"][0]["f0_shape_r"] > 0.5
+
+
+def test_prosody_transfer_opposite_contour_scores_low(tmp_path: Path):
+    # Source glides up, dub glides down → anti-correlated F0 → below matching case.
+    src = tmp_path / "src.wav"
+    dub = tmp_path / "dub.wav"
+    _write_glide_wav(src, 120, 240)
+    _write_glide_wav(dub, 240, 120)
+
+    segments = [{"id": 0, "start": 0.05, "end": 1.15, "emotion": "happy"}]
+    result = score_tts_prosody_transfer(src, dub, segments)
+
+    assert result["n_segments"] == 1
+    assert result["segments"][0]["f0_shape_r"] < 0.0
+
+
+def test_prosody_transfer_skips_unvoiced_source(tmp_path: Path):
+    # A silent source slice carries no prosody → segment is skipped, not scored.
+    src = tmp_path / "src.wav"
+    dub = tmp_path / "dub.wav"
+    sr = 16000
+    with wave.open(str(src), "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(sr)
+        w.writeframes(np.zeros(int(sr * 1.2), dtype="<i2").tobytes())
+    _write_glide_wav(dub, 130, 250)
+
+    segments = [{"id": 0, "start": 0.05, "end": 1.15, "emotion": "happy"}]
+    result = score_tts_prosody_transfer(src, dub, segments)
+
+    assert result["n_segments"] == 0
+    assert result["avg_soft_score"] is None

@@ -312,7 +312,7 @@ def test_extract_glossary_calls_claude_and_caches(tmp_path: Path):
     fake_response = MagicMock()
     fake_response.content = [MagicMock(text='{"Tom": "टॉम"}')]
 
-    with patch("pipeline_v2.anthropic.Anthropic") as MockClient:
+    with patch("translation.anthropic.Anthropic") as MockClient:
         MockClient.return_value.messages.create.return_value = fake_response
         result = extract_glossary(segs, target_lang="hi", cache_path=cache)
 
@@ -421,7 +421,7 @@ def test_no_speech_prob_carried_through_translate(monkeypatch):
     }
     whisper_result = {"segments": [whisper_seg]}
 
-    with patch("pipeline_v2.GoogleTranslator", return_value=fake_translator):
+    with patch("translation.GoogleTranslator", return_value=fake_translator):
         result = _mod.translate_segments(whisper_result)
 
     assert result[0]["no_speech_prob"] == 0.82
@@ -444,8 +444,8 @@ def test_refine_segments_skips_high_no_speech_prob(monkeypatch):
         batches_sent.append([s["id"] for s in batch])
         return {s["id"]: s for s in batch}
 
-    with patch("pipeline_v2._refine_batch", side_effect=fake_refine_batch):
-        with patch("pipeline_v2.anthropic.Anthropic"):
+    with patch("translation._refine_batch", side_effect=fake_refine_batch):
+        with patch("translation.anthropic.Anthropic"):
             _mod.refine_segments(segments, skip=False)
 
     sent_ids = [sid for batch in batches_sent for sid in batch]

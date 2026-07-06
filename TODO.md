@@ -41,6 +41,19 @@ Spec: `docs/emotion_matching_spec.docx`
   - Praat/parselmouth prosody-only scorer tried 2026-06-26 (`score_tts_prosody_fidelity` in emotion.py) — scored 39.5%. Root cause: natural sentence-level F0 variance (±15-22%, driven by intonation) is larger than SSML pitch offsets (8-22%). Azure TTS does apply SSML pitch (surprised=289 Hz vs neutral=254 Hz baseline), but the content-dependent variance (~25 Hz std) swamps the signal. Would require paired neutral/emotional recordings of identical text to isolate SSML contribution.
   - **All local scorer alternatives exhausted.** 74.7% is the practical ceiling for audeering + Azure Hindi TTS. To exceed 75%: need ElevenLabs TTS (blocked on BD) or paired neutral reference audio to enable Praat-based differential scoring.
 
+- [x] **Prosody-*transfer* fidelity scorer** — done 2026-07-02
+  - `score_tts_prosody_transfer(source_audio, dubbed_audio, segments)` in `emotion.py`; wired as Stage 8e-iii in `pipeline_v2.py` (added **alongside** `tts_fidelity`, does not replace it or the regression gate)
+  - Compares z-normalised F0 + energy **contour shapes** of dubbed Hindi vs the original English **vocal stem** (captured from demucs `vocals.wav`, falls back to source mix), per aligned segment. F0 weighted 0.6 / energy 0.4; correlation `[-1,1]→[0,1]`; segments with <10% voiced source skipped
+  - Sidesteps both prior failure modes: references the *actual source performance* (not a content-sensitive SER argmax) and measures contour *correlation* (not SSML-offset detection, which the earlier Praat scorer showed is swamped by content variance)
+  - **First run on `tears_of_steel_2min` (hi): 51.7% over 19 segments** — most per-segment F0 correlations near-zero/negative. Diagnostic confirms the 74.7% ceiling is NOT a scorer artifact: the current SSML-preset pipeline genuinely does **not** transfer the source performance's dynamics into the dub. This is the target metric for source-conditioned prosody warping (next lever) — expect it to rise substantially once the Hindi TTS is contour-warped to the English source
+- [~] **Source-conditioned prosody warping (PoC)** — `code/warp_prosody.py`, 2026-07-02
+  - WORLD (pyworld) analysis→resynth of dubbed audio; per segment, blends dubbed log-F0 *shape* toward source log-F0 shape (dubbed mean/range retained), leaving spectral envelope + aperiodicity untouched. `blend` in [0,1]. Deps: `pyworld`, `soundfile`
+  - **tears_of_steel, prosody-transfer score:** baseline 51.7% → blend0.4 54.4 → **blend0.6 57.6** → blend0.8 59.7 → blend1.0 61.5. Monotonic — warping causally lifts the stuck metric
+  - ⚠️ **Partial circularity:** warp-toward-source then score-vs-source; the gain proves the mechanism works, NOT that output sounds better. pyworld resynth is lossy (vocoder artifacts even at blend0). **Not yet validated for naturalness** — existing MOS rubric grades TEXT not audio, so no automated arbiter; needs a listening test (baseline vs blend0.6 vs blend1.0) before shipping. Warped WAVs in `scratchpad/tears_warped_b*.wav`
+  - Next: A/B listen → if natural, wire as pipeline stage + sweep all clips; if artifacty, try warping only high-arousal segments or a gentler blend
+  - **6-clip validation sweep 2026-07-02 (mean 50.6%):** tears_of_steel 51.7 (n19) · sintel_climax 51.5 (n19) · sintel_shaman 55.7 (n18) · elephants_dream 49.2 (n17) · advanced_english 53.5 (n17) · cosmos_laundromat 41.8 (**n2** — 17 segs skipped, music-dominant clip w/ <10% voiced source). Five of six cluster 49–56% with median F0 r≈0 → **no transfer, consistently, across content types**. Justifies building source-conditioned prosody warping (pyworld). Sweep script: `scratchpad/sweep_prosody_transfer.py`
+  - Added `praat-parselmouth>=0.4.7` to deps; 5 new unit tests (`tests/test_emotion_scoring.py`) — matching/opposite/unvoiced/missing-file paths; 52 passing
+
 ---
 
 ## P1 — Ship in v3.0, can slip to v3.1
@@ -80,6 +93,25 @@ Spec: `docs/emotion_matching_spec.docx`
 - [x] **Face emotion detection (`--face-emotion` flag)** — done (prior session)
   - `classify_face_emotions()` in `emotion.py`; wired as Stage 2.6 in `pipeline_v2.py`
   - MediaPipe FaceMesh → VA proxy → fused with text SER at 0.6/0.4; opt-in via `--face-emotion`
+
+---
+
+## Tech debt — flagged during pipeline_v2 modularisation (2026-07-06, branch `refactor/pipeline-v2-modules`)
+
+- [ ] **Loudnorm silently never runs from the CLI** — `run_pipeline` calls `apply_loudnorm(dubbed_video, force=args.force)` but argparse defines no `--force` flag; the `AttributeError` is swallowed by the Stage 7c `try/except`, so every CLI run prints the "[warn] Loudnorm failed" path and ships unnormalised audio. Fix: add `--force` (or drop the kwarg). Pre-existing bug, found not introduced by the refactor
+- [ ] **`SOURCE_SCRIPT`/`FULL_SOURCE_TEXT` duplicated** — `code/metrics.py` keeps a manual copy ("kept in sync" comment), now also defined in `code/video.py`; consolidate into one shared constant
+- [ ] **`save_outputs` dead parameters** — takes `src_audio` / `dubbed_audio` and never uses them (`code/reporting.py`); drop them (touches call site in `run_pipeline`)
+- [ ] **Stage numbering non-monotonic in `run_pipeline`** — Stages 2.5/2.6/2.7 (emotion) run after 4b; renumber or reorder logs for readability
+- [ ] **Per-module test coverage** — `asr.py`, `translation.py`, `video.py`, `reporting.py` are only covered indirectly via `tests/test_pipeline_v2.py`; add dedicated test files before COMET-QE / LatentSync / EMO-SIM work lands
+
+---
+
+## Lipsync (LatentSync) — pick up Monday 2026-06-30
+
+- [ ] **Confirm inference params are being applied server-side** — output file size identical across default and HQ settings (inference_steps=35, guidance_scale=2.2, enable_deepcache=false); Atharv to verify params are wired into the API handler
+- [ ] **Face detector fails on animated/VFX content** — `RuntimeError: Face not detected` on all our dubbed clips (sintel_climax, sample_en); need real human-face footage to test end-to-end
+- [ ] **VPN access via Sandeep** — GPU machine only reachable over internal VPN; email drafted, pending send
+- [ ] **Quality bar** — Atharv's `test_output2.mp4` is noticeably better than API output even with same clip; investigate if server is running different settings locally vs API
 
 ---
 
